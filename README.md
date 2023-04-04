@@ -147,15 +147,15 @@ foreach ($cursors as $cursor)
 ```
 
 ## Documentation
-+ [Setup](docs/1. Setup.md)
-+ [Active Record](docs/2. Active Record.md)
-+ [Active Table](docs/3. Active Table.md)
-+ [Cursors](docs/4. Cursors.md)
-+ [Virtual Fields](docs/5. Virtual Fields.md)
-+ [Migrations](docs/6. Migrations.md)
-+ [Validation](docs/7. Validation.md)
-+ [Translations](docs/8. Translations.md)
-+ [Miscellaneous](docs/9. Miscellaneous.md)
++ [Setup](<https://github.com/phpfui/ORM/blob/main/docs/1. Setup.md>)
++ [Active Record](<https://github.com/phpfui/ORM/blob/main/docs/2. Active Record.md>)
++ [Active Table](<https://github.com/phpfui/ORM/blob/main/docs/3. Active Table.md>)
++ [Cursors](<https://github.com/phpfui/ORM/blob/main/docs/4. Cursors.md>)
++ [Virtual Fields](<https://github.com/phpfui/ORM/blob/main/docs/5. Virtual Fields.md>)
++ [Migrations](<https://github.com/phpfui/ORM/blob/main/docs/6. Migrations.md>)
++ [Validation](<https://github.com/phpfui/ORM/blob/main/docs/7. Validation.md>)
++ [Translations](<https://github.com/phpfui/ORM/blob/main/docs/8. Translations.md>)
++ [Miscellaneous](<https://github.com/phpfui/ORM/blob/main/docs/9. Miscellaneous.md>)
 
 ## Full Class Documentation
 [PHPFUI/ORM](http://phpfui.com/?n=PHPFUI\ORM)
