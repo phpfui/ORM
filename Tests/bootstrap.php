@@ -40,7 +40,7 @@ $pdo = new \PHPFUI\ORM\PDOInstance('sqlite:' . __DIR__ . '/../northwind/northwin
 
 \PHPFUI\ORM::setTranslationCallback(\PHPFUI\Translation\Translator::trans(...));
 \PHPFUI\Translation\Translator::setTranslationDirectory(__DIR__ . '/../translations');
-\PHPFUI\Translation\Translator::setLocale(\Locale::getDefault());
+\PHPFUI\Translation\Translator::setLocale('en_US');
 
 $tables = \PHPFUI\ORM::getTables();
 
