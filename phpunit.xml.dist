@@ -9,7 +9,7 @@
 					convertDeprecationsToExceptions="true"
 					processIsolation="false"
 					stopOnFailure="false"
-					bootstrap="./tests/bootstrap.php"
+					bootstrap="./Tests/bootstrap.php"
 					>
 
 	<testsuites>
