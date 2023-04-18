@@ -13,17 +13,17 @@ namespace PHPFUI\ORM;
  */
 abstract class Record extends DataObject
 	{
-	public const ALLOWS_NULL_INDEX = 3;
-
-	public const DEFAULT_INDEX = 4;
-
-	public const KEY_INDEX = 5;
-
-	public const LENGTH_INDEX = 2;
-
 	public const MYSQL_TYPE_INDEX = 0;
 
 	public const PHP_TYPE_INDEX = 1;
+
+	public const LENGTH_INDEX = 2;
+
+	public const KEY_INDEX = 3;
+
+	public const ALLOWS_NULL_INDEX = 4;
+
+	public const DEFAULT_INDEX = 5;
 
 	protected static bool $autoIncrement = false;
 
@@ -56,6 +56,7 @@ abstract class Record extends DataObject
 	 */
 	public function __construct(int|array|null|string $parameter = null)
 		{
+		$this->setEmpty();
 		$type = \gettype($parameter);
 
 		switch ($type)
@@ -89,18 +90,9 @@ abstract class Record extends DataObject
 
 			case 'array':
 
-				$this->current = [];
-				$this->setFrom($parameter);
+				$this->read($parameter);
 
 				break;
-
-
-			default:
-
-				$this->setEmpty();
-
-				break;
-
 			}
 		}
 
@@ -175,14 +167,14 @@ abstract class Record extends DataObject
 
 			if ($value instanceof \PHPFUI\ORM\Record && $field == $haveType)
 				{
+				$this->empty = false;
+
 				if (empty($value->{$id}))
 					{
-					$this->empty = false;
 					$this->current[$id] = $value->insert();
 					}
 				else
 					{
-					$this->empty = false;
 					$this->current[$id] = $value->{$id};
 					}
 
@@ -209,9 +201,8 @@ abstract class Record extends DataObject
 
 		if (null !== $value && $haveType != $expectedType)
 			{
-			//throw new \PHPFUI\ORM\Exception($message);
 			$message = static::class . "::{$field} is of type {$expectedType} but being assigned a type of {$haveType}";
-			\PHPFUI\ORM::log(\Psr\Log\LogLevel::ERROR, $message);
+			\PHPFUI\ORM::log(\Psr\Log\LogLevel::WARNING, $message);
 			// do the conversion
 			switch ($expectedType)
 				{
@@ -354,12 +345,6 @@ abstract class Record extends DataObject
 
 		return static::$fields[$field][self::LENGTH_INDEX];
 		}
-
-	//	ALLOWS_NULL_INDEX = 3;
-	//	DEFAULT_INDEX = 4;
-	//	KEY_INDEX = 5;
-	//	MYSQL_TYPE_INDEX = 0;
-	//	PHP_TYPE_INDEX = 1;
 
 	/**
 	 * @return array  primary keys
@@ -525,7 +510,10 @@ abstract class Record extends DataObject
 
 		foreach (static::$fields as $field => $description)
 			{
-			$this->current[$field] = $description[self::DEFAULT_INDEX];
+			if (\array_key_exists(self::DEFAULT_INDEX, $description))
+				{
+				$this->current[$field] = $description[self::DEFAULT_INDEX];
+				}
 			}
 
 		return $this;
@@ -809,8 +797,8 @@ abstract class Record extends DataObject
 			if (isset(static::$fields[$key]))
 				{
 				$definition = static::$fields[$key];
-				// MYSQL_TYPE, PHP_TYPE, LENGTH, NULL, DEFAULT, KEY
-				if ($definition[self::ALLOWS_NULL_INDEX] && empty($definition[self::DEFAULT_INDEX]) && empty($value))
+
+				if (\array_key_exists(self::DEFAULT_INDEX, $definition) && $value === $definition[self::DEFAULT_INDEX])
 					{
 					continue;
 					}
@@ -837,8 +825,8 @@ abstract class Record extends DataObject
 				if (isset(static::$fields[$key]))
 					{
 					$definition = static::$fields[$key];
-					// MYSQL_TYPE, PHP_TYPE, LENGTH, NULL, DEFAULT, KEY
-					if ($definition[self::ALLOWS_NULL_INDEX] && empty($definition[self::DEFAULT_INDEX]) && empty($value))
+
+					if (\array_key_exists(self::DEFAULT_INDEX, $definition) && $value === $definition[self::DEFAULT_INDEX])
 						{
 						continue;
 						}

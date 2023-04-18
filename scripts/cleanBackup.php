@@ -26,27 +26,14 @@ if (! \file_exists($backupPath))
 if (\file_exists($targetPath))
 	{
 	echo "File {$targetPath} already exists\n";
-
-//	exit;
 	}
 
-$backupHandle = \fopen($backupPath, 'r');
-
-if (! $backupHandle)
+$cleaner = new CleanBackup($backupPath, $targetPath);
+if ($cleaner->run())
 	{
-	echo "Can't open {$backupPath} for reading\n";
-
-	exit;
+	echo "File {$targetPath} cleaned\n";
 	}
-
-$targetHandle = \fopen($targetPath, 'w');
-
-if (! $targetHandle)
+else
 	{
-	echo "Can't open {$targetPath} for writing\n";
-
-	exit;
+	echo 'Error: ' . $cleaner->getError() . "\n";
 	}
-
-$cleaner = new CleanBackup($backupHandle, $targetHandle);
-$cleaner->run();

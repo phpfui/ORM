@@ -4,6 +4,61 @@ namespace Tests\Unit;
 
 class InsertTest extends \PHPUnit\Framework\TestCase
 	{
+	public function testStringNullInsert() : void
+		{
+		$transaction = new \PHPFUI\ORM\Transaction();
+		$test = new \Tests\App\Record\StringRecord();
+		$test->stringRequired = $required = 'required';
+		$id = $test->insert();
+		$this->assertGreaterThan(0, $id);
+		$insertedTest = new \Tests\App\Record\StringRecord($id);
+		$this->assertNull($insertedTest->stringDefaultNull);
+		$this->assertEquals($required, $insertedTest->stringRequired);
+		$this->assertEquals('default', $insertedTest->stringDefaultNullable);
+		$this->assertEquals('default', $insertedTest->stringDefaultNotNull);
+		$this->assertTrue($transaction->rollBack());
+		}
+
+	public function testRequiredStringNotSetInsert() : void
+		{
+		$this->expectException(\Exception::class);
+		$transaction = new \PHPFUI\ORM\Transaction();
+		$test = new \Tests\App\Record\StringRecord();
+		$id = $test->insert();
+		$this->assertTrue($transaction->rollBack());
+		}
+
+	public function testDateNullInsert() : void
+		{
+		$transaction = new \PHPFUI\ORM\Transaction();
+		$test = new \Tests\App\Record\DateRecord();
+		$test->dateRequired = $date = \date('Y-m-d');
+		$timeStamp = \date('Y-m-d H:i:s');
+		$id = $test->insert();
+		$insertedTest = new \Tests\App\Record\DateRecord($id);
+		$this->assertNull($insertedTest->dateDefaultNull);
+		$this->assertEquals($date, $insertedTest->dateRequired);
+		$this->assertEquals('2000-01-02', $insertedTest->dateDefaultNullable);
+		$this->assertEquals('2000-01-02', $insertedTest->dateDefaultNotNull);
+		$this->assertGreaterThanOrEqual($timeStamp, $insertedTest->timestampDefaultCurrentNullable);
+		$this->assertGreaterThanOrEqual($timeStamp, $insertedTest->timestampDefaultCurrentNotNull);
+
+		$this->assertTrue($transaction->rollBack());
+		}
+
+	public function testDateRequiredInsert() : void
+		{
+		$this->expectException(\Exception::class);
+		$transaction = new \PHPFUI\ORM\Transaction();
+		$test = new \Tests\App\Record\DateRecord();
+		$id = $test->insert();
+		$insertedTest = new \Tests\App\Record\DateRecord($id);
+		$this->assertNull($insertedTest->dateDefaultNull);
+		$this->assertEquals('2000-01-02', $insertedTest->dateDefaultNullable);
+		$this->assertEquals('2000-01-02', $insertedTest->dateDefaultNotNull);
+		$this->assertTrue($transaction->rollBack());
+		}
+
 	public function testRecordInsert() : void
 		{
 		$customer = new \Tests\App\Record\Customer();
@@ -25,10 +80,10 @@ class InsertTest extends \PHPUnit\Framework\TestCase
 
 		$table = new \Tests\App\Table\Customer();
 		$this->assertEquals(29, $table->count());
-		$this->assertTrue(\PHPFUI\ORM::beginTransaction());
+		$transaction = new \PHPFUI\ORM\Transaction();
 		$this->assertEquals(30, $customer->insert());
 		$this->assertEquals(30, $table->count());
-		$this->assertTrue(\PHPFUI\ORM::rollBack());
+		$this->assertTrue($transaction->rollBack());
 		$this->assertEquals(29, $table->count());
 		}
 
@@ -39,7 +94,7 @@ class InsertTest extends \PHPUnit\Framework\TestCase
 		$orderTable = new \Tests\App\Table\Order();
 		$this->assertEquals(48, $orderTable->count());
 
-		$this->assertTrue(\PHPFUI\ORM::beginTransaction());
+		$transaction = new \PHPFUI\ORM\Transaction();
 
 		$customer = new \Tests\App\Record\Customer();
 		$customer->address = '123 Broadway';
@@ -89,7 +144,7 @@ class InsertTest extends \PHPUnit\Framework\TestCase
 		$orderTable->setWhere(new \PHPFUI\ORM\Condition('notes', 'Test Order'));
 		$foundOrder = $orderTable->getRecordCursor()->current();
 
-		$this->assertTrue(\PHPFUI\ORM::rollBack());
+		$this->assertTrue($transaction->rollBack());
 		$this->assertEquals(29, $customerTable->count());
 		$orderTable->setWhere();
 		$this->assertEquals(48, $orderTable->count());

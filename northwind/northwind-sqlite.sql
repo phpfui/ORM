@@ -488,3 +488,20 @@ CREATE TABLE IF NOT EXISTS `setting` (
   `setting_id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
   `setting_data` VARCHAR(255) NULL DEFAULT NULL);
 
+drop table if exists stringRecord;
+CREATE TABLE stringRecord (
+  stringRecordId INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  stringRequired varchar(100) not null,
+  stringDefaultNull varchar(100) DEFAULT NULL,
+  stringDefaultNullable varchar(100) default 'default',
+  stringDefaultNotNull varchar(100) not null default 'default');
+
+drop table if exists dateRecord;
+create table dateRecord (
+  dateRecordId INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  dateRequired date not null,
+  dateDefaultNull date DEFAULT NULL,
+  dateDefaultNullable date default '2000-01-02',
+  dateDefaultNotNull date not null default '2000-01-02',
+  timestampDefaultCurrentNullable timestamp DEFAULT CURRENT_TIMESTAMP,
+  timestampDefaultCurrentNotNull timestamp not null default CURRENT_TIMESTAMP);

@@ -320,7 +320,7 @@ class PDOInstance extends \PDO
 			$data = ['sql' => $info,
 				'input' => $input,
 				'error' => $this->lastError[2],
-				'stack' => \array_slice(\debug_backtrace(\DEBUG_BACKTRACE_IGNORE_ARGS), 1, 4),
+				'stack' => \debug_backtrace(\DEBUG_BACKTRACE_IGNORE_ARGS),
 			];
 			$this->lastErrors[] = $data;
 			$this->log(\Psr\Log\LogLevel::ERROR, 'Error from ' . $this->lastSql, $data);

@@ -48,7 +48,7 @@ abstract class Table implements \Countable
 	 */
 	public static function getAllTables(array $skipTables = []) : array
 		{
-		$iterator = new \DirectoryIterator(\PHPFUI\ORM::$namespaceRoot . '/' . \PHPFUI\ORM::$tableNamespace);
+		$iterator = new \DirectoryIterator(\PHPFUI\ORM::getTableNamespacePath());
 		$currentTables = [];
 
 		foreach ($iterator as $item)
@@ -790,13 +790,13 @@ abstract class Table implements \Countable
 		return $this;
 		}
 
-	public function updateFromTable(array $request) : void
+	public function updateFromTable(array $request) : bool
 		{
 		$fields = $this->instance->getFields();
 
 		$primaryKeys = $this->getPrimaryKeys();
 
-		\PHPFUI\ORM::beginTransaction();
+		$transation = new \PHPFUI\ORM\Transaction();
 
 		if (\count($primaryKeys))
 			{
@@ -823,7 +823,8 @@ abstract class Table implements \Countable
 				$this->instance->setEmpty()->setFrom($data)->insertOrUpdate();
 				}
 			}
-		\PHPFUI\ORM::commit();
+
+		return $transation->commit();
 		}
 
 	/**

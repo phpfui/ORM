@@ -496,6 +496,26 @@ CREATE TABLE IF NOT EXISTS `setting` (
   `setting_id` INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
   `setting_data` VARCHAR(255) NULL DEFAULT NULL);
 
+drop table if exists stringRecord;
+CREATE TABLE stringRecord (
+  stringRecordId int NOT NULL AUTO_INCREMENT,
+  stringRequired varchar(100) not null,
+  stringDefaultNull varchar(100) DEFAULT NULL,
+  stringDefaultNullable varchar(100) default 'default',
+  stringDefaultNotNull varchar(100) not null default 'default',
+  primary key(stringRecordId));
+
+drop table if exists dateRecord;
+create table dateRecord (
+  dateRecordId int not null auto_increment,
+  dateRequired date not null,
+  dateDefaultNull date DEFAULT NULL,
+  dateDefaultNullable date default '2000-01-02',
+  dateDefaultNotNull date not null default '2000-01-02',
+  timestampDefaultCurrentNullable timestamp DEFAULT CURRENT_TIMESTAMP,
+  timestampDefaultCurrentNotNull timestamp not null default CURRENT_TIMESTAMP,
+  PRIMARY KEY (dateRecordId));
+
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;

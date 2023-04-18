@@ -19,7 +19,7 @@ class UpdateTest extends \PHPUnit\Framework\TestCase
 		$customerTable2->setWhere($condition2);
 		$this->assertEquals(1, $customerTable2->count());
 
-		$this->assertTrue(\PHPFUI\ORM::beginTransaction());
+		$transaction = new \PHPFUI\ORM\Transaction();
 		$customer = new \Tests\App\Record\Customer(15);
 		$this->assertEquals('Helena', $customer->first_name);
 		$this->assertEquals('Kupkova', $customer->last_name);
@@ -29,7 +29,7 @@ class UpdateTest extends \PHPUnit\Framework\TestCase
 		$this->assertEquals(1, $customerTable->count());
 		$this->assertEquals(0, $customerTable2->count());
 
-		$this->assertTrue(\PHPFUI\ORM::rollBack());
+		$this->assertTrue($transaction->rollBack());
 		$this->assertEquals(0, $customerTable->count());
 		$this->assertEquals(1, $customerTable2->count());
 		$customerTable->setWhere();

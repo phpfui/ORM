@@ -33,7 +33,7 @@ class Field
 		$this->name = $fields['name']; /** @phpstan-ignore-line */
 		$this->type = \strtolower($fields['type']); /** @phpstan-ignore-line */
 		$this->nullable = ! (bool)$fields['notnull']; /** @phpstan-ignore-line */
-		$this->defaultValue = 'NULL' != $fields['dflt_value'] ? $fields['dflt_value'] : null; /** @phpstan-ignore-line */
+		$this->defaultValue = $fields['dflt_value']; /** @phpstan-ignore-line */
 		$this->primaryKey = (bool)$fields['pk']; /** @phpstan-ignore-line */
 		$this->autoIncrement = $autoIncrement && $this->primaryKey; /** @phpstan-ignore-line */
 		}

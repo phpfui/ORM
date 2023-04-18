@@ -1,4 +1,4 @@
-# PHPFUI\ORM [![Tests](https://github.com/phpfui/ORM/actions/workflows/tests.yml/badge.svg)](https://github.com/phpfui/ORM/actions?query=workflow%3Atests) [![Latest Packagist release](https://img.shields.io/packagist/v/phpfui/ORM.svg)](https://packagist.org/packages/phpfui/ORM) ![](https://img.shields.io/badge/PHPStan-level%206-brightgreen.svg?style=flat)
+# PHPFUI\ORM [![Tests](https://github.com/phpfui/ORM/actions/workflows/tests.yml/badge.svg)](https://github.com/phpfui/ORM/actions?query=workflow%3Atests) [![Latest Packagist release](https://img.shields.io/packagist/v/phpfui/ORM.svg)](https://packagist.org/packages/phpfui/ORM) ![](https://img.shields.io/badge/PHPStan-level%205-brightgreen.svg?style=flat)
 
 ### PHPFUI\ORM a minimal Object Relational Mapper (ORM) for MySQL, MariaDB and SQLite3
 Why another PHP ORM? In writing minimal and fast websites, it was determined that existing PHP ORM solutions were overly complex. **PHPFUI\ORM** is less than 6k lines of code in under 50 files.  It is designed to have a minimal memory footprint and excellent execution times for most database needs.
@@ -6,16 +6,18 @@ Why another PHP ORM? In writing minimal and fast websites, it was determined tha
 **PHPFUI\ORM** is not an attempt to write an abstraction around SQL as other ORMs do, rather it is a way to work with SQL that closely matches the semantics of SQL, with the power of PHP objects.  It allows PHP to manipulate SQL queries without having to write SQL in plain text. This is very useful for queries generated via user interfaces where the user is given a lot of flexability in how a query is defined.
 
 ## Features
-- **Active Records** that present a fully type checked object interface and implement basic CRUD functionality.
-- **Active Tables** for full table operations including support for where, having, limits, ordering, grouping, joins and unions.
-- **Data Cursors** that implement **iterable** and **Countable** eliminating the need for full arrays read into memory.
-- **Validation** for fully customizable and translatable backend validation.
-- **Virtual Fields** for get and set semantics.
-- **Migrations** simple migrations offer atomic up and down migrations.
-- **Relations** for parent, children, one to one, many to many, and custom relationships.
-- **Type Safe** to prevent stupid type errors.
-- **Raw SQL Query Support** execute any valid SQL command.
-- **MultiDatabase Support** built on PDO with support for MySQL, MariaDB and SQLite.
+- **Active Records** A fully type checked object interface and implement basic CRUD functionality.
+- **Active Tables** Full table operations including support for where, having, limits, ordering, grouping, joins and unions.
+- **Data Cursors** Cursors implement **iterable** and **Countable** eliminating the need for full arrays read into memory.
+- **Validation** Fully customizable and translatable backend validation.
+- **Virtual Fields** Supports get and set semantics for any custom or calculated field.
+- **Migrations** Simple migrations offer atomic up and down migrations.
+- **Relations** Parent, children, one to one, many to many, and custom relationships.
+- **Transactions** Object based transaction meaning exceptions can not leave an open transacton.
+- **Type Safe** Prevent stupid type errors.
+- **Raw SQL Query Support** Execute any valid SQL command.
+- **Multiple Database Support** Work with multiple databases simultaneously.
+- **Multi-Vendor Support** Built on PDO with support for MySQL, MariaDB and SQLite.
 
 ## Usage
 ### Setup
@@ -108,13 +110,12 @@ Exceptions are generated in the following conditions:
 - Incorrect type for Operator (must be an array for **IN** for example)
 - Passing an incorrect type as a primary key
 - Invalid join type
-- Requesting a **RecordCursor** with a table join
 - Joining on an invalid table
 
 All of the above exceptions are programmer errors and strictly enforced. Empty queries are not considered errors. SQL may also return [Exceptions](https://www.php.net/manual/en/class.exception.php) if invalid fields are used.
 
 ### Type Conversions
-If you set a field to the wrong type, the library logs an error then converts the type via the appropriate PHP cast.
+If you set a field to the wrong type, the library logs an warning then converts the type via the appropriate PHP cast.
 
 ## Multiple Database Support
 While this is primarily a single database ORM, you can switch databases at run time. Save the value from `$connectionId = \PHPFUI\ORM::addConnection($pdo);` and then call `\PHPFUI\ORM::useConnection($db);` to switch.  `\PHPFUI\ORM::addConnection` will set the current connection.
@@ -155,7 +156,8 @@ foreach ($cursors as $cursor)
 + [Migrations](<https://github.com/phpfui/ORM/blob/main/docs/6. Migrations.md>)
 + [Validation](<https://github.com/phpfui/ORM/blob/main/docs/7. Validation.md>)
 + [Translations](<https://github.com/phpfui/ORM/blob/main/docs/8. Translations.md>)
-+ [Miscellaneous](<https://github.com/phpfui/ORM/blob/main/docs/9. Miscellaneous.md>)
++ [Transactions](<https://github.com/phpfui/ORM/blob/main/docs/9. Transactions.md>)
++ [Miscellaneous](<https://github.com/phpfui/ORM/blob/main/docs/10. Miscellaneous.md>)
 
 ## Full Class Documentation
 [PHPFUI/ORM](http://phpfui.com/?n=PHPFUI\ORM)

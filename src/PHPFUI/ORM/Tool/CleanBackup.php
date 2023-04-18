@@ -4,16 +4,51 @@ namespace PHPFUI\ORM\Tool;
 
 class CleanBackup
 	{
-	public function __construct(private $backupHandle, private $targetHandle)
+	private $backupHandle;
+
+	private $targetHandle;
+
+	private string $error = '';
+
+	public function __construct(string $backupPath, string $targetPath)
 		{
+		$this->backupHandle = \fopen($backupPath, 'r');
+
+		if (! $this->backupHandle)
+			{
+			$this->error = "Can't open {$backupPath} for reading";
+
+			return;
+			}
+
+		$this->targetHandle = \fopen($targetPath, 'w');
+
+		if (! $this->targetHandle)
+			{
+			$this->error = "Can't open {$targetPath} for writing";
+
+			return;
+			}
 		}
 
-	public function run() : void
+	public function getError() : string
 		{
+		return $this->error;
+		}
+
+	public function run() : bool
+		{
+		if ($this->error)
+			{
+			return false;
+			}
+
 		while (($line = \fgets($this->backupHandle)) !== false)
 			{
 			\fwrite($this->targetHandle, $this->processLine($line));
 			}
+
+		return true;
 		}
 
 	private function replaceOption(string $option, string $replacement, string $line) : string

@@ -25,7 +25,7 @@ foreach ($files as $fileinfo)
 	{
 	if ($fileinfo->isFile() && \str_ends_with($fileinfo->getRealPath(), '.php'))
 		{
-	\unlink($fileinfo->getRealPath());
+		\unlink($fileinfo->getRealPath());
 		}
 	}
 

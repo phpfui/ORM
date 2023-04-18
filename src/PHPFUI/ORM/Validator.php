@@ -29,13 +29,13 @@ namespace PHPFUI\ORM;
  * | day_month_year | Loosely formatted date (D-M-Y) | None |
  * | domain         | Valid domain | None |
  * | email          | Valid email | None |
- * | enum           | MySQL enum value, case insensitive | comma separated list of identifiers<br>**Example:** enum:GET,POST,PUT,DELETE |
+ * | enum           | MySQL enum value, case insensitive | comma separated list of identifiers<br>**Example:** enum:Get,Post,Put,Delete |
  * | enum_exact     | MySQL enum value, case sensitive | comma separated list of identifiers<br>**Example:** enum:ssl,tls |
  * | integer        | Whole number, no fractional part | None |
  * | maxlength      | Length must be greater or equal | Optional length, else MySQL limit |
- * | maxvalue       | Value must be greater or equal | number, required |
+ * | maxvalue       | Value must be greater or equal | value, required |
  * | minlength      | Must be less than or equal | number, default field size |
- * | minvalue       | Must be less than or equal | number, required |
+ * | minvalue       | Must be less than or equal | value, required |
  * | month_day_year | Loosely formatted date (M-D-Y) | None |
  * | month_year     | Loosely formatted Month Year | None |
  * | number         | Floating point number or whole number | None |

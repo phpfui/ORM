@@ -287,6 +287,7 @@ class ORM
 		if (self::$translationCallback)
 			{
 			$callback = self::$translationCallback;
+
 			return $callback($text, $variables);
 			}
 
@@ -316,12 +317,7 @@ class ORM
 		return \implode('', $parts);
 		}
 
-	private static function filePath(string $namespace) : string
-		{
-		return \str_replace('\\', '/', $namespace);
-		}
-
-	private static function getInstance() : \PHPFUI\ORM\PDOInstance
+	public static function getInstance() : \PHPFUI\ORM\PDOInstance
 		{
 		if (null === self::$currentInstance)
 			{
@@ -329,5 +325,10 @@ class ORM
 			}
 
 		return self::$instances[self::$currentInstance];
+		}
+
+	private static function filePath(string $namespace) : string
+		{
+		return \str_replace('\\', '/', $namespace);
 		}
 	}
