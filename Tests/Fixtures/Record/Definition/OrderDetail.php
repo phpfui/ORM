@@ -28,17 +28,17 @@ abstract class OrderDetail extends \PHPFUI\ORM\Record
 
 	/** @var array<string, array<mixed>> */
 	protected static array $fields = [
-		// MYSQL_TYPE, PHP_TYPE, LENGTH, NULL, DEFAULT, KEY
-		'date_allocated' => ['datetime', 'string', 20, true, null, false, ],
-		'discount' => ['double', 'float', 0, false, 0, false, ],
-		'inventory_transaction_id' => ['integer', 'int', 0, true, null, false, ],
-		'order_detail_id' => ['integer', 'int', 0, false, null, true, ],
-		'order_detail_status_id' => ['integer', 'int', 0, true, null, false, ],
-		'order_id' => ['integer', 'int', 0, false, null, false, ],
-		'product_id' => ['integer', 'int', 0, true, null, false, ],
-		'purchase_order_id' => ['integer', 'int', 0, true, null, false, ],
-		'quantity' => ['decimal(18,4)', 'float', 18, false, 0, false, ],
-		'unit_price' => ['decimal(19,4)', 'float', 19, true, 0, false, ],
+		// MYSQL_TYPE, PHP_TYPE, LENGTH, KEY, ALLOWS_NULL, DEFAULT
+		'date_allocated' => ['datetime', 'string', 20, false, true, 'NULL', ],
+		'discount' => ['double', 'float', 0, false, false, 0, ],
+		'inventory_transaction_id' => ['integer', 'int', 0, false, true, NULL, ],
+		'order_detail_id' => ['integer', 'int', 0, true, false, ],
+		'order_detail_status_id' => ['integer', 'int', 0, false, true, NULL, ],
+		'order_id' => ['integer', 'int', 0, false, false, ],
+		'product_id' => ['integer', 'int', 0, false, true, NULL, ],
+		'purchase_order_id' => ['integer', 'int', 0, false, true, NULL, ],
+		'quantity' => ['decimal(18,4)', 'float', 18, false, false, 0, ],
+		'unit_price' => ['decimal(19,4)', 'float', 19, false, true, 0, ],
 	];
 
 	/** @var array<string, true> */

@@ -161,13 +161,11 @@ PHP;
 			case 'bool':
 			case 'datetime':
 			case 'string':
-				if ('CURRENT_TIMESTAMP' == $field->defaultValue)
+				if ('CURRENT_TIMESTAMP' == $field->defaultValue || 'CURRENT_DATE' == $field->defaultValue)
 					{
-					$defaultValue = '';
-					$allowNulls = 'true';
+					$defaultValue = null;
 					}
-
-				if (\str_contains($field->defaultValue ?? '', "'"))
+				elseif (\str_contains($field->defaultValue ?? '', "'"))
 					{
 					$defaultValue = "\"{$field->defaultValue}\"";
 					}

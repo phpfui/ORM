@@ -26,20 +26,20 @@ abstract class Product extends \PHPFUI\ORM\Record
 
 	/** @var array<string, array<mixed>> */
 	protected static array $fields = [
-		// MYSQL_TYPE, PHP_TYPE, LENGTH, NULL, DEFAULT, KEY
-		'attachments' => ['longblob', 'string', 0, true, null, false, ],
-		'category' => ['varchar(50)', 'string', 50, true, null, false, ],
-		'description' => ['longtext', 'string', 4294967295, true, null, false, ],
-		'discontinued' => ['integer', 'int', 0, false, 0, false, ],
-		'list_price' => ['decimal(19,4)', 'float', 19, false, 0, false, ],
-		'minimum_reorder_quantity' => ['integer', 'int', 0, true, null, false, ],
-		'product_code' => ['varchar(25)', 'string', 25, true, null, false, ],
-		'product_id' => ['integer', 'int', 0, false, null, true, ],
-		'product_name' => ['varchar(50)', 'string', 50, true, null, false, ],
-		'quantity_per_unit' => ['varchar(50)', 'string', 50, true, null, false, ],
-		'reorder_level' => ['integer', 'int', 0, true, null, false, ],
-		'standard_cost' => ['decimal(19,4)', 'float', 19, true, 0, false, ],
-		'target_level' => ['integer', 'int', 0, true, null, false, ],
+		// MYSQL_TYPE, PHP_TYPE, LENGTH, KEY, ALLOWS_NULL, DEFAULT
+		'attachments' => ['longblob', 'string', 0, false, true, 'NULL', ],
+		'category' => ['varchar(50)', 'string', 50, false, true, 'NULL', ],
+		'description' => ['longtext', 'string', 4294967295, false, true, 'NULL', ],
+		'discontinued' => ['integer', 'int', 0, false, false, 0, ],
+		'list_price' => ['decimal(19,4)', 'float', 19, false, false, 0, ],
+		'minimum_reorder_quantity' => ['integer', 'int', 0, false, true, NULL, ],
+		'product_code' => ['varchar(25)', 'string', 25, false, true, 'NULL', ],
+		'product_id' => ['integer', 'int', 0, true, false, ],
+		'product_name' => ['varchar(50)', 'string', 50, false, true, 'NULL', ],
+		'quantity_per_unit' => ['varchar(50)', 'string', 50, false, true, 'NULL', ],
+		'reorder_level' => ['integer', 'int', 0, false, true, NULL, ],
+		'standard_cost' => ['decimal(19,4)', 'float', 19, false, true, 0, ],
+		'target_level' => ['integer', 'int', 0, false, true, NULL, ],
 	];
 
 	/** @var array<string, true> */

@@ -38,27 +38,27 @@ abstract class Order extends \PHPFUI\ORM\Record
 
 	/** @var array<string, array<mixed>> */
 	protected static array $fields = [
-		// MYSQL_TYPE, PHP_TYPE, LENGTH, NULL, DEFAULT, KEY
-		'customer_id' => ['integer', 'int', 0, true, null, false, ],
-		'employee_id' => ['integer', 'int', 0, true, null, false, ],
-		'notes' => ['longtext', 'string', 4294967295, true, null, false, ],
-		'order_date' => ['datetime', 'string', 20, true, 'CURRENT_TIMESTAMP', false, ],
-		'order_id' => ['integer', 'int', 0, false, null, true, ],
-		'order_status_id' => ['integer', 'int', 0, true, 0, false, ],
-		'order_tax_status_id' => ['integer', 'int', 0, true, null, false, ],
-		'paid_date' => ['datetime', 'string', 20, true, null, false, ],
-		'payment_type' => ['varchar(50)', 'string', 50, true, null, false, ],
-		'ship_address' => ['longtext', 'string', 4294967295, true, null, false, ],
-		'ship_city' => ['varchar(50)', 'string', 50, true, null, false, ],
-		'ship_country_region' => ['varchar(50)', 'string', 50, true, null, false, ],
-		'ship_name' => ['varchar(50)', 'string', 50, true, null, false, ],
-		'ship_state_province' => ['varchar(50)', 'string', 50, true, null, false, ],
-		'ship_zip_postal_code' => ['varchar(50)', 'string', 50, true, null, false, ],
-		'shipped_date' => ['datetime', 'string', 20, true, null, false, ],
-		'shipper_id' => ['integer', 'int', 0, true, null, false, ],
-		'shipping_fee' => ['decimal(19,4)', 'float', 19, true, 0, false, ],
-		'tax_rate' => ['double', 'float', 0, true, 0, false, ],
-		'taxes' => ['decimal(19,4)', 'float', 19, true, 0, false, ],
+		// MYSQL_TYPE, PHP_TYPE, LENGTH, KEY, ALLOWS_NULL, DEFAULT
+		'customer_id' => ['integer', 'int', 0, false, true, NULL, ],
+		'employee_id' => ['integer', 'int', 0, false, true, NULL, ],
+		'notes' => ['longtext', 'string', 4294967295, false, true, 'NULL', ],
+		'order_date' => ['datetime', 'string', 20, false, false, ],
+		'order_id' => ['integer', 'int', 0, true, false, ],
+		'order_status_id' => ['integer', 'int', 0, false, true, 0, ],
+		'order_tax_status_id' => ['integer', 'int', 0, false, true, NULL, ],
+		'paid_date' => ['datetime', 'string', 20, false, true, 'NULL', ],
+		'payment_type' => ['varchar(50)', 'string', 50, false, true, 'NULL', ],
+		'ship_address' => ['longtext', 'string', 4294967295, false, true, 'NULL', ],
+		'ship_city' => ['varchar(50)', 'string', 50, false, true, 'NULL', ],
+		'ship_country_region' => ['varchar(50)', 'string', 50, false, true, 'NULL', ],
+		'ship_name' => ['varchar(50)', 'string', 50, false, true, 'NULL', ],
+		'ship_state_province' => ['varchar(50)', 'string', 50, false, true, 'NULL', ],
+		'ship_zip_postal_code' => ['varchar(50)', 'string', 50, false, true, 'NULL', ],
+		'shipped_date' => ['datetime', 'string', 20, false, true, 'NULL', ],
+		'shipper_id' => ['integer', 'int', 0, false, true, NULL, ],
+		'shipping_fee' => ['decimal(19,4)', 'float', 19, false, true, 0, ],
+		'tax_rate' => ['double', 'float', 0, false, true, 0, ],
+		'taxes' => ['decimal(19,4)', 'float', 19, false, true, 0, ],
 	];
 
 	/** @var array<string, true> */
