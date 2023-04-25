@@ -294,9 +294,17 @@ abstract class Migration
 	/**
 	 * Add an index on the fields in the array.
 	 */
-	protected function addIndex(string $table, array $fields, string $indexType = '') : bool
+	protected function addIndex(string $table, string | array $fields, string $indexType = '') : bool
 		{
-		$indexName = \implode('', $fields) . $table . 'Index';
+		if (\is_string($fields))
+			{
+			$indexName = $fields;
+			$fields = [$fields];
+			}
+		else
+			{
+			$indexName = \implode('', $fields) . $table . 'Index';
+			}
 
 		if ($this->indexExists($table, $indexName))
 			{

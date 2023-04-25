@@ -408,6 +408,16 @@ abstract class Record extends DataObject
 		}
 
 	/**
+	 * Inserts current data into table or ignores duplicate key if found
+	 *
+	 * @return int | bool inserted id if auto increment, true on insertion if not auto increment or false on error
+	 */
+	public function insertOrIgnore() : int | bool
+		{
+		return $this->privateInsert(false, 'ignore ');
+		}
+
+	/**
 	 * Load first from SQL query
 	 */
 	public function loadFromSQL(string $sql, array $input = []) : bool
@@ -782,12 +792,12 @@ abstract class Record extends DataObject
 	 *
 	 * @return int | bool inserted id if auto increment, true on insertion if not auto increment or false on error
 	 */
-	private function privateInsert(bool $updateOnDuplicate) : int | bool
+	private function privateInsert(bool $updateOnDuplicate, string $ignore = '') : int | bool
 		{
 		$this->clean();
 		$table = static::$table;
 
-		$sql = "insert into `{$table}` (";
+		$sql = "insert {$ignore}into `{$table}` (";
 		$values = [];
 		$whereInput = $input = [];
 		$comma = '';
@@ -817,8 +827,9 @@ abstract class Record extends DataObject
 
 		if ($updateOnDuplicate)
 			{
-			$sql .= ' on duplicate key update ';
+			$updateSql = ' on duplicate key update ';
 			$comma = '';
+			$inputCount = count($input);
 
 			foreach ($this->current as $key => $value)
 				{
@@ -833,11 +844,19 @@ abstract class Record extends DataObject
 
 					if (! isset(static::$primaryKeys[$key]))
 						{
-						$sql .= $comma . '`' . $key . '` = ?';
+						$updateSql .= $comma . '`' . $key . '` = ?';
 						$input[] = $value;
 						$comma = ',';
 						}
 					}
+				}
+			if (count($input) == $inputCount) // nothing to update but primary keys, ignore input
+				{
+				$sql = str_replace('insert into', 'insert ignore into', $sql);
+				}
+			else
+				{
+				$sql .= $updateSql;
 				}
 			}
 

@@ -303,7 +303,7 @@ class PDOInstance extends \PDO
 			{
 			$returnValue = $statement->execute($input);
 			}
-		catch (\Throwable)
+		catch (\PDOException)
 			{
 			$returnValue = false;
 			}
