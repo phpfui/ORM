@@ -27,9 +27,9 @@ class Children extends \PHPFUI\ORM\VirtualField
 		$childTable = new $child();
 		$condition = new \PHPFUI\ORM\Condition();
 
-		foreach ($this->parentRecord->getPrimaryKeys() as $primaryKey => $junk)
+		foreach ($this->currentRecord->getPrimaryKeys() as $primaryKey => $junk)
 			{
-			$condition->and($primaryKey, $this->parentRecord->{$primaryKey});
+			$condition->and($primaryKey, $this->currentRecord->{$primaryKey});
 			}
 		$childTable->setWhere($condition);
 
