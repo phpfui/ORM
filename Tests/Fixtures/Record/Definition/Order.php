@@ -39,13 +39,13 @@ abstract class Order extends \PHPFUI\ORM\Record
 	/** @var array<string, array<mixed>> */
 	protected static array $fields = [
 		// MYSQL_TYPE, PHP_TYPE, LENGTH, KEY, ALLOWS_NULL, DEFAULT
-		'customer_id' => ['integer', 'int', 0, false, true, NULL, ],
-		'employee_id' => ['integer', 'int', 0, false, true, NULL, ],
+		'customer_id' => ['integer', 'int', 0, false, true, null, ],
+		'employee_id' => ['integer', 'int', 0, false, true, null, ],
 		'notes' => ['longtext', 'string', 4294967295, false, true, 'NULL', ],
 		'order_date' => ['datetime', 'string', 20, false, false, ],
 		'order_id' => ['integer', 'int', 0, true, false, ],
 		'order_status_id' => ['integer', 'int', 0, false, true, 0, ],
-		'order_tax_status_id' => ['integer', 'int', 0, false, true, NULL, ],
+		'order_tax_status_id' => ['integer', 'int', 0, false, true, null, ],
 		'paid_date' => ['datetime', 'string', 20, false, true, 'NULL', ],
 		'payment_type' => ['varchar(50)', 'string', 50, false, true, 'NULL', ],
 		'ship_address' => ['longtext', 'string', 4294967295, false, true, 'NULL', ],
@@ -55,7 +55,7 @@ abstract class Order extends \PHPFUI\ORM\Record
 		'ship_state_province' => ['varchar(50)', 'string', 50, false, true, 'NULL', ],
 		'ship_zip_postal_code' => ['varchar(50)', 'string', 50, false, true, 'NULL', ],
 		'shipped_date' => ['datetime', 'string', 20, false, true, 'NULL', ],
-		'shipper_id' => ['integer', 'int', 0, false, true, NULL, ],
+		'shipper_id' => ['integer', 'int', 0, false, true, null, ],
 		'shipping_fee' => ['decimal(19,4)', 'float', 19, false, true, 0, ],
 		'tax_rate' => ['double', 'float', 0, false, true, 0, ],
 		'taxes' => ['decimal(19,4)', 'float', 19, false, true, 0, ],

@@ -32,14 +32,14 @@ abstract class Product extends \PHPFUI\ORM\Record
 		'description' => ['longtext', 'string', 4294967295, false, true, 'NULL', ],
 		'discontinued' => ['integer', 'int', 0, false, false, 0, ],
 		'list_price' => ['decimal(19,4)', 'float', 19, false, false, 0, ],
-		'minimum_reorder_quantity' => ['integer', 'int', 0, false, true, NULL, ],
+		'minimum_reorder_quantity' => ['integer', 'int', 0, false, true, null, ],
 		'product_code' => ['varchar(25)', 'string', 25, false, true, 'NULL', ],
 		'product_id' => ['integer', 'int', 0, true, false, ],
 		'product_name' => ['varchar(50)', 'string', 50, false, true, 'NULL', ],
 		'quantity_per_unit' => ['varchar(50)', 'string', 50, false, true, 'NULL', ],
-		'reorder_level' => ['integer', 'int', 0, false, true, NULL, ],
+		'reorder_level' => ['integer', 'int', 0, false, true, null, ],
 		'standard_cost' => ['decimal(19,4)', 'float', 19, false, true, 0, ],
-		'target_level' => ['integer', 'int', 0, false, true, NULL, ],
+		'target_level' => ['integer', 'int', 0, false, true, null, ],
 	];
 
 	/** @var array<string, true> */

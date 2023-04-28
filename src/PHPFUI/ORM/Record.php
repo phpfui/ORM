@@ -655,12 +655,12 @@ abstract class Record extends DataObject
 
 	public function blankDate(?string $date) : string
 		{
-		if ('1000-01-01' < $date)
+		if ('1000-01-01' > $date)
 			{
 			return '';
 			}
 
-		return $date ?? '';
+		return $date;
 		}
 
 	/**
@@ -829,7 +829,7 @@ abstract class Record extends DataObject
 			{
 			$updateSql = ' on duplicate key update ';
 			$comma = '';
-			$inputCount = count($input);
+			$inputCount = \count($input);
 
 			foreach ($this->current as $key => $value)
 				{
@@ -850,9 +850,10 @@ abstract class Record extends DataObject
 						}
 					}
 				}
-			if (count($input) == $inputCount) // nothing to update but primary keys, ignore input
+
+			if (\count($input) == $inputCount) // nothing to update but primary keys, ignore input
 				{
-				$sql = str_replace('insert into', 'insert ignore into', $sql);
+				$sql = \str_replace('insert into', 'insert ignore into', $sql);
 				}
 			else
 				{

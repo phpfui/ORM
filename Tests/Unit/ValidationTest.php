@@ -653,25 +653,21 @@ class ValidationTest extends \PHPUnit\Framework\TestCase
 		$this->assertContains('2-30-20 is not a valid date (M-D-Y)', $errors['month_day_year']);
 		}
 
-//	public function testUnique() : void
-//			{
-//		$crud = new \Tests\Fixtures\Record\Unique();
-//		$validator = new \Tests\Fixtures\Validation\Unique($crud);
-//
-//		// empty test
-//		$validator->validate();
-//		$this->assertEmpty($validator->getErrors());
-//
-//		// valid tests
-//		$crud->unique = '';
-//		$validator->validate();
-//		$this->assertEmpty($validator->getErrors());
-//
-//		// invalid tests
-//		$crud->unique = '';
-//		$validator->validate();
-//		$this->assertNotEmpty($validator->getErrors());
-//			}
+	public function testUnique() : void
+		{
+		$crud = new \Tests\Fixtures\Record\Product(90);
+		$this->assertEquals('NWTCFV-90', $crud->product_code);
+		$validator = new \Tests\Fixtures\Record\Validation\Product($crud);
+		// empty test
+		$validator->validate();
+		$this->assertEmpty($validator->getErrors());
+		$crud->product_code = 'NWTCFV-91';
+		$validator->validate();
+		$errors = $validator->getErrors();
+//		fwrite(STDERR, print_r($errors, true));
+		$this->assertCount(1, $errors);
+		$this->assertContains('NWTCFV-91 is not unique', $errors['product_code']);
+		}
 
 	public function testMonthYear() : void
 		{
@@ -817,6 +813,36 @@ class ValidationTest extends \PHPUnit\Framework\TestCase
 		$crud->required = null;
 		$validator->validate();
 		$this->assertNotEmpty($validator->getErrors());
+		}
+
+	public function testStrings() : void
+		{
+		$crud = new \Tests\Fixtures\Record\Strings();
+		$crud->starts_with = 'asdfghjkl';
+		$crud->ends_with = 'sdfghjklc';
+		$crud->contains = 'sdfaghjkl';
+		$crud->istarts_with = 'CSDFGHJKL';
+		$crud->iends_with = 'SDFGHJKLB';
+		$crud->icontains = 'SDFCGHJKL';
+		$validator = new \Tests\Fixtures\Validation\Strings($crud);
+		$validator->validate();
+		$this->assertEmpty($validator->getErrors());
+
+		$crud->starts_with = 'sdfghjkl';
+		$crud->ends_with = 'sdfghjkl';
+		$crud->contains = 'sdfghjkl';
+		$crud->istarts_with = 'SDFGHJKL';
+		$crud->iends_with = 'SDFGHJKL';
+		$crud->icontains = 'SDFGHJKL';
+		$validator->validate();
+		$errors = $validator->getErrors();
+		$this->assertCount(6, $errors);
+		$this->assertContains('sdfghjkl does not start with one of (a,b,c) of the same case', $errors['starts_with']);
+		$this->assertContains('sdfghjkl does not end with one of (a,b,c) of the same case', $errors['ends_with']);
+		$this->assertContains('sdfghjkl does not contain one of (a,b,c) of the same case', $errors['contains']);
+		$this->assertContains('SDFGHJKL does not start with one of (a,b,c)', $errors['istarts_with']);
+		$this->assertContains('SDFGHJKL does not end with one of (a,b,c)', $errors['iends_with']);
+		$this->assertContains('SDFGHJKL does not contain one of (a,b,c)', $errors['icontains']);
 		}
 
 	public function testTime() : void

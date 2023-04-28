@@ -29,6 +29,7 @@ abstract class Base
 		if (! $primaryKeys) // look in indicies if no primary, could be a composite primary key
 			{
 			$indexes = \PHPFUI\ORM::getIndexes($table);
+
 			foreach ($indexes as $index)
 				{
 				if ($index->primaryKey)

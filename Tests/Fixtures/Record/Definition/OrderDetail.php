@@ -31,12 +31,12 @@ abstract class OrderDetail extends \PHPFUI\ORM\Record
 		// MYSQL_TYPE, PHP_TYPE, LENGTH, KEY, ALLOWS_NULL, DEFAULT
 		'date_allocated' => ['datetime', 'string', 20, false, true, 'NULL', ],
 		'discount' => ['double', 'float', 0, false, false, 0, ],
-		'inventory_transaction_id' => ['integer', 'int', 0, false, true, NULL, ],
+		'inventory_transaction_id' => ['integer', 'int', 0, false, true, null, ],
 		'order_detail_id' => ['integer', 'int', 0, true, false, ],
-		'order_detail_status_id' => ['integer', 'int', 0, false, true, NULL, ],
+		'order_detail_status_id' => ['integer', 'int', 0, false, true, null, ],
 		'order_id' => ['integer', 'int', 0, false, false, ],
-		'product_id' => ['integer', 'int', 0, false, true, NULL, ],
-		'purchase_order_id' => ['integer', 'int', 0, false, true, NULL, ],
+		'product_id' => ['integer', 'int', 0, false, true, null, ],
+		'purchase_order_id' => ['integer', 'int', 0, false, true, null, ],
 		'quantity' => ['decimal(18,4)', 'float', 18, false, false, 0, ],
 		'unit_price' => ['decimal(19,4)', 'float', 19, false, true, 0, ],
 	];
