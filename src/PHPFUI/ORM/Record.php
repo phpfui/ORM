@@ -13,37 +13,37 @@ namespace PHPFUI\ORM;
  */
 abstract class Record extends DataObject
 	{
-	public const MYSQL_TYPE_INDEX = 0;
-
-	public const PHP_TYPE_INDEX = 1;
-
-	public const LENGTH_INDEX = 2;
-
-	public const KEY_INDEX = 3;
-
 	public const ALLOWS_NULL_INDEX = 4;
 
 	public const DEFAULT_INDEX = 5;
 
+	public const KEY_INDEX = 3;
+
+	public const LENGTH_INDEX = 2;
+
+	public const MYSQL_TYPE_INDEX = 0;
+
+	public const PHP_TYPE_INDEX = 1;
+
 	protected static bool $autoIncrement = false;
+
+	protected static array $displayTransforms = [];
+
+	protected bool $empty = true;
 
 	protected static array $fields = [];
 
+	protected bool $loaded = false;
+
 	protected static array $primaryKeys = [];
-
-	protected static array $virtualFields = [];
-
-	protected static array $displayTransforms = [];
 
 	protected static array $setTransforms = [];
 
 	protected static string $table = '';
 
-	protected bool $empty = true;
-
-	protected bool $loaded = false;
-
 	protected string $validator = '';
+
+	protected static array $virtualFields = [];
 
 	/**
 	 * Construct a CRUD object
@@ -234,6 +234,14 @@ abstract class Record extends DataObject
 		}
 
 	/**
+	 * Add a transform for get.  Callback is passed value.
+	 */
+	public static function addDisplayTransform(string $field, callable $callback) : void
+		{
+		static::$displayTransforms[$field] = $callback;
+		}
+
+	/**
 	 * Add a transform for set.  Callback is passed value.
 	 */
 	public function addSetTransform(string $field, callable $callback) : static
@@ -243,19 +251,14 @@ abstract class Record extends DataObject
 		return $this;
 		}
 
-	/**
-	 * Add a transform for get.  Callback is passed value.
-	 */
-	public static function addDisplayTransform(string $field, callable $callback) : void
+	public function blankDate(?string $date) : string
 		{
-		static::$displayTransforms[$field] = $callback;
-		}
+		if ('1000-01-01' > $date)
+			{
+			return '';
+			}
 
-	public function offsetGet(mixed $offset) : mixed
-		{
-		$this->validateFieldExists($offset);
-
-		return $this->current[$offset] ?? null;
+		return $date;
 		}
 
 	/**
@@ -310,6 +313,24 @@ abstract class Record extends DataObject
 		$sql = "delete from `{$table}` " . $where;
 
 		return \PHPFUI\ORM::execute($sql, $input);
+		}
+
+	/**
+	 * Transform a field for display
+	 */
+	public function displayTransform(string $field, $value = null)
+		{
+		if (null === $value)
+			{
+			$value = $this->current[$field] ?? null;
+			}
+
+		if (! isset(static::$displayTransforms[$field]))
+			{
+			return $value;
+			}
+
+		return static::$displayTransforms[$field]($value);
 		}
 
 	/**
@@ -398,6 +419,16 @@ abstract class Record extends DataObject
 		}
 
 	/**
+	 * Inserts current data into table or ignores duplicate key if found
+	 *
+	 * @return int | bool inserted id if auto increment, true on insertion if not auto increment or false on error
+	 */
+	public function insertOrIgnore() : int | bool
+		{
+		return $this->privateInsert(false, 'ignore ');
+		}
+
+	/**
 	 * Inserts current data into table or updates if duplicate key
 	 *
 	 * @return int | bool inserted id if auto increment, true on insertion if not auto increment or false on error
@@ -408,13 +439,11 @@ abstract class Record extends DataObject
 		}
 
 	/**
-	 * Inserts current data into table or ignores duplicate key if found
-	 *
-	 * @return int | bool inserted id if auto increment, true on insertion if not auto increment or false on error
+	 * @return bool  true if loaded from the disk
 	 */
-	public function insertOrIgnore() : int | bool
+	public function loaded() : bool
 		{
-		return $this->privateInsert(false, 'ignore ');
+		return $this->loaded;
 		}
 
 	/**
@@ -467,6 +496,13 @@ abstract class Record extends DataObject
 		return true;
 		}
 
+	public function offsetGet(mixed $offset) : mixed
+		{
+		$this->validateFieldExists($offset);
+
+		return $this->current[$offset] ?? null;
+		}
+
  /**
   * Read a record from the db. If more than one match, only the first is loaded.
   *
@@ -481,14 +517,6 @@ abstract class Record extends DataObject
 		$sql = "select * from `{$table}` " . $this->buildWhere($fields, $input);
 
 		return $this->loadFromSQL($sql, $input);
-		}
-
-	/**
-	 * @return bool  true if loaded from the disk
-	 */
-	public function loaded() : bool
-		{
-		return $this->loaded;
 		}
 
 	/**
@@ -507,6 +535,16 @@ abstract class Record extends DataObject
 			}
 
 		return $this->read($keys);
+		}
+
+	/**
+	 * Set a custom validator class
+	 */
+	public function setCustomValidator(string $className) : static
+		{
+		$this->validator = $className;
+
+		return $this;
 		}
 
 	/**
@@ -606,24 +644,6 @@ abstract class Record extends DataObject
 		}
 
 	/**
-	 * Transform a field for display
-	 */
-	public function displayTransform(string $field, $value = null)
-		{
-		if (null === $value)
-			{
-			$value = $this->current[$field] ?? null;
-			}
-
-		if (! isset(static::$displayTransforms[$field]))
-			{
-			return $value;
-			}
-
-		return static::$displayTransforms[$field]($value);
-		}
-
-	/**
 	 * Return array of validation errors indexed by offending field containing an array of translated errors
 	 */
 	public function validate(string $optionalMethod = '', ?self $originalRecord = null) : array
@@ -644,33 +664,26 @@ abstract class Record extends DataObject
 		}
 
 	/**
-	 * Set a custom validator class
+	 * Lowercases and strips invalid email characters.  Does not validate email address.
 	 */
-	public function setCustomValidator(string $className) : static
+	protected function cleanEmail(string $field) : static
 		{
-		$this->validator = $className;
+		if (isset($this->current[$field]))
+			{
+			$this->current[$field] = \preg_replace('/[^a-z0-9\._\-@!#\$%&\'\*\+=\?\^`\{\|\}~]/', '', \strtolower($this->current[$field]));
+			}
 
 		return $this;
 		}
 
-	public function blankDate(?string $date) : string
-		{
-		if ('1000-01-01' > $date)
-			{
-			return '';
-			}
-
-		return $date;
-		}
-
 	/**
-	 * Converts the field to all upper case
+	 * removes all non-digits (0-9, . and -)
 	 */
-	protected function cleanUpperCase(string $field) : static
+	protected function cleanFloat(string $field, int $decimalPoints = 2) : static
 		{
 		if (isset($this->current[$field]))
 			{
-			$this->current[$field] = \strtoupper($this->current[$field]);
+			$this->current[$field] = \number_format((float)$this->current[$field], $decimalPoints);
 			}
 
 		return $this;
@@ -698,19 +711,6 @@ abstract class Record extends DataObject
 			{
 			$temp = (int)$this->current[$field];
 			$this->current[$field] = "{$temp}";
-			}
-
-		return $this;
-		}
-
-	/**
-	 * removes all non-digits (0-9, . and -)
-	 */
-	protected function cleanFloat(string $field, int $decimalPoints = 2) : static
-		{
-		if (isset($this->current[$field]))
-			{
-			$this->current[$field] = \number_format((float)$this->current[$field], $decimalPoints);
 			}
 
 		return $this;
@@ -751,13 +751,13 @@ abstract class Record extends DataObject
 		}
 
 	/**
-	 * Lowercases and strips invalid email characters.  Does not validate email address.
+	 * Converts the field to all upper case
 	 */
-	protected function cleanEmail(string $field) : static
+	protected function cleanUpperCase(string $field) : static
 		{
 		if (isset($this->current[$field]))
 			{
-			$this->current[$field] = \preg_replace('/[^a-z0-9\._\-@!#\$%&\'\*\+=\?\^`\{\|\}~]/', '', \strtolower($this->current[$field]));
+			$this->current[$field] = \strtoupper($this->current[$field]);
 			}
 
 		return $this;
@@ -771,6 +771,64 @@ abstract class Record extends DataObject
 			}
 
 		return \date('Y-m-d g:i a', $timeStamp);
+		}
+
+	/**
+	 * Build a where clause
+	 *
+	 * @param int|array|string $key if int|string, primary key, otherwise a key => value array of fields to match
+	 *
+	 * @return string  starting with " where"
+	 */
+	private function buildWhere(array|int|string $key, array &$input) : string
+		{
+		if ('*' === $key)
+			{
+			return '';
+			}
+
+		if (! \is_array($key))
+			{
+			$key = [\array_key_first(static::$primaryKeys) => $key];
+			}
+		else
+			{ // if all primary keys are set, then use primary keys only
+
+			$keys = [];
+			$all = true;
+
+			foreach (static::$primaryKeys as $keyField => $junk)
+				{
+				if (! isset($key[$keyField]))
+					{
+					$all = false;
+
+					break;
+					}
+				$keys[$keyField] = $key[$keyField];
+				}
+
+			if ($all && \count($keys))
+				{
+				$key = $keys;
+				}
+			}
+
+		$and = ' ';
+		$sql = '';
+
+		foreach ($key as $field => $value)
+			{
+			if (isset(static::$fields[$field]))
+				{
+				$sql .= empty($sql) ? ' where' : '';
+				$sql .= $and . '`' . $field . '`=?';
+				$input[] = $value;
+				$and = ' and ';
+				}
+			}
+
+		return $sql;
 		}
 
 	private function getChildTable(string $relationship) : ?\PHPFUI\ORM\Table
@@ -871,64 +929,6 @@ abstract class Record extends DataObject
 		$this->loaded = true;	// record is effectively read from the database now
 
 		return $returnValue;
-		}
-
-	/**
-	 * Build a where clause
-	 *
-	 * @param int|array|string $key if int|string, primary key, otherwise a key => value array of fields to match
-	 *
-	 * @return string  starting with " where"
-	 */
-	private function buildWhere(array|int|string $key, array &$input) : string
-		{
-		if ('*' === $key)
-			{
-			return '';
-			}
-
-		if (! \is_array($key))
-			{
-			$key = [\array_key_first(static::$primaryKeys) => $key];
-			}
-		else
-			{ // if all primary keys are set, then use primary keys only
-
-			$keys = [];
-			$all = true;
-
-			foreach (static::$primaryKeys as $keyField => $junk)
-				{
-				if (! isset($key[$keyField]))
-					{
-					$all = false;
-
-					break;
-					}
-				$keys[$keyField] = $key[$keyField];
-				}
-
-			if ($all && \count($keys))
-				{
-				$key = $keys;
-				}
-			}
-
-		$and = ' ';
-		$sql = '';
-
-		foreach ($key as $field => $value)
-			{
-			if (isset(static::$fields[$field]))
-				{
-				$sql .= empty($sql) ? ' where' : '';
-				$sql .= $and . '`' . $field . '`=?';
-				$input[] = $value;
-				$and = ' and ';
-				}
-			}
-
-		return $sql;
 		}
 
 	private function validateFieldExists(string $field) : void

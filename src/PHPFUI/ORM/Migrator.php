@@ -113,14 +113,6 @@ class Migrator implements \Countable
 		}
 
 	/**
-	 * @return bool true if a migration needs to be run
-	 */
-	public function migrationNeeded() : bool
-		{
-		return $this->count() > $this->getCurrentMigrationId();
-		}
-
-	/**
 	 * Migrates to the latest
 	 *
 	 * @return bool true if migration happened
@@ -248,6 +240,14 @@ class Migrator implements \Countable
 		$result = $this->runUp($migration);
 
 		return $result;
+		}
+
+	/**
+	 * @return bool true if a migration needs to be run
+	 */
+	public function migrationNeeded() : bool
+		{
+		return $this->count() > $this->getCurrentMigrationId();
 		}
 
 	/**

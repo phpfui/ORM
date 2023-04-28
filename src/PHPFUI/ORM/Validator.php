@@ -33,15 +33,23 @@ namespace PHPFUI\ORM;
  * | ends_with      | Field must end with (case sensitive) | comma separated list of strings |
  * | enum           | MySQL enum value, case insensitive | comma separated list of identifiers<br>**Example:** enum:Get,Post,Put,Delete |
  * | enum_exact     | MySQL enum value, case sensitive | comma separated list of identifiers<br>**Example:** enum:ssl,tls |
+ * | eq_field       | Equal to field | field, required |
+ * | equal          | Value must be equal | value, required |
+ * | gt_field       | Greater Than field | field, required |
+ * | gte_field      | Greater Than or Equal to field | field, required |
  * | icontains      | Field must contain (case insensitive) | comma separated list of strings |
  * | integer        | Whole number, no fractional part | None |
  * | istarts_with   | Field must start with (case insensitive) | comma separated list of strings |
+ * | lt_field       | Less Than field | field, required |
+ * | lte_field      | Less Than or Equal to field | field, required |
  * | maxlength      | Length must be greater or equal | Optional length, else MySQL limit |
  * | maxvalue       | Value must be greater or equal | value, required |
  * | minlength      | Must be less than or equal | number, default field size |
  * | minvalue       | Must be less than or equal | value, required |
  * | month_day_year | Loosely formatted date (M-D-Y) | None |
  * | month_year     | Loosely formatted Month Year | None |
+ * | neq_field      | Not Equal to field | field, required |
+ * | not_equal      | Value must not be equal | value, required |
  * | number         | Floating point number or whole number | None |
  * | required       | Field is required, can't be null or blank, 0 is OK | None |
  * | starts_with    | Field must start with (case sensitive) | comma separated list of strings |
@@ -50,6 +58,17 @@ namespace PHPFUI\ORM;
  * | url            | Valid URL (ftp, http, etc) | None |
  * | website        | Valid URL (http or https only) | None |
  * | year_month     | Loosely formatted Year Month | None |
+ *
+ * ## Field Comparison Validators
+ * You can compare one field to another on the same Record with the field validators.
+ * * gt_field
+ * * lt_field
+ * * gte_field
+ * * lte_field
+ * * eq_field
+ * * neq_field
+ *
+ * Field validators take another field name as a parameter and perform the specified condition test. To compare against a specific value, use minvalue, maxvalue, equal or not_equal.
  *
  * ## Unique Parameters
  * Without any parameters, the **unique** validator will make sure no other record has a matching value for the field being validated. The current record is always exempted from the unique test so it can be updated.
@@ -89,11 +108,11 @@ abstract class Validator
 
 	private bool $currentRequired = false;
 
-	/** @var array<string, array<mixed>> */
-	private array $fieldDefinitions = [];
-
 	/** @var array<string, string[]> */
 	private array $errors = [];
+
+	/** @var array<string, array<mixed>> */
+	private array $fieldDefinitions = [];
 
 	public function __construct(protected \PHPFUI\ORM\Record $record, protected ?\PHPFUI\ORM\Record $originalRecord = null)
 		{
@@ -314,23 +333,6 @@ abstract class Validator
 	 * @param string[] $parameters
 	 * @param array<int, array<mixed>> $fieldDefinitions
 	 */
-	private function validate_icontains(mixed $value, array $parameters, array $fieldDefinitions) : string
-		{
-		$valid = false;
-		$test = \strtolower($value);
-
-		foreach ($parameters as $text)
-			{
-			$valid |= \str_contains($test, \strtolower($text));
-			}
-
-		return $valid ? '' : \PHPFUI\ORM::trans('.validator.icontains', ['value' => $value, 'set' => \implode(',', $parameters)]);
-		}
-
-	/**
-	 * @param string[] $parameters
-	 * @param array<int, array<mixed>> $fieldDefinitions
-	 */
 	private function validate_cvv(mixed $value, array $parameters, array $fieldDefinitions) : string
 		{
 		$int = (int)$value;
@@ -440,6 +442,22 @@ abstract class Validator
 	 * @param string[] $parameters
 	 * @param array<int, array<mixed>> $fieldDefinitions
 	 */
+	private function validate_ends_with(mixed $value, array $parameters, array $fieldDefinitions) : string
+		{
+		$valid = false;
+
+		foreach ($parameters as $end)
+			{
+			$valid |= \str_ends_with($value, $end);
+			}
+
+		return $valid ? '' : \PHPFUI\ORM::trans('.validator.ends_with', ['value' => $value, 'set' => \implode(',', $parameters)]);
+		}
+
+	/**
+	 * @param string[] $parameters
+	 * @param array<int, array<mixed>> $fieldDefinitions
+	 */
 	private function validate_enum(mixed $value, array $parameters, array $fieldDefinitions) : string
 		{
 		$valueUC = \strtoupper((string)$value);
@@ -466,9 +484,131 @@ abstract class Validator
 	 * @param string[] $parameters
 	 * @param array<int, array<mixed>> $fieldDefinitions
 	 */
+	private function validate_eq_field(mixed $value, array $parameters, array $fieldDefinitions) : string
+		{
+		$field = $parameters[0] ?? '';
+		$compare = $this->record[$field];
+
+		return $value == $compare ? '' : \PHPFUI\ORM::trans('.validator.eq_field', ['value' => $value, 'field' => $field, 'compare' => $compare]);
+		}
+
+	/**
+	 * @param string[] $parameters
+	 * @param array<int, array<mixed>> $fieldDefinitions
+	 */
+	private function validate_equal(mixed $value, array $parameters, array $fieldDefinitions) : string
+		{
+		$required = $parameters[0] ?? '';
+
+		return $required == $value ? '' : \PHPFUI\ORM::trans('.validator.equal', ['value' => $value, 'required' => $required]);
+		}
+
+	/**
+	 * @param string[] $parameters
+	 * @param array<int, array<mixed>> $fieldDefinitions
+	 */
+	private function validate_gt_field(mixed $value, array $parameters, array $fieldDefinitions) : string
+		{
+		$field = $parameters[0] ?? '';
+		$compare = $this->record[$field];
+
+		return $value > $compare ? '' : \PHPFUI\ORM::trans('.validator.gt_field', ['value' => $value, 'field' => $field, 'compare' => $compare]);
+		}
+
+	/**
+	 * @param string[] $parameters
+	 * @param array<int, array<mixed>> $fieldDefinitions
+	 */
+	private function validate_gte_field(mixed $value, array $parameters, array $fieldDefinitions) : string
+		{
+		$field = $parameters[0] ?? '';
+		$compare = $this->record[$field];
+
+		return $value >= $compare ? '' : \PHPFUI\ORM::trans('.validator.gte_field', ['value' => $value, 'field' => $field, 'compare' => $compare]);
+		}
+
+	/**
+	 * @param string[] $parameters
+	 * @param array<int, array<mixed>> $fieldDefinitions
+	 */
+	private function validate_icontains(mixed $value, array $parameters, array $fieldDefinitions) : string
+		{
+		$valid = false;
+		$test = \strtolower($value);
+
+		foreach ($parameters as $text)
+			{
+			$valid |= \str_contains($test, \strtolower($text));
+			}
+
+		return $valid ? '' : \PHPFUI\ORM::trans('.validator.icontains', ['value' => $value, 'set' => \implode(',', $parameters)]);
+		}
+
+	/**
+	 * @param string[] $parameters
+	 * @param array<int, array<mixed>> $fieldDefinitions
+	 */
+	private function validate_iends_with(mixed $value, array $parameters, array $fieldDefinitions) : string
+		{
+		$valid = false;
+		$test = \strtolower($value);
+
+		foreach ($parameters as $end)
+			{
+			$valid |= \str_ends_with($test, \strtolower($end));
+			}
+
+		return $valid ? '' : \PHPFUI\ORM::trans('.validator.iends_with', ['value' => $value, 'set' => \implode(',', $parameters)]);
+		}
+
+	/**
+	 * @param string[] $parameters
+	 * @param array<int, array<mixed>> $fieldDefinitions
+	 */
 	private function validate_integer(mixed $value, array $parameters, array $fieldDefinitions) : string
 		{
 		return false !== \filter_var($value, \FILTER_VALIDATE_INT) ? '' : \PHPFUI\ORM::trans('.validator.integer', ['value' => $value]);
+		}
+
+	/**
+	 * @param string[] $parameters
+	 * @param array<int, array<mixed>> $fieldDefinitions
+	 */
+	private function validate_istarts_with(mixed $value, array $parameters, array $fieldDefinitions) : string
+		{
+		$valid = false;
+		$test = \strtolower($value);
+
+		foreach ($parameters as $start)
+			{
+			$valid |= \str_starts_with($test, \strtolower($start));
+			}
+
+		return $valid ? '' : \PHPFUI\ORM::trans('.validator.istarts_with', ['value' => $value, 'set' => \implode(',', $parameters)]);
+		}
+
+	/**
+	 * @param string[] $parameters
+	 * @param array<int, array<mixed>> $fieldDefinitions
+	 */
+	private function validate_lt_field(mixed $value, array $parameters, array $fieldDefinitions) : string
+		{
+		$field = $parameters[0] ?? '';
+		$compare = $this->record[$field];
+
+		return $value < $compare ? '' : \PHPFUI\ORM::trans('.validator.lt_field', ['value' => $value, 'field' => $field, 'compare' => $compare]);
+		}
+
+	/**
+	 * @param string[] $parameters
+	 * @param array<int, array<mixed>> $fieldDefinitions
+	 */
+	private function validate_lte_field(mixed $value, array $parameters, array $fieldDefinitions) : string
+		{
+		$field = $parameters[0] ?? '';
+		$compare = $this->record[$field];
+
+		return $value <= $compare ? '' : \PHPFUI\ORM::trans('.validator.lte_field', ['value' => $value, 'field' => $field, 'compare' => $compare]);
 		}
 
 	/**
@@ -560,6 +700,29 @@ abstract class Validator
 	 * @param string[] $parameters
 	 * @param array<int, array<mixed>> $fieldDefinitions
 	 */
+	private function validate_neq_field(mixed $value, array $parameters, array $fieldDefinitions) : string
+		{
+		$field = $parameters[0] ?? '';
+		$compare = $this->record[$field];
+
+		return $value != $compare ? '' : \PHPFUI\ORM::trans('.validator.neq_field', ['value' => $value, 'field' => $field, 'compare' => $compare]);
+		}
+
+	/**
+	 * @param string[] $parameters
+	 * @param array<int, array<mixed>> $fieldDefinitions
+	 */
+	private function validate_not_equal(mixed $value, array $parameters, array $fieldDefinitions) : string
+		{
+		$required = $parameters[0] ?? '';
+
+		return $required != $value ? '' : \PHPFUI\ORM::trans('.validator.not_equal', ['value' => $value, 'required' => $required]);
+		}
+
+	/**
+	 * @param string[] $parameters
+	 * @param array<int, array<mixed>> $fieldDefinitions
+	 */
 	private function validate_number(mixed $value, array $parameters, array $fieldDefinitions) : string
 		{
 		return false !== \filter_var($value, \FILTER_VALIDATE_FLOAT) ? '' : \PHPFUI\ORM::trans('.validator.number', ['value' => $value]);
@@ -588,56 +751,6 @@ abstract class Validator
 			}
 
 		return $valid ? '' : \PHPFUI\ORM::trans('.validator.starts_with', ['value' => $value, 'set' => \implode(',', $parameters)]);
-		}
-
-	/**
-	 * @param string[] $parameters
-	 * @param array<int, array<mixed>> $fieldDefinitions
-	 */
-	private function validate_istarts_with(mixed $value, array $parameters, array $fieldDefinitions) : string
-		{
-		$valid = false;
-		$test = \strtolower($value);
-
-		foreach ($parameters as $start)
-			{
-			$valid |= \str_starts_with($test, \strtolower($start));
-			}
-
-		return $valid ? '' : \PHPFUI\ORM::trans('.validator.istarts_with', ['value' => $value, 'set' => \implode(',', $parameters)]);
-		}
-
-	/**
-	 * @param string[] $parameters
-	 * @param array<int, array<mixed>> $fieldDefinitions
-	 */
-	private function validate_ends_with(mixed $value, array $parameters, array $fieldDefinitions) : string
-		{
-		$valid = false;
-
-		foreach ($parameters as $end)
-			{
-			$valid |= \str_ends_with($value, $end);
-			}
-
-		return $valid ? '' : \PHPFUI\ORM::trans('.validator.ends_with', ['value' => $value, 'set' => \implode(',', $parameters)]);
-		}
-
-	/**
-	 * @param string[] $parameters
-	 * @param array<int, array<mixed>> $fieldDefinitions
-	 */
-	private function validate_iends_with(mixed $value, array $parameters, array $fieldDefinitions) : string
-		{
-		$valid = false;
-		$test = \strtolower($value);
-
-		foreach ($parameters as $end)
-			{
-			$valid |= \str_ends_with($test, \strtolower($end));
-			}
-
-		return $valid ? '' : \PHPFUI\ORM::trans('.validator.iends_with', ['value' => $value, 'set' => \implode(',', $parameters)]);
 		}
 
 	/**

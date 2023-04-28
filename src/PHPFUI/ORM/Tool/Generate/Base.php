@@ -42,21 +42,6 @@ abstract class Base
 		return $primaryKeys;
 		}
 
-	protected function quote(string $field) : string
-		{
-		return "'{$field}'";
-		}
-
-	protected function quoteLine(string $field) : string
-		{
-		return "'{$field}', ";
-		}
-
-	protected function line(float | int | string $field) : string
-		{
-		return "{$field}, ";
-		}
-
 	protected function getTypeLength(string &$type) : float
 		{
 		$start = \strpos($type, '(');
@@ -123,5 +108,20 @@ abstract class Base
 		$type = $types[$type] ?? 'string';
 
 		return (float)$precision;
+		}
+
+	protected function line(float | int | string $field) : string
+		{
+		return "{$field}, ";
+		}
+
+	protected function quote(string $field) : string
+		{
+		return "'{$field}'";
+		}
+
+	protected function quoteLine(string $field) : string
+		{
+		return "'{$field}', ";
 		}
 	}

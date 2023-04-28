@@ -123,6 +123,49 @@ class ValidationTest extends \PHPUnit\Framework\TestCase
 		$this->assertNotEmpty($validator->getErrors());
 		}
 
+	public function testComparison() : void
+		{
+		$crud = new \Tests\Fixtures\Record\Comparison();
+		$validator = new \Tests\Fixtures\Validation\Comparison($crud);
+
+		$date = '2023-01-01';
+		$gtDate = '2023-01-02';
+		$ltDate = '2022-12-31';
+
+		$crud->equal = $date;
+		$crud->not_equal = $gtDate;
+		$crud->gt_field = $gtDate;
+		$crud->gte_field = $date;
+		$crud->lt_field = $ltDate;
+		$crud->lte_field = $date;
+		$crud->eq_field = $date;
+		$crud->neq_field = $ltDate;
+		$crud->date = $date;
+		$validator->validate();
+		$errors = $validator->getErrors();
+		$this->assertEmpty($errors);
+
+		$crud->equal = $ltDate;
+		$crud->not_equal = $date;
+		$crud->gt_field = $date;
+		$crud->gte_field = $ltDate;
+		$crud->lt_field = $date;
+		$crud->lte_field = $gtDate;
+		$crud->eq_field = $ltDate;
+		$crud->neq_field = $date;
+		$validator->validate();
+		$errors = $validator->getErrors();
+		$this->assertCount(8, $errors);
+		$this->assertContains('2022-12-31 is not equal to 2023-01-01', $errors['equal']);
+		$this->assertContains('2023-01-01 can not be equal to 2023-01-01', $errors['not_equal']);
+		$this->assertContains('2023-01-01 is not greater than 2023-01-01 (date)', $errors['gt_field']);
+		$this->assertContains('2022-12-31 is not greater than or equal to 2023-01-01 (date)', $errors['gte_field']);
+		$this->assertContains('2023-01-01 is not less than 2023-01-01 (date)', $errors['lt_field']);
+		$this->assertContains('2023-01-02 is not less than or equal to 2023-01-01 (date)', $errors['lte_field']);
+		$this->assertContains('2022-12-31 is not equal to 2023-01-01 (date)', $errors['eq_field']);
+		$this->assertContains('2023-01-01 can not be equal to 2023-01-01 (date)', $errors['neq_field']);
+		}
+
 	public function testCvv() : void
 		{
 		$crud = new \Tests\Fixtures\Record\Cvv();
@@ -653,22 +696,6 @@ class ValidationTest extends \PHPUnit\Framework\TestCase
 		$this->assertContains('2-30-20 is not a valid date (M-D-Y)', $errors['month_day_year']);
 		}
 
-	public function testUnique() : void
-		{
-		$crud = new \Tests\Fixtures\Record\Product(90);
-		$this->assertEquals('NWTCFV-90', $crud->product_code);
-		$validator = new \Tests\Fixtures\Record\Validation\Product($crud);
-		// empty test
-		$validator->validate();
-		$this->assertEmpty($validator->getErrors());
-		$crud->product_code = 'NWTCFV-91';
-		$validator->validate();
-		$errors = $validator->getErrors();
-//		fwrite(STDERR, print_r($errors, true));
-		$this->assertCount(1, $errors);
-		$this->assertContains('NWTCFV-91 is not unique', $errors['product_code']);
-		}
-
 	public function testMonthYear() : void
 		{
 		$crud = new \Tests\Fixtures\Record\Month_year();
@@ -938,6 +965,22 @@ class ValidationTest extends \PHPUnit\Framework\TestCase
 		$crud->time = 25;
 		$validator->validate();
 		$this->assertNotEmpty($validator->getErrors());
+		}
+
+	public function testUnique() : void
+		{
+		$crud = new \Tests\Fixtures\Record\Product(90);
+		$this->assertEquals('NWTCFV-90', $crud->product_code);
+		$validator = new \Tests\Fixtures\Record\Validation\Product($crud);
+		// empty test
+		$validator->validate();
+		$this->assertEmpty($validator->getErrors());
+		$crud->product_code = 'NWTCFV-91';
+		$validator->validate();
+		$errors = $validator->getErrors();
+//		fwrite(STDERR, print_r($errors, true));
+		$this->assertCount(1, $errors);
+		$this->assertContains('NWTCFV-91 is not unique', $errors['product_code']);
 		}
 
 	public function testUrl() : void

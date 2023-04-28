@@ -4,11 +4,11 @@ namespace PHPFUI\ORM\Schema;
 
 class Index
 	{
-	public readonly bool $primaryKey;
+	public readonly string $extra;
 
 	public readonly string $name;
 
-	public readonly string $extra;
+	public readonly bool $primaryKey;
 
 	public function __construct(\PHPFUI\ORM\PDOInstance $pdo, array $fields)
 		{

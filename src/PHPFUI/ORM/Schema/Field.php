@@ -4,17 +4,17 @@ namespace PHPFUI\ORM\Schema;
 
 class Field
 	{
-	public readonly string $name;
-
-	public readonly string $type;
-
-	public readonly bool $nullable;
+	public readonly bool $autoIncrement;
 
 	public readonly ?string $defaultValue;
 
+	public readonly string $name;
+
+	public readonly bool $nullable;
+
 	public readonly bool $primaryKey;
 
-	public readonly bool $autoIncrement;
+	public readonly string $type;
 
 	public function __construct(\PHPFUI\ORM\PDOInstance $pdo, array $fields, bool $autoIncrement)
 		{

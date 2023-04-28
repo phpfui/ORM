@@ -6,9 +6,9 @@ class CleanBackup
 	{
 	private $backupHandle;
 
-	private $targetHandle;
-
 	private string $error = '';
+
+	private $targetHandle;
 
 	public function __construct(string $backupPath, string $targetPath)
 		{
@@ -51,6 +51,18 @@ class CleanBackup
 		return true;
 		}
 
+	private function processLine(string $line) : string
+		{
+		static $options = ['CHARSET=' => 'UTF8MB4', 'COLLATE ' => '', 'COLLATE=' => 'utf8mb4_general_ci', 'DEFINER=' => 'CURRENT_USER', ];
+
+		foreach ($options as $option => $replacement)
+			{
+			$line = $this->replaceOption($option, $replacement, $line);
+			}
+
+		return $line;
+		}
+
 	private function replaceOption(string $option, string $replacement, string $line) : string
 		{
 		$start = \stripos($line, $option);
@@ -78,17 +90,5 @@ class CleanBackup
 			}
 
 		return \substr($line, 0, $start) . $replacement . \substr($line, $end);
-		}
-
-	private function processLine(string $line) : string
-		{
-		static $options = ['CHARSET=' => 'UTF8MB4', 'COLLATE ' => '', 'COLLATE=' => 'utf8mb4_general_ci', 'DEFINER=' => 'CURRENT_USER', ];
-
-		foreach ($options as $option => $replacement)
-			{
-			$line = $this->replaceOption($option, $replacement, $line);
-			}
-
-		return $line;
 		}
 	}

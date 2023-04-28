@@ -13,9 +13,9 @@ abstract class BaseCursor implements \Countable, \Iterator
 
 	private ?int $count = null;
 
-	private ?int $total = null;
-
 	private ?\PDOStatement $countStatement = null;
+
+	private ?int $total = null;
 
 	private ?\PDOStatement $totalStatement = null;
 
@@ -30,13 +30,6 @@ abstract class BaseCursor implements \Countable, \Iterator
 		$this->index = -1;
 		$this->total = null;
 		$this->count = null;
-		}
-
-	public function setQueryCount(int $count) : self
-		{
-		$this->count = $count;
-
-		return $this;
 		}
 
 	/**
@@ -111,6 +104,13 @@ abstract class BaseCursor implements \Countable, \Iterator
 	public function setCountSQL(string $limitedSql) : static
 		{
 		$this->countStatement = \PHPFUI\ORM::pdo()->prepare($limitedSql);
+
+		return $this;
+		}
+
+	public function setQueryCount(int $count) : self
+		{
+		$this->count = $count;
 
 		return $this;
 		}

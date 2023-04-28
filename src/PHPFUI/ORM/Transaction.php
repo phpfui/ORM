@@ -19,6 +19,11 @@ class Transaction
 		$this->rollBack();
 		}
 
+	public function commit() : bool
+		{
+		return $this->committed = $this->instance->commit();
+		}
+
 	public function rollBack() : bool
 		{
 		if ($this->committed)
@@ -27,10 +32,5 @@ class Transaction
 			}
 
 		return $this->committed = $this->instance->rollBack();
-		}
-
-	public function commit() : bool
-		{
-		return $this->committed = $this->instance->commit();
 		}
 	}

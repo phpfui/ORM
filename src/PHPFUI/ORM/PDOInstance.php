@@ -29,44 +29,6 @@ class PDOInstance extends \PDO
 		return parent::beginTransaction();
 		}
 
-	/**
-	 * Executes the SQL string using the matching $input array
-	 *
-	 * @return bool  status of command run
-	 */
-	public function execute(string $sql, array $input = []) : bool
-		{
-		$this->lastParameters = $input;
-		$this->lastSql = $sql;
-
-		return null !== $this->run($sql, $input);
-		}
-
-	public function getDSN() : string
-		{
-		return $this->dsn;
-		}
-
-	public function getTables() : array
-		{
-		if (\str_starts_with($this->dsn, 'mysql'))
-			{
-			$rows = $this->getRows('show tables');
-			}
-		else
-			{
-			$rows = $this->getRows('SELECT name FROM sqlite_schema WHERE type="table" AND name NOT LIKE "sqlite_%"');
-			}
-		$tables = [];
-
-		foreach ($rows as $row)
-			{
-			$tables[] = \array_pop($row);
-			}
-
-		return $tables;
-		}
-
 	public function describeTable(string $table) : array
 		{
 		$fields = [];
@@ -90,6 +52,85 @@ class PDOInstance extends \PDO
 		return $fields;
 		}
 
+	/**
+	 * Executes the SQL string using the matching $input array
+	 *
+	 * @return bool  status of command run
+	 */
+	public function execute(string $sql, array $input = []) : bool
+		{
+		$this->lastParameters = $input;
+		$this->lastSql = $sql;
+
+		return null !== $this->run($sql, $input);
+		}
+
+	/**
+	 * Executes the query and catches any errors
+	 */
+	public function executeStatement(\PDOStatement $statement, array $input = []) : ?\PDOStatement
+		{
+		$this->lastErrorCode = 0;
+		$this->lastError = [];
+
+		try
+			{
+			$returnValue = $statement->execute($input);
+			}
+		catch (\PDOException)
+			{
+			$returnValue = false;
+			}
+		$this->lastErrorCode = (int)$statement->errorCode();
+		// save last statement for potential use of column data
+
+		if (! $returnValue || $this->lastErrorCode)
+			{
+			$this->lastError = $statement->errorInfo();
+			\ob_start();
+			$statement->debugDumpParams();
+			$info = \ob_get_contents();
+			\ob_end_clean();
+			$data = ['sql' => $info,
+				'input' => $input,
+				'error' => $this->lastError[2],
+				'stack' => \debug_backtrace(\DEBUG_BACKTRACE_IGNORE_ARGS),
+			];
+			$this->lastErrors[] = $data;
+			$this->log(\Psr\Log\LogLevel::ERROR, 'Error from ' . $this->lastSql, $data);
+			$statement = null;
+			}
+
+		return $statement;
+		}
+
+	/**
+	 * @return \PHPFUI\ORM\ArrayCursor  tracking the sql and input passed
+	 */
+	public function getArrayCursor(string $sql = 'select 0 limit 0', array $input = []) : \PHPFUI\ORM\ArrayCursor
+		{
+		$this->lastParameters = $input;
+		$this->lastSql = $sql;
+
+		return new \PHPFUI\ORM\ArrayCursor($this->prepare($sql), $input);
+		}
+
+	/**
+	 * @return \PHPFUI\ORM\DataObjectCursor  tracking the sql and input passed
+	 */
+	public function getDataObjectCursor(string $sql = 'select 0 limit 0', array $input = []) : \PHPFUI\ORM\DataObjectCursor
+		{
+		$this->lastParameters = $input;
+		$this->lastSql = $sql;
+
+		return new \PHPFUI\ORM\DataObjectCursor($this->prepare($sql), $input);
+		}
+
+	public function getDSN() : string
+		{
+		return $this->dsn;
+		}
+
 	public function getIndexes(string $table) : array
 		{
 		$fields = [];
@@ -109,39 +150,6 @@ class PDOInstance extends \PDO
 			}
 
 		return $fields;
-		}
-
-	/**
-	 * @return \PHPFUI\ORM\ArrayCursor  tracking the sql and input passed
-	 */
-	public function getArrayCursor(string $sql = 'select 0 limit 0', array $input = []) : \PHPFUI\ORM\ArrayCursor
-		{
-		$this->lastParameters = $input;
-		$this->lastSql = $sql;
-
-		return new \PHPFUI\ORM\ArrayCursor($this->prepare($sql), $input);
-		}
-
-	/**
-	 * @return \PHPFUI\ORM\RecordCursor  tracking the sql and input passed
-	 */
-	public function getRecordCursor(\PHPFUI\ORM\Record $crud, string $sql = 'select 0 limit 0', array $input = []) : \PHPFUI\ORM\RecordCursor
-		{
-		$this->lastParameters = $input;
-		$this->lastSql = $sql;
-
-		return new \PHPFUI\ORM\RecordCursor($crud, $this->prepare($sql), $input);
-		}
-
-	/**
-	 * @return \PHPFUI\ORM\DataObjectCursor  tracking the sql and input passed
-	 */
-	public function getDataObjectCursor(string $sql = 'select 0 limit 0', array $input = []) : \PHPFUI\ORM\DataObjectCursor
-		{
-		$this->lastParameters = $input;
-		$this->lastSql = $sql;
-
-		return new \PHPFUI\ORM\DataObjectCursor($this->prepare($sql), $input);
 		}
 
 	/**
@@ -187,6 +195,17 @@ class PDOInstance extends \PDO
 	public function getLastSql() : string
 		{
 		return $this->lastSql;
+		}
+
+	/**
+	 * @return \PHPFUI\ORM\RecordCursor  tracking the sql and input passed
+	 */
+	public function getRecordCursor(\PHPFUI\ORM\Record $crud, string $sql = 'select 0 limit 0', array $input = []) : \PHPFUI\ORM\RecordCursor
+		{
+		$this->lastParameters = $input;
+		$this->lastSql = $sql;
+
+		return new \PHPFUI\ORM\RecordCursor($crud, $this->prepare($sql), $input);
 		}
 
 	/**
@@ -238,6 +257,26 @@ class PDOInstance extends \PDO
 		return $returnValue;
 		}
 
+	public function getTables() : array
+		{
+		if (\str_starts_with($this->dsn, 'mysql'))
+			{
+			$rows = $this->getRows('show tables');
+			}
+		else
+			{
+			$rows = $this->getRows('SELECT name FROM sqlite_schema WHERE type="table" AND name NOT LIKE "sqlite_%"');
+			}
+		$tables = [];
+
+		foreach ($rows as $row)
+			{
+			$tables[] = \array_pop($row);
+			}
+
+		return $tables;
+		}
+
 	/**
 	 * @return string value returned from the first field in the first row returned by the querry, or blank if error
 	 */
@@ -280,6 +319,14 @@ class PDOInstance extends \PDO
 		}
 
 	/**
+	 * Logs array of errors via logger
+	 */
+	public function log(string $level, string $message, array $context = []) : void
+		{
+		\PHPFUI\ORM::log($level, $message, $context);
+		}
+
+	/**
 	 * Logs errors and clears error log
 	 */
 	public function reportErrors() : void
@@ -289,53 +336,6 @@ class PDOInstance extends \PDO
 			$this->log(\Psr\Log\LogLevel::ERROR, 'Current Errors', $this->lastErrors);
 			$this->lastErrors = [];
 			}
-		}
-
-	/**
-	 * Executes the query and catches any errors
-	 */
-	public function executeStatement(\PDOStatement $statement, array $input = []) : ?\PDOStatement
-		{
-		$this->lastErrorCode = 0;
-		$this->lastError = [];
-
-		try
-			{
-			$returnValue = $statement->execute($input);
-			}
-		catch (\PDOException)
-			{
-			$returnValue = false;
-			}
-		$this->lastErrorCode = (int)$statement->errorCode();
-		// save last statement for potential use of column data
-
-		if (! $returnValue || $this->lastErrorCode)
-			{
-			$this->lastError = $statement->errorInfo();
-			\ob_start();
-			$statement->debugDumpParams();
-			$info = \ob_get_contents();
-			\ob_end_clean();
-			$data = ['sql' => $info,
-				'input' => $input,
-				'error' => $this->lastError[2],
-				'stack' => \debug_backtrace(\DEBUG_BACKTRACE_IGNORE_ARGS),
-			];
-			$this->lastErrors[] = $data;
-			$this->log(\Psr\Log\LogLevel::ERROR, 'Error from ' . $this->lastSql, $data);
-			$statement = null;
-			}
-
-		return $statement;
-		}
-
-	/**
-	 * Logs array of errors via logger
-	 */
-	public function log(string $level, string $message, array $context = []) : void
-		{
-		\PHPFUI\ORM::log($level, $message, $context);
 		}
 
 	/**

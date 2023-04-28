@@ -7,38 +7,23 @@ namespace PHPFUI;
  */
 class ORM
 	{
+	public static string $idSuffix = 'Id';
+
+	public static string $migrationNamespace = 'App\\Migration';
+
 	public static string $namespaceRoot = __DIR__ . '/..';
 
 	public static string $recordNamespace = 'App\\Record';
 
 	public static string $tableNamespace = 'App\\Table';
 
-	public static string $migrationNamespace = 'App\\Migration';
-
-	public static string $idSuffix = 'Id';
-
-	private static $translationCallback = null;
+	private static int | string | null $currentInstance = null;
 
 	private static array $instances = [];
 
-	private static int | string | null $currentInstance = null;
-
 	private static ?\Psr\Log\AbstractLogger $logger = null;
 
-	public static function getRecordNamespacePath() : string
-		{
-		return self::filePath(self::$namespaceRoot . '/' . self::$recordNamespace);
-		}
-
-	public static function getTableNamespacePath() : string
-		{
-		return self::filePath(self::$namespaceRoot . '/' . self::$tableNamespace);
-		}
-
-	public static function getMigrationNamespacePath() : string
-		{
-		return self::filePath(self::$namespaceRoot . '/' . self::$migrationNamespace);
-		}
+	private static $translationCallback = null;
 
 	/**
 	 * Add a PDO instance and return the index for future reference.  Use the return value to switch bethin
@@ -59,37 +44,6 @@ class ORM
 		return self::$currentInstance;
 		}
 
-	public static function setLogger(\Psr\Log\AbstractLogger $logger) : void
-		{
-		self::$logger = $logger;
-		}
-
-	/**
-	 * Use a specific connection
-	 *
-	 * @return null if requested connection is not found, else returns the previously selected connection
-	 */
-	public static function useConnection(int | string $connection) : int | string | null
-		{
-		$prior = null;
-
-		if (\array_key_exists($connection, self::$instances))
-			{
-			$prior = self::$currentInstance;
-			self::$currentInstance = $connection;
-			}
-
-		return $prior;
-		}
-
-	/**
-	 * Gets the current connection id in use
-	 */
-	public static function getConnection() : int | string | null
-		{
-		return self::$currentInstance;
-		}
-
 	/**
 	 * Clears an existing errors and begins a transaction
 	 */
@@ -106,6 +60,11 @@ class ORM
 		return self::getInstance()->commit();
 		}
 
+	public static function describeTable(string $table) : array
+		{
+		return self::getInstance()->describeTable($table);
+		}
+
 	/**
 	 * Executes the SQL string using the matching $input array
 	 *
@@ -116,9 +75,12 @@ class ORM
 		return self::getInstance()->execute($sql, $input);
 		}
 
-	public static function describeTable(string $table) : array
+	/**
+	 * Executes the query and catches any errors
+	 */
+	public static function executeStatement(\PDOStatement $statement, array $input = []) : ?\PDOStatement
 		{
-		return self::getInstance()->describeTable($table);
+		return self::getInstance()->executeStatement($statement, $input);
 		}
 
 	/**
@@ -130,11 +92,26 @@ class ORM
 		}
 
 	/**
-	 * @return \PHPFUI\ORM\RecordCursor  tracking the sql and input passed
+	 * Get the correct class name from the table name
 	 */
-	public static function getRecordCursor(\PHPFUI\ORM\Record $crud, string $sql = 'select 0 limit 0', array $input = []) : \PHPFUI\ORM\RecordCursor
+	public static function getBaseClassName(string $table) : string
 		{
-		return self::getInstance()->getRecordCursor($crud, $sql, $input);
+		$parts = \explode('_', $table);
+
+		foreach ($parts as $index => $part)
+			{
+			$parts[$index] = \ucfirst($part);
+			}
+
+		return \implode('', $parts);
+		}
+
+	/**
+	 * Gets the current connection id in use
+	 */
+	public static function getConnection() : int | string | null
+		{
+		return self::$currentInstance;
 		}
 
 	/**
@@ -145,14 +122,19 @@ class ORM
 		return self::getInstance()->getDataObjectCursor($sql, $input);
 		}
 
-	public static function getTables() : array
-		{
-		return self::getInstance()->getTables();
-		}
-
 	public static function getIndexes(string $table) : array
 		{
 		return self::getInstance()->getIndexes($table);
+		}
+
+	public static function getInstance() : \PHPFUI\ORM\PDOInstance
+		{
+		if (null === self::$currentInstance)
+			{
+			throw new \Exception('You need to call \PHPFUI\ORM::addConnection before accessing database');
+			}
+
+		return self::$instances[self::$currentInstance];
 		}
 
 	/**
@@ -195,6 +177,24 @@ class ORM
 		return self::getInstance()->getLastSql();
 		}
 
+	public static function getMigrationNamespacePath() : string
+		{
+		return self::filePath(self::$namespaceRoot . '/' . self::$migrationNamespace);
+		}
+
+	/**
+	 * @return \PHPFUI\ORM\RecordCursor  tracking the sql and input passed
+	 */
+	public static function getRecordCursor(\PHPFUI\ORM\Record $crud, string $sql = 'select 0 limit 0', array $input = []) : \PHPFUI\ORM\RecordCursor
+		{
+		return self::getInstance()->getRecordCursor($crud, $sql, $input);
+		}
+
+	public static function getRecordNamespacePath() : string
+		{
+		return self::filePath(self::$namespaceRoot . '/' . self::$recordNamespace);
+		}
+
 	/**
 	 * @return array<string, string> a single row of the first matching record or an empty array if an error
 	 */
@@ -211,6 +211,16 @@ class ORM
 	public static function getRows(string $sql, array $input = [], int $fetchType = \PDO::FETCH_ASSOC) : array
 		{
 		return self::getInstance()->getRows($sql, $input, $fetchType);
+		}
+
+	public static function getTableNamespacePath() : string
+		{
+		return self::filePath(self::$namespaceRoot . '/' . self::$tableNamespace);
+		}
+
+	public static function getTables() : array
+		{
+		return self::getInstance()->getTables();
 		}
 
 	/**
@@ -272,6 +282,11 @@ class ORM
 		return self::getInstance()->rollBack();
 		}
 
+	public static function setLogger(\Psr\Log\AbstractLogger $logger) : void
+		{
+		self::$logger = $logger;
+		}
+
 	public static function setTranslationCallback($callback) : void
 		{
 		self::$translationCallback = $callback;
@@ -295,36 +310,21 @@ class ORM
 		}
 
 	/**
-	 * Executes the query and catches any errors
+	 * Use a specific connection
+	 *
+	 * @return null if requested connection is not found, else returns the previously selected connection
 	 */
-	public static function executeStatement(\PDOStatement $statement, array $input = []) : ?\PDOStatement
+	public static function useConnection(int | string $connection) : int | string | null
 		{
-		return self::getInstance()->executeStatement($statement, $input);
-		}
+		$prior = null;
 
-	/**
-	 * Get the correct class name from the table name
-	 */
-	public static function getBaseClassName(string $table) : string
-		{
-		$parts = \explode('_', $table);
-
-		foreach ($parts as $index => $part)
+		if (\array_key_exists($connection, self::$instances))
 			{
-			$parts[$index] = \ucfirst($part);
+			$prior = self::$currentInstance;
+			self::$currentInstance = $connection;
 			}
 
-		return \implode('', $parts);
-		}
-
-	public static function getInstance() : \PHPFUI\ORM\PDOInstance
-		{
-		if (null === self::$currentInstance)
-			{
-			throw new \Exception('You need to call \PHPFUI\ORM::addConnection before accessing database');
-			}
-
-		return self::$instances[self::$currentInstance];
+		return $prior;
 		}
 
 	private static function filePath(string $namespace) : string

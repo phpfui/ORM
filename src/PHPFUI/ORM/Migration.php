@@ -17,42 +17,10 @@ abstract class Migration
 		"b'1'",
 	];
 
-	private string $ran = '';
-
 	/** @var array<string, array> */
 	private array $alters = [];
 
-	/**
-	 * Returns true if the up migrate worked
-	 */
-	abstract public function down() : bool;
-
-	/**
-	 * Returns the migration id. Class name should be Migration_x
-	 */
-	public function id() : int
-		{
-		$parts = \explode('_', static::class);
-
-		return (int)$parts[1];
-		}
-
-	public function ran() : string
-		{
-		return $this->ran;
-		}
-
-	public function setRan(string $ran) : static
-		{
-		$this->ran = $ran;
-
-		return $this;
-		}
-
-	/**
-	 * Returns true if the up migrate worked
-	 */
-	abstract public function up() : bool;
+	private string $ran = '';
 
 	/**
 	 * Returns a description of the migration
@@ -60,6 +28,28 @@ abstract class Migration
 	public function description() : string
 		{
 		return 'description not set in ' . static::class;
+		}
+
+	/**
+	 * Returns true if the up migrate worked
+	 */
+	abstract public function down() : bool;
+
+	/**
+	 * Run all the cached alter statements.  You will need to call if this directly if you need to change a table altered in the current migration.
+	 */
+	public function executeAlters() : bool
+		{
+		// do DROP, ADD and CHANGE for each table
+		foreach ($this->alters as $table => $alters)
+			{
+			$sql = 'ALTER TABLE `' . $table . '` ' . \implode(',', $alters);
+
+			$this->runSQL($sql);
+			}
+		$this->alters = [];
+
+		return 0 == \count($this->errors);
 		}
 
 	/**
@@ -103,20 +93,18 @@ abstract class Migration
 		}
 
 	/**
-	 * Run all the cached alter statements.  You will need to call if this directly if you need to change a table altered in the current migration.
+	 * Returns the migration id. Class name should be Migration_x
 	 */
-	public function executeAlters() : bool
+	public function id() : int
 		{
-		// do DROP, ADD and CHANGE for each table
-		foreach ($this->alters as $table => $alters)
-			{
-			$sql = 'ALTER TABLE `' . $table . '` ' . \implode(',', $alters);
+		$parts = \explode('_', static::class);
 
-			$this->runSQL($sql);
-			}
-		$this->alters = [];
+		return (int)$parts[1];
+		}
 
-		return 0 == \count($this->errors);
+	public function ran() : string
+		{
+		return $this->ran;
 		}
 
 	/**
@@ -152,86 +140,22 @@ abstract class Migration
 		return true;
 		}
 
-	/**
-	 * Duplicate rows with the same key values will be deleted
-	 */
-	protected function deleteDuplicateRows(string $table, array $keys) : bool
+	public function setRan(string $ran) : static
 		{
-		$fields = '`' . \implode('`,`', $keys) . '`';
-		$sql = "select count(*) number,{$fields} from `{$table}` group by {$fields} having number > 1";
-		$rows = \PHPFUI\ORM::getArrayCursor($sql);
+		$this->ran = $ran;
 
-		foreach ($rows as $row)
-			{
-			$count = (int)$row['number'] - 1;
-			$where = $comma = '';
-			$input = [];
-
-			foreach ($keys as $key)
-				{
-				$input[] = $row[$key];
-				$where .= "{$comma}`{$key}`=?";
-				$comma = ' and ';
-				}
-			$sql = "delete from `{$table}` where {$where} limit {$count}";
-			\PHPFUI\ORM::execute($sql, $input);
-			}
-
-		return true;
+		return $this;
 		}
 
 	/**
-	 * Drops the primary key
+	 * Returns true if the up migrate worked
 	 */
-	protected function dropPrimaryKey(string $table) : bool
-		{
-		$rows = \PHPFUI\ORM::getArrayCursor("SHOW COLUMNS FROM {$table}");
-
-		foreach ($rows as $row)
-			{
-			if ('PRI' == $row['Key'])
-				{
-				$sql = 'alter table ' . $table;
-
-				if ('auto_increment' == $row['Extra'])
-					{
-					$nullable = 'NO' == $row['Null'] ? 'NOT NULL' : '';
-					$sql .= " change {$row['Field']} {$row['Field']} {$row['Type']} {$nullable},";
-					}
-				$sql .= ' DROP PRIMARY KEY';
-				$this->runSQL($sql);
-
-				return true;
-				}
-			}
-
-		return false;
-		}
+	abstract public function up() : bool;
 
 	/**
-	 * Adds a primary key to the table.  If $field is not specified, it will the primary key will be the table name with Id appended.  If $newFieldName is not specified, it will default to $field. This method works on an existing field only.
+	 * Always adds a column
 	 */
-	protected function addPrimaryKeyAutoIncrement(string $table, string $field = '', string $newFieldName = '') : bool
-		{
-		if (empty($field))
-			{
-			$field = $table . \PHPFUI\ORM::$idSuffix;
-			}
-
-		if (empty($newFieldName))
-			{
-			$newFieldName = $field;
-			}
-		$this->dropPrimaryKey($table);
-		$this->alters[$table] = ["change `{$field}` `{$newFieldName}` int NOT NULL primary key auto_increment"];
-
-		return true;
-		}
-
-	/**
-	 * Drops a column if it exists
-	 */
-	protected function dropColumn(string $table, string $field) : bool
+	protected function addColumn(string $table, string $field, string $parameters) : bool
 		{
 		$fieldInfo = $this->getFieldInfo($table, $field);
 
@@ -239,157 +163,7 @@ abstract class Migration
 			{
 			$this->alter('DROP', $table, $field);
 			}
-
-		return true;
-		}
-
-	/**
-	 *  Drops a table if it exists
-	 */
-	protected function dropTable(string $table) : bool
-		{
-		return $this->runSQL('DROP TABLE IF EXISTS `' . $table . '`');
-		}
-
-	/**
-	 * Renames an existing table
-	 */
-	protected function renameTable(string $oldName, string $newName) : bool
-		{
-		$this->dropTable($newName);
-
-		return $this->runSQL("rename table `{$oldName}` to `{$newName}`");
-		}
-
-	/**
-	 * Drops tables contained in the array
-	 */
-	protected function dropTables(array $tables) : void
-		{
-		foreach ($tables as $table)
-			{
-			$this->dropTable($table);
-			}
-		}
-
-	/**
-	 * Drops a view if it exists
-	 */
-	protected function dropView(string $view) : bool
-		{
-		return $this->runSQL('DROP VIEW IF EXISTS ' . $view);
-		}
-
-	/**
-	 * Drops views contained in the array
-	 */
-	protected function dropViews(array $views) : void
-		{
-		foreach ($views as $view)
-			{
-			$this->dropView($view);
-			}
-		}
-
-	/**
-	 * Add an index on the fields in the array.
-	 */
-	protected function addIndex(string $table, string | array $fields, string $indexType = '') : bool
-		{
-		if (\is_string($fields))
-			{
-			$indexName = $fields;
-			$fields = [$fields];
-			}
-		else
-			{
-			$indexName = \implode('', $fields) . $table . 'Index';
-			}
-
-		if ($this->indexExists($table, $indexName))
-			{
-			return false;
-			}
-
-		$sql = "CREATE {$indexType} INDEX `{$indexName}` ON `{$table}` (`" . \implode('`,`', $fields) . '`)';
-
-		return $this->runSQL($sql);
-		}
-
-	/**
-	 * Drops an index by the name used by addIndex
-	 */
-	protected function dropIndex(string $table, string | array $fields) : bool
-		{
-		if (\is_string($fields))
-			{
-			$indexName = $fields;
-			}
-		else
-			{
-			$indexName = \implode('', $fields) . $table . 'Index';
-			}
-
-		if (! $this->indexExists($table, $indexName))
-			{
-			return true;
-			}
-
-		$sql = "DROP INDEX `{$indexName}` ON `{$table}`";
-
-		return $this->runSQL($sql);
-		}
-
-	/**
-	 * Drops all indexes on a table but not the primary key.
-	 */
-	protected function dropAllIndexes(string $table) : void
-		{
-		$dropped = [];
-		$rows = \PHPFUI\ORM::getRows("SHOW INDEX FROM `{$table}`");
-
-		foreach ($rows as $row)
-			{
-			$indexName = $row['Key_name'];
-
-			if (! isset($dropped[$indexName]))
-				{
-				$dropped[$indexName] = 1;
-				$this->runSQL("DROP INDEX `{$indexName}` ON `{$table}`");
-				}
-			}
-		}
-
-	/**
-	 * Tests for existance of an index on the table
-	 */
-	protected function indexExists(string $table, string $indexName) : bool
-		{
-		$rows = \PHPFUI\ORM::getRows("SHOW INDEX FROM `{$table}`");
-
-		foreach ($rows as $row)
-			{
-			if ($row['Key_name'] == $indexName)
-				{
-				return true;
-				}
-			}
-
-		return false;
-		}
-
-	/**
-	 * Drops the foreign key on the table
-	 */
-	protected function dropForeignKey(string $table, array $columns) : bool
-		{
-		$index = \implode('_', $columns) . '_FK';
-
-		if ($this->indexExists($table, $index))
-			{
-			$sql = 'DROP FOREIGN KEY ' . \implode('_', $columns) . '_FK';
-			$this->alters[$table][] = $sql;
-			}
+		$this->alter('ADD', $table, $field, $parameters);
 
 		return true;
 		}
@@ -444,17 +218,46 @@ abstract class Migration
 		}
 
 	/**
-	 * Always adds a column
+	 * Add an index on the fields in the array.
 	 */
-	protected function addColumn(string $table, string $field, string $parameters) : bool
+	protected function addIndex(string $table, string | array $fields, string $indexType = '') : bool
 		{
-		$fieldInfo = $this->getFieldInfo($table, $field);
-
-		if ($fieldInfo)
+		if (\is_string($fields))
 			{
-			$this->alter('DROP', $table, $field);
+			$indexName = $fields;
+			$fields = [$fields];
 			}
-		$this->alter('ADD', $table, $field, $parameters);
+		else
+			{
+			$indexName = \implode('', $fields) . $table . 'Index';
+			}
+
+		if ($this->indexExists($table, $indexName))
+			{
+			return false;
+			}
+
+		$sql = "CREATE {$indexType} INDEX `{$indexName}` ON `{$table}` (`" . \implode('`,`', $fields) . '`)';
+
+		return $this->runSQL($sql);
+		}
+
+	/**
+	 * Adds a primary key to the table.  If $field is not specified, it will the primary key will be the table name with Id appended.  If $newFieldName is not specified, it will default to $field. This method works on an existing field only.
+	 */
+	protected function addPrimaryKeyAutoIncrement(string $table, string $field = '', string $newFieldName = '') : bool
+		{
+		if (empty($field))
+			{
+			$field = $table . \PHPFUI\ORM::$idSuffix;
+			}
+
+		if (empty($newFieldName))
+			{
+			$newFieldName = $field;
+			}
+		$this->dropPrimaryKey($table);
+		$this->alters[$table] = ["change `{$field}` `{$newFieldName}` int NOT NULL primary key auto_increment"];
 
 		return true;
 		}
@@ -478,19 +281,201 @@ abstract class Migration
 		return true;
 		}
 
-	private function getFieldInfo(string $table, string $field) : array
+	/**
+	 * Duplicate rows with the same key values will be deleted
+	 */
+	protected function deleteDuplicateRows(string $table, array $keys) : bool
 		{
-		$rows = \PHPFUI\ORM::getArrayCursor("SHOW COLUMNS FROM `{$table}`");
+		$fields = '`' . \implode('`,`', $keys) . '`';
+		$sql = "select count(*) number,{$fields} from `{$table}` group by {$fields} having number > 1";
+		$rows = \PHPFUI\ORM::getArrayCursor($sql);
 
 		foreach ($rows as $row)
 			{
-			if (0 == \strcasecmp((string)$row['Field'], $field))
+			$count = (int)$row['number'] - 1;
+			$where = $comma = '';
+			$input = [];
+
+			foreach ($keys as $key)
 				{
-				return $row;
+				$input[] = $row[$key];
+				$where .= "{$comma}`{$key}`=?";
+				$comma = ' and ';
+				}
+			$sql = "delete from `{$table}` where {$where} limit {$count}";
+			\PHPFUI\ORM::execute($sql, $input);
+			}
+
+		return true;
+		}
+
+	/**
+	 * Drops all indexes on a table but not the primary key.
+	 */
+	protected function dropAllIndexes(string $table) : void
+		{
+		$dropped = [];
+		$rows = \PHPFUI\ORM::getRows("SHOW INDEX FROM `{$table}`");
+
+		foreach ($rows as $row)
+			{
+			$indexName = $row['Key_name'];
+
+			if (! isset($dropped[$indexName]))
+				{
+				$dropped[$indexName] = 1;
+				$this->runSQL("DROP INDEX `{$indexName}` ON `{$table}`");
+				}
+			}
+		}
+
+	/**
+	 * Drops a column if it exists
+	 */
+	protected function dropColumn(string $table, string $field) : bool
+		{
+		$fieldInfo = $this->getFieldInfo($table, $field);
+
+		if ($fieldInfo)
+			{
+			$this->alter('DROP', $table, $field);
+			}
+
+		return true;
+		}
+
+	/**
+	 * Drops the foreign key on the table
+	 */
+	protected function dropForeignKey(string $table, array $columns) : bool
+		{
+		$index = \implode('_', $columns) . '_FK';
+
+		if ($this->indexExists($table, $index))
+			{
+			$sql = 'DROP FOREIGN KEY ' . \implode('_', $columns) . '_FK';
+			$this->alters[$table][] = $sql;
+			}
+
+		return true;
+		}
+
+	/**
+	 * Drops an index by the name used by addIndex
+	 */
+	protected function dropIndex(string $table, string | array $fields) : bool
+		{
+		if (\is_string($fields))
+			{
+			$indexName = $fields;
+			}
+		else
+			{
+			$indexName = \implode('', $fields) . $table . 'Index';
+			}
+
+		if (! $this->indexExists($table, $indexName))
+			{
+			return true;
+			}
+
+		$sql = "DROP INDEX `{$indexName}` ON `{$table}`";
+
+		return $this->runSQL($sql);
+		}
+
+	/**
+	 * Drops the primary key
+	 */
+	protected function dropPrimaryKey(string $table) : bool
+		{
+		$rows = \PHPFUI\ORM::getArrayCursor("SHOW COLUMNS FROM {$table}");
+
+		foreach ($rows as $row)
+			{
+			if ('PRI' == $row['Key'])
+				{
+				$sql = 'alter table ' . $table;
+
+				if ('auto_increment' == $row['Extra'])
+					{
+					$nullable = 'NO' == $row['Null'] ? 'NOT NULL' : '';
+					$sql .= " change {$row['Field']} {$row['Field']} {$row['Type']} {$nullable},";
+					}
+				$sql .= ' DROP PRIMARY KEY';
+				$this->runSQL($sql);
+
+				return true;
 				}
 			}
 
-		return [];
+		return false;
+		}
+
+	/**
+	 *  Drops a table if it exists
+	 */
+	protected function dropTable(string $table) : bool
+		{
+		return $this->runSQL('DROP TABLE IF EXISTS `' . $table . '`');
+		}
+
+	/**
+	 * Drops tables contained in the array
+	 */
+	protected function dropTables(array $tables) : void
+		{
+		foreach ($tables as $table)
+			{
+			$this->dropTable($table);
+			}
+		}
+
+	/**
+	 * Drops a view if it exists
+	 */
+	protected function dropView(string $view) : bool
+		{
+		return $this->runSQL('DROP VIEW IF EXISTS ' . $view);
+		}
+
+	/**
+	 * Drops views contained in the array
+	 */
+	protected function dropViews(array $views) : void
+		{
+		foreach ($views as $view)
+			{
+			$this->dropView($view);
+			}
+		}
+
+	/**
+	 * Tests for existance of an index on the table
+	 */
+	protected function indexExists(string $table, string $indexName) : bool
+		{
+		$rows = \PHPFUI\ORM::getRows("SHOW INDEX FROM `{$table}`");
+
+		foreach ($rows as $row)
+			{
+			if ($row['Key_name'] == $indexName)
+				{
+				return true;
+				}
+			}
+
+		return false;
+		}
+
+	/**
+	 * Renames an existing table
+	 */
+	protected function renameTable(string $oldName, string $newName) : bool
+		{
+		$this->dropTable($newName);
+
+		return $this->runSQL("rename table `{$oldName}` to `{$newName}`");
 		}
 
 	private function alter(string $type, string $table, string $field, string $extra = '', string $newName = '') : void
@@ -513,5 +498,20 @@ abstract class Migration
 			$this->alters[$table] = [];
 			}
 		$this->alters[$table][] = $sql;
+		}
+
+	private function getFieldInfo(string $table, string $field) : array
+		{
+		$rows = \PHPFUI\ORM::getArrayCursor("SHOW COLUMNS FROM `{$table}`");
+
+		foreach ($rows as $row)
+			{
+			if (0 == \strcasecmp((string)$row['Field'], $field))
+				{
+				return $row;
+				}
+			}
+
+		return [];
 		}
 	}

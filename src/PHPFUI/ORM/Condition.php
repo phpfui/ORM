@@ -89,11 +89,6 @@ class Condition implements \Countable, \Stringable
 		return $retVal;
 		}
 
-	public function getJSON() : string
-		{
-		return \json_encode($this->getConditionArray($this->conditions), JSON_THROW_ON_ERROR);
-		}
-
 	/**
 	 * Add logical AND between FOV tupples or Condition
 	 */
@@ -181,6 +176,11 @@ class Condition implements \Countable, \Stringable
 		return $retVal;
 		}
 
+	public function getJSON() : string
+		{
+		return \json_encode($this->getConditionArray($this->conditions), JSON_THROW_ON_ERROR);
+		}
+
 	/**
 	 * Add logical OR between FOV tupples or Condition
 	 */
@@ -195,28 +195,6 @@ class Condition implements \Countable, \Stringable
 	public function orNot(string | \PHPFUI\ORM\Condition $condition, mixed $value = null, \PHPFUI\ORM\Operator $operator = new \PHPFUI\ORM\Operator\Equal()) : self
 		{
 		return $this->add('OR NOT', $condition, $operator, $value);
-		}
-
-	private function getConditionArray(array $conditions) : array
-		{
-		$data = [];
-
-		foreach ($conditions as $condition)
-			{
-			if (4 == (\is_countable($condition) ? \count($condition) : 0))
-				{
-				// convert operator to string
-				$condition[2] = $condition[2]->getOperatorString();
-				$data[] = $condition;
-				}
-			else
-				{
-				$condition[1] = $this->getConditionArray($condition[1]->conditions);
-				$data[] = $condition;
-				}
-			}
-
-		return $data;
 		}
 
 	/**
@@ -255,5 +233,27 @@ class Condition implements \Countable, \Stringable
 			}
 
 		return $this;
+		}
+
+	private function getConditionArray(array $conditions) : array
+		{
+		$data = [];
+
+		foreach ($conditions as $condition)
+			{
+			if (4 == (\is_countable($condition) ? \count($condition) : 0))
+				{
+				// convert operator to string
+				$condition[2] = $condition[2]->getOperatorString();
+				$data[] = $condition;
+				}
+			else
+				{
+				$condition[1] = $this->getConditionArray($condition[1]->conditions);
+				$data[] = $condition;
+				}
+			}
+
+		return $data;
 		}
 	}

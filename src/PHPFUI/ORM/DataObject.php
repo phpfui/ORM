@@ -42,20 +42,29 @@ class DataObject implements \ArrayAccess
 		return $value;
 		}
 
-	public function isset(string $field) : bool
-		{
-		return \array_key_exists($field, $this->current);
-		}
-
 	public function empty() : bool
 		{
 		return ! \count($this->current);
 		}
 
-	/** @return array<string, mixed> */
-	public function toArray() : array
+	public function isset(string $field) : bool
 		{
-		return $this->current;
+		return \array_key_exists($field, $this->current);
+		}
+
+	public function offsetExists($offset) : bool
+		{
+		return \array_key_exists($offset, $this->current);
+		}
+
+	public function offsetGet($offset) : mixed
+		{
+		if (\array_key_exists($offset, $this->current))
+			{
+			return $this->current[$offset];
+			}
+
+		throw new \PHPFUI\ORM\Exception(self::class . " {$offset} is not defined");
 		}
 
   public function offsetSet($offset, $value) : void
@@ -67,23 +76,14 @@ class DataObject implements \ArrayAccess
 		$this->current[$offset] = $value;
 		}
 
-	public function offsetExists($offset) : bool
-		{
-		return \array_key_exists($offset, $this->current);
-		}
-
 	public function offsetUnset($offset) : void
 		{
 		unset($this->current[$offset]);
 		}
 
-	public function offsetGet($offset) : mixed
+	/** @return array<string, mixed> */
+	public function toArray() : array
 		{
-		if (\array_key_exists($offset, $this->current))
-			{
-			return $this->current[$offset];
-			}
-
-		throw new \PHPFUI\ORM\Exception(self::class . " {$offset} is not defined");
+		return $this->current;
 		}
 	}
