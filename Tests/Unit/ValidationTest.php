@@ -140,6 +140,18 @@ class ValidationTest extends \PHPUnit\Framework\TestCase
 		$crud->lte_field = $date;
 		$crud->eq_field = $date;
 		$crud->neq_field = $ltDate;
+		$validator->validate();
+		$errors = $validator->getErrors();
+		$this->assertEmpty($errors);
+
+		$crud->equal = $date;
+		$crud->not_equal = $gtDate;
+		$crud->gt_field = $gtDate;
+		$crud->gte_field = $date;
+		$crud->lt_field = $ltDate;
+		$crud->lte_field = $date;
+		$crud->eq_field = $date;
+		$crud->neq_field = $ltDate;
 		$crud->date = $date;
 		$validator->validate();
 		$errors = $validator->getErrors();
@@ -978,7 +990,6 @@ class ValidationTest extends \PHPUnit\Framework\TestCase
 		$crud->product_code = 'NWTCFV-91';
 		$validator->validate();
 		$errors = $validator->getErrors();
-//		fwrite(STDERR, print_r($errors, true));
 		$this->assertCount(1, $errors);
 		$this->assertContains('NWTCFV-91 is not unique', $errors['product_code']);
 		}

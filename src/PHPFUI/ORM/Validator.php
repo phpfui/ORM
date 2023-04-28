@@ -489,7 +489,7 @@ abstract class Validator
 		$field = $parameters[0] ?? '';
 		$compare = $this->record[$field];
 
-		return $value == $compare ? '' : \PHPFUI\ORM::trans('.validator.eq_field', ['value' => $value, 'field' => $field, 'compare' => $compare]);
+		return empty($compare) || $value == $compare ? '' : \PHPFUI\ORM::trans('.validator.eq_field', ['value' => $value, 'field' => $field, 'compare' => $compare]);
 		}
 
 	/**
@@ -512,7 +512,7 @@ abstract class Validator
 		$field = $parameters[0] ?? '';
 		$compare = $this->record[$field];
 
-		return $value > $compare ? '' : \PHPFUI\ORM::trans('.validator.gt_field', ['value' => $value, 'field' => $field, 'compare' => $compare]);
+		return empty($compare) || $value > $compare ? '' : \PHPFUI\ORM::trans('.validator.gt_field', ['value' => $value, 'field' => $field, 'compare' => $compare]);
 		}
 
 	/**
@@ -524,7 +524,7 @@ abstract class Validator
 		$field = $parameters[0] ?? '';
 		$compare = $this->record[$field];
 
-		return $value >= $compare ? '' : \PHPFUI\ORM::trans('.validator.gte_field', ['value' => $value, 'field' => $field, 'compare' => $compare]);
+		return empty($compare) || $value >= $compare ? '' : \PHPFUI\ORM::trans('.validator.gte_field', ['value' => $value, 'field' => $field, 'compare' => $compare]);
 		}
 
 	/**
@@ -596,7 +596,7 @@ abstract class Validator
 		$field = $parameters[0] ?? '';
 		$compare = $this->record[$field];
 
-		return $value < $compare ? '' : \PHPFUI\ORM::trans('.validator.lt_field', ['value' => $value, 'field' => $field, 'compare' => $compare]);
+		return empty($compare) || $value < $compare ? '' : \PHPFUI\ORM::trans('.validator.lt_field', ['value' => $value, 'field' => $field, 'compare' => $compare]);
 		}
 
 	/**
@@ -608,7 +608,7 @@ abstract class Validator
 		$field = $parameters[0] ?? '';
 		$compare = $this->record[$field];
 
-		return $value <= $compare ? '' : \PHPFUI\ORM::trans('.validator.lte_field', ['value' => $value, 'field' => $field, 'compare' => $compare]);
+		return empty($compare) || $value <= $compare ? '' : \PHPFUI\ORM::trans('.validator.lte_field', ['value' => $value, 'field' => $field, 'compare' => $compare]);
 		}
 
 	/**
@@ -705,7 +705,7 @@ abstract class Validator
 		$field = $parameters[0] ?? '';
 		$compare = $this->record[$field];
 
-		return $value != $compare ? '' : \PHPFUI\ORM::trans('.validator.neq_field', ['value' => $value, 'field' => $field, 'compare' => $compare]);
+		return empty($compare) || $value != $compare ? '' : \PHPFUI\ORM::trans('.validator.neq_field', ['value' => $value, 'field' => $field, 'compare' => $compare]);
 		}
 
 	/**
