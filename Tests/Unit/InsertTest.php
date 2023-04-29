@@ -4,6 +4,37 @@ namespace Tests\Unit;
 
 class InsertTest extends \PHPUnit\Framework\TestCase
 	{
+	public function testDateNullInsert() : void
+		{
+		$transaction = new \PHPFUI\ORM\Transaction();
+		$test = new \Tests\App\Record\DateRecord();
+		$test->dateRequired = $date = \date('Y-m-d');
+		$timeStamp = \date('Y-m-d H:i:s');
+		$id = $test->insert();
+		$insertedTest = new \Tests\App\Record\DateRecord($id);
+		$this->assertNull($insertedTest->dateDefaultNull);
+		$this->assertEquals($date, $insertedTest->dateRequired);
+		$this->assertEquals('2000-01-02', $insertedTest->dateDefaultNullable);
+		$this->assertEquals('2000-01-02', $insertedTest->dateDefaultNotNull);
+		$this->assertGreaterThanOrEqual($timeStamp, $insertedTest->timestampDefaultCurrentNullable);
+		$this->assertGreaterThanOrEqual($timeStamp, $insertedTest->timestampDefaultCurrentNotNull);
+
+		$this->assertTrue($transaction->rollBack());
+		}
+
+	public function testDateRequiredInsert() : void
+		{
+		$this->expectException(\Exception::class);
+		$transaction = new \PHPFUI\ORM\Transaction();
+		$test = new \Tests\App\Record\DateRecord();
+		$id = $test->insert();
+		$insertedTest = new \Tests\App\Record\DateRecord($id);
+		$this->assertNull($insertedTest->dateDefaultNull);
+		$this->assertEquals('2000-01-02', $insertedTest->dateDefaultNullable);
+		$this->assertEquals('2000-01-02', $insertedTest->dateDefaultNotNull);
+		$this->assertTrue($transaction->rollBack());
+		}
+
 	public function testMultipleInserts() : void
 		{
 		$transaction = new \PHPFUI\ORM\Transaction();
@@ -71,37 +102,6 @@ class InsertTest extends \PHPUnit\Framework\TestCase
 		$this->assertTrue($transaction->rollBack());
 		$customerTable->setWhere();
 		$this->assertCount(29, $customerTable);
-		}
-
-	public function testDateNullInsert() : void
-		{
-		$transaction = new \PHPFUI\ORM\Transaction();
-		$test = new \Tests\App\Record\DateRecord();
-		$test->dateRequired = $date = \date('Y-m-d');
-		$timeStamp = \date('Y-m-d H:i:s');
-		$id = $test->insert();
-		$insertedTest = new \Tests\App\Record\DateRecord($id);
-		$this->assertNull($insertedTest->dateDefaultNull);
-		$this->assertEquals($date, $insertedTest->dateRequired);
-		$this->assertEquals('2000-01-02', $insertedTest->dateDefaultNullable);
-		$this->assertEquals('2000-01-02', $insertedTest->dateDefaultNotNull);
-		$this->assertGreaterThanOrEqual($timeStamp, $insertedTest->timestampDefaultCurrentNullable);
-		$this->assertGreaterThanOrEqual($timeStamp, $insertedTest->timestampDefaultCurrentNotNull);
-
-		$this->assertTrue($transaction->rollBack());
-		}
-
-	public function testDateRequiredInsert() : void
-		{
-		$this->expectException(\Exception::class);
-		$transaction = new \PHPFUI\ORM\Transaction();
-		$test = new \Tests\App\Record\DateRecord();
-		$id = $test->insert();
-		$insertedTest = new \Tests\App\Record\DateRecord($id);
-		$this->assertNull($insertedTest->dateDefaultNull);
-		$this->assertEquals('2000-01-02', $insertedTest->dateDefaultNullable);
-		$this->assertEquals('2000-01-02', $insertedTest->dateDefaultNotNull);
-		$this->assertTrue($transaction->rollBack());
 		}
 
 	public function testRecordInsert() : void

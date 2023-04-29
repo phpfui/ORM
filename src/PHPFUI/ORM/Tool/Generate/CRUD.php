@@ -229,7 +229,12 @@ PHP;
 			if (! isset($commentedFields[$var]))
 				{
 				$table = \PHPFUI\ORM::getBaseClassName($var);
-				$block .= "\n * @property \\~~RECORD_NAMESPACE~~\\" . $table . ' $' . $var . ' related record';
+				$className = '\\' . \PHPFUI\ORM::$recordNamespace . "\\{$table}";
+
+				if (\class_exists($className))
+					{
+					$block .= "\n * @property \\~~RECORD_NAMESPACE~~\\" . $table . ' $' . $var . ' related record';
+					}
 				}
 			$commentedFields[$var] = true;
 			}
