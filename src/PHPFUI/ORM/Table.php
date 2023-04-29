@@ -698,6 +698,53 @@ abstract class Table implements \Countable
 		return $this->whereCondition;
 		}
 
+	/**
+	 * Mass insertion.  Does not use a transaction, so surround by a transaction if needed
+	 *
+	 * @param array<\PHPFUI\ORM\Record> $records
+	 */
+	public function insert(array $records) : bool
+		{
+		$tableName = $this->getTableName();
+		$sql = "insert into `{$tableName}` (";
+
+		$fields = array_keys($this->getFields());
+		$comma = '';
+		foreach ($fields as $fieldName)
+			{
+			$sql .= "{$comma}`{$fieldName}`";
+			$comma = ',';
+			}
+
+		$sql .= ') values ';
+
+		$input = [];
+		$comma = '(';
+		foreach ($records as $record)
+			{
+			if ($record->getTableName() != $tableName)
+				{
+				$myType = get_debug_type($this->instance);
+				$haveType = get_debug_type($record);
+				throw new \PHPFUI\ORM\Exception(__METHOD__ . ": record should be of type {$myType} but is of type {$haveType}");
+				}
+			foreach ($fields as $fieldName)
+				{
+				$sql .= $comma . '?';
+				$comma = ',';
+				$input[] = $record[$fieldName];
+				}
+			$comma = '),(';
+			}
+		$sql .= ')';
+
+		$this->lastSql = $sql;
+		$this->lastInput = $input;
+		\PHPFUI\ORM::execute($this->lastSql, $this->lastInput);
+
+		return \PHPFUI\ORM::getLastErrorCode() == 0;
+		}
+
 	public function setDistinct(string $distinct = 'DISTINCT') : static
 		{
 		$this->distinct = $distinct;

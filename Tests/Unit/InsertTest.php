@@ -4,6 +4,75 @@ namespace Tests\Unit;
 
 class InsertTest extends \PHPUnit\Framework\TestCase
 	{
+	public function testMultipleInserts() : void
+		{
+		$transaction = new \PHPFUI\ORM\Transaction();
+		$customer1 = new \Tests\App\Record\Customer();
+		$customer1->address = '123 Broadway';
+		$customer1->business_phone = '212-987-6543';
+		$customer1->city = 'New York';
+		$customer1->company = 'PHPFUI';
+		$customer1->country_region = 'USA';
+		$customer1->email_address = 'bruce@phpfui.com';
+		$customer1->fax_number = '212-345-6789';
+		$customer1->first_name = 'Bruce';
+		$customer1->home_phone = '987-654-3210';
+		$customer1->job_title = 'Head Honcho';
+		$customer1->last_name = 'Wells';
+		$customer1->mobile_phone = '123-456-7890';
+		$customer1->state_province = 'NY';
+		$customer1->web_page = 'http://www.phpfui.com';
+		$customer1->zip_postal_code = '10021';
+
+		$customer2 = new \Tests\App\Record\Customer();
+		$customer2->address = '123 Main Street';
+		$customer2->business_phone = '212-555-1212';
+		$customer2->city = 'New York City';
+		$customer2->company = 'PHPFUI';
+		$customer2->country_region = 'USA';
+		$customer2->email_address = 'bruce2@phpfui.com';
+		$customer2->fax_number = '212-111-3333';
+		$customer2->first_name = 'Bruce';
+		$customer2->home_phone = '987-654-3210';
+		$customer2->job_title = 'Head Honcho';
+		$customer2->last_name = 'Wells';
+		$customer2->state_province = 'NY';
+		$customer2->web_page = 'http://buriedtreasure.phpfui.com';
+
+		$customer3 = new \Tests\App\Record\Customer();
+		$customer3->address = '456 Elm';
+		$customer3->business_phone = '212-987-6543';
+		$customer3->city = 'Rochester';
+		$customer3->company = 'PHPFUI';
+		$customer3->email_address = 'bruce3@phpfui.net';
+		$customer3->fax_number = '212-345-6789';
+		$customer3->first_name = 'Fred';
+		$customer3->home_phone = '987-654-3210';
+		$customer3->job_title = 'Honcho';
+		$customer3->last_name = 'Willis';
+		$customer3->mobile_phone = '123-456-7890';
+		$customer3->state_province = 'NY';
+
+		$customers = [];
+		$customers[] = $customer1;
+		$customers[] = $customer2;
+		$customers[] = $customer3;
+
+		$customerTable = new \Tests\App\Table\Customer();
+		$this->assertCount(29, $customerTable);
+
+		$customerTable->insert($customers);
+		$this->assertCount(32, $customerTable);
+		$customerTable->setWhere(new \PHPFUI\ORM\Condition('zip_postal_code', operator:new \PHPFUI\ORM\Operator\IsNull()));
+		$this->assertCount(2, $customerTable);
+		$customerTable->setWhere(new \PHPFUI\ORM\Condition('email_address', '%@phpfui%', new \PHPFUI\ORM\Operator\Like()));
+		$this->assertCount(3, $customerTable);
+
+		$this->assertTrue($transaction->rollBack());
+		$customerTable->setWhere();
+		$this->assertCount(29, $customerTable);
+		}
+
 	public function testDateNullInsert() : void
 		{
 		$transaction = new \PHPFUI\ORM\Transaction();
