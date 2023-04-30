@@ -16,8 +16,8 @@ abstract class Migration extends \PHPFUI\ORM\Record
 	/** @var array<string, array<mixed>> */
 	protected static array $fields = [
 		// MYSQL_TYPE, PHP_TYPE, LENGTH, KEY, ALLOWS_NULL, DEFAULT
-		'migrationId' => ['int(11)', 'int', 11, true, false, ],
-		'ran' => ['timestamp', 'string', 20, false, false, ],
+		'migrationId' => ['int(11)', 'int', 11, true, false, null, ],
+		'ran' => ['timestamp', 'string', 20, false, false, null, ],
 	];
 
 	/** @var array<string, true> */

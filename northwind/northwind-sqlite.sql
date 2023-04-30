@@ -505,3 +505,7 @@ create table dateRecord (
   dateDefaultNotNull date not null default '2000-01-02',
   timestampDefaultCurrentNullable timestamp DEFAULT CURRENT_TIMESTAMP,
   timestampDefaultCurrentNotNull timestamp not null default CURRENT_TIMESTAMP);
+
+drop table if exists migration;
+create table migration (migrationId int NOT NULL primary key, ran TIMESTAMP DEFAULT CURRENT_TIMESTAMP);
+

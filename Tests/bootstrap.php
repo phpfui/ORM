@@ -35,7 +35,7 @@ $pdo = new \PHPFUI\ORM\PDOInstance('sqlite:' . __DIR__ . '/../northwind/northwin
 \PHPFUI\ORM::$namespaceRoot = __DIR__ . '/..';
 \PHPFUI\ORM::$recordNamespace = 'Tests\\App\\Record';
 \PHPFUI\ORM::$tableNamespace = 'Tests\\App\\Table';
-\PHPFUI\ORM::$migrationNamespace = 'Tests\\App\\Migration';
+\PHPFUI\ORM::$migrationNamespace = 'Tests\\Fixtures\\Migration';
 \PHPFUI\ORM::$idSuffix = '_id';
 
 \PHPFUI\ORM::setTranslationCallback(\PHPFUI\Translation\Translator::trans(...));

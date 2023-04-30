@@ -57,23 +57,7 @@ abstract class Migration
 	 */
 	public function getAllTables(string $type = 'BASE TABLE') : array
 		{
-		$where = '';
-
-		if ($type)
-			{
-			$where = " where Table_Type = '{$type}'";
-			}
-
-		$tableArray = \PHPFUI\ORM::getRows('show full tables' . $where);
-
-		$tables = [];
-
-		foreach ($tableArray as $row)
-			{
-			$tables[] = \array_shift($row);
-			}
-
-		return $tables;
+		return \PHPFUI\ORM::getTables();
 		}
 
 	/** @return string[] */
@@ -500,18 +484,17 @@ abstract class Migration
 		$this->alters[$table][] = $sql;
 		}
 
-	private function getFieldInfo(string $table, string $field) : array
+	private function getFieldInfo(string $table, string $field) : ?PHPFUI\ORM\Schema\Field
 		{
-		$rows = \PHPFUI\ORM::getArrayCursor("SHOW COLUMNS FROM `{$table}`");
-
-		foreach ($rows as $row)
+		$fields = \PHPFUI\ORM::describeTable($table);
+		foreach ($fields as $field)
 			{
-			if (0 == \strcasecmp((string)$row['Field'], $field))
+			if ($field->name == $field)
 				{
-				return $row;
+				return $field;
 				}
 			}
 
-		return [];
+		return null;
 		}
 	}
