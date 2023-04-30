@@ -19,9 +19,9 @@ class RelatedRecord extends \PHPFUI\ORM\VirtualField
 			{
 			throw new \PHPFUI\ORM\Exception(__METHOD__ . ': Error - ' . \get_debug_type($value) . ' is not an instance of ' . $class);
 			}
-		$primaryKevValues = $value->getPrimaryKeyValues();
+		$primaryKeyValues = $value->getPrimaryKeyValues();
 
-		if (1 != \count($primaryKevValues))
+		if (1 != \count($primaryKeyValues))
 			{
 			throw new \PHPFUI\ORM\Exception(__METHOD__ . ': Error - ' . \get_debug_type($value) . ' does not have a single primary key');
 			}

@@ -558,10 +558,7 @@ abstract class Record extends DataObject
 
 		foreach (static::$fields as $field => $description)
 			{
-			if (\array_key_exists(self::DEFAULT_INDEX, $description))
-				{
-				$this->current[$field] = $description[self::DEFAULT_INDEX];
-				}
+			$this->current[$field] = $description[self::DEFAULT_INDEX] ?? null;
 			}
 
 		return $this;

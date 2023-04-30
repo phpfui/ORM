@@ -24,15 +24,14 @@ class InsertTest extends \PHPUnit\Framework\TestCase
 
 	public function testDateRequiredInsert() : void
 		{
-		$this->expectException(\Exception::class);
-		$transaction = new \PHPFUI\ORM\Transaction();
 		$test = new \Tests\App\Record\DateRecord();
 		$id = $test->insert();
+		$this->assertNotEmpty(\PHPFUI\ORM::getLastError());
+		$this->assertEquals(0, $id);
 		$insertedTest = new \Tests\App\Record\DateRecord($id);
 		$this->assertNull($insertedTest->dateDefaultNull);
 		$this->assertEquals('2000-01-02', $insertedTest->dateDefaultNullable);
 		$this->assertEquals('2000-01-02', $insertedTest->dateDefaultNotNull);
-		$this->assertTrue($transaction->rollBack());
 		}
 
 	public function testMultipleInserts() : void
@@ -197,11 +196,10 @@ class InsertTest extends \PHPUnit\Framework\TestCase
 
 	public function testRequiredStringNotSetInsert() : void
 		{
-		$this->expectException(\Exception::class);
-		$transaction = new \PHPFUI\ORM\Transaction();
 		$test = new \Tests\App\Record\StringRecord();
 		$id = $test->insert();
-		$this->assertTrue($transaction->rollBack());
+		$this->assertNotEmpty(\PHPFUI\ORM::getLastError());
+		$this->assertEquals(0, $id);
 		}
 
 	public function testStringNullInsert() : void
