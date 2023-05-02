@@ -484,12 +484,12 @@ abstract class Migration
 		$this->alters[$table][] = $sql;
 		}
 
-	private function getFieldInfo(string $table, string $field) : ?PHPFUI\ORM\Schema\Field
+	private function getFieldInfo(string $table, string $fieldName) : ?\PHPFUI\ORM\Schema\Field
 		{
 		$fields = \PHPFUI\ORM::describeTable($table);
 		foreach ($fields as $field)
 			{
-			if ($field->name == $field)
+			if ($field->name == $fieldName)
 				{
 				return $field;
 				}

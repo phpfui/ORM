@@ -7,14 +7,15 @@ Why another PHP ORM? In writing minimal and fast websites, it was determined tha
 
 ## Features
 - **Active Records** A fully type checked object interface and implement basic CRUD functionality.
-- **Active Tables** Full table operations including support for where, having, limits, ordering, grouping, joins and unions.
+- **Active Tables** Full table operations (select, update, insert and delete) including support for where, having, limits, ordering, grouping, joins and unions.
 - **Data Cursors** Cursors implement **iterable** and **Countable** eliminating the need for full arrays read into memory.
 - **Validation** Fully customizable and translatable backend validation.
-- **Virtual Fields** Supports get and set semantics for any custom or calculated field.
+- **Virtual Fields** Supports get and set semantics for any custom or calculated field such as Carbon dates.
 - **Migrations** Simple migrations offer atomic up and down migrations.
 - **Relations** Parent, children, one to one, many to many, and custom relationships.
 - **Transactions** Object based transaction meaning exceptions can not leave an open transacton.
-- **Type Safe** Prevent stupid type errors.
+- **Type Safe** Prevents stupid type errors.
+- **Injection Safe** Uses PDO placeholders and field sanitation to prevent injection attacks.
 - **Raw SQL Query Support** Execute any valid SQL command.
 - **Multiple Database Support** Work with multiple databases simultaneously.
 - **Multi-Vendor Support** Built on PDO with support for MySQL, MariaDB and SQLite.
@@ -115,7 +116,7 @@ Exceptions are generated in the following conditions:
 All of the above exceptions are programmer errors and strictly enforced. Empty queries are not considered errors. SQL may also return [Exceptions](https://www.php.net/manual/en/class.exception.php) if invalid fields are used.
 
 ### Type Conversions
-If you set a field to the wrong type, the library logs an warning then converts the type via the appropriate PHP cast.
+If you set a field to the wrong type, the library logs a warning then converts the type via the appropriate PHP cast.
 
 ## Multiple Database Support
 While this is primarily a single database ORM, you can switch databases at run time. Save the value from `$connectionId = \PHPFUI\ORM::addConnection($pdo);` and then call `\PHPFUI\ORM::useConnection($db);` to switch.  `\PHPFUI\ORM::addConnection` will set the current connection.

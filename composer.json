@@ -20,6 +20,7 @@
         "phpfui/phpunit-syntax-coverage": "^1.0",
         "roave/security-advisories": "dev-latest",
         "friendsofphp/php-cs-fixer": "^3.0",
+        "nesbot/carbon": "*",
         "phpstan/phpstan": "^1.8"
     },
     "autoload": {
