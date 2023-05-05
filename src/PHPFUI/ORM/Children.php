@@ -20,7 +20,11 @@ class Children extends \PHPFUI\ORM\VirtualField
 	{
 	public function delete(array $parameters) : void
 		{
-		$this->getTable(\array_shift($parameters))->delete();
+		$table = $this->getTable(\array_shift($parameters));
+		foreach ($table->getRecordCursor() as $record)
+			{
+			$record->delete();
+			}
 		}
 
 	/**
