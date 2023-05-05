@@ -487,6 +487,7 @@ abstract class Migration
 	private function getFieldInfo(string $table, string $fieldName) : ?\PHPFUI\ORM\Schema\Field
 		{
 		$fields = \PHPFUI\ORM::describeTable($table);
+
 		foreach ($fields as $field)
 			{
 			if ($field->name == $fieldName)

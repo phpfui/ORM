@@ -173,11 +173,6 @@ abstract class Table implements \Countable
 		return $this;
 		}
 
-	public function cleanField(string $fieldName) : string
-		{
-		return \preg_replace('/[^[a-zA-Z_][a-zA-Z0-9_.$@-]{0,63}$]/', '', $fieldName);  // string invalid characters since we can't use a placeholder in order and group by
-		}
-
 	public function addOrderBy(string $field, string $ascending = 'ASC') : static
 		{
 		if (\strlen($field))
@@ -263,6 +258,11 @@ abstract class Table implements \Countable
 			}
 
 		return $output;
+		}
+
+	public function cleanField(string $fieldName) : string
+		{
+		return \preg_replace('/[^[a-zA-Z_][a-zA-Z0-9_.$@-]{0,63}$]/', '', $fieldName);  // string invalid characters since we can't use a placeholder in order and group by
 		}
 
 	/**

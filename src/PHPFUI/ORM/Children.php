@@ -12,27 +12,23 @@ namespace PHPFUI\ORM;
  * Example:
  * ```php
  * protected static array $virtualFields = [
- *   'OrderDetailChildren' => [\PHPFUI\ORM\Children::class, \Tests\App\Table\OrderDetail::class, 'data_allocated', 'desc'],
+ *   'orderDetailChildren' => [\PHPFUI\ORM\Children::class, \Tests\App\Table\OrderDetail::class, 'data_allocated', 'desc'],
  * ];
  * ```
  */
 class Children extends \PHPFUI\ORM\VirtualField
 	{
+	public function delete(array $parameters) : void
+		{
+		$this->getTable(\array_shift($parameters))->delete();
+		}
+
 	/**
-	 * @param array<string, string[]> $parameters containing **\PHPFUI\ORM\Children::class** followed by the child table, then the optional parameters of an order by column and sort order (defaults to ASC).
+	 * @param array<string, string> $parameters containing **\PHPFUI\ORM\Children::class** followed by the child table, then the optional parameters of an order by column and sort order (defaults to ASC).
 	 */
 	public function getValue(array $parameters) : mixed
 		{
-		$child = \array_shift($parameters);
-		$childTable = new $child();
-		$condition = new \PHPFUI\ORM\Condition();
-
-		foreach ($this->currentRecord->getPrimaryKeys() as $primaryKey => $junk)
-			{
-			$condition->and($primaryKey, $this->currentRecord->{$primaryKey});
-			}
-		$childTable->setWhere($condition);
-
+		$childTable = $this->getTable(\array_shift($parameters));
 		$orderBy = \array_shift($parameters);
 		$sort = \array_shift($parameters) ?? 'asc';
 
@@ -42,5 +38,18 @@ class Children extends \PHPFUI\ORM\VirtualField
 			}
 
 		return $childTable->getRecordCursor();
+		}
+
+	protected function getTable(string $class) : \PHPFUI\ORM\Table
+		{
+		$childTable = new $class();
+		$condition = new \PHPFUI\ORM\Condition();
+
+		foreach ($this->currentRecord->getPrimaryKeys() as $primaryKey => $junk)
+			{
+			$condition->and($primaryKey, $this->currentRecord->{$primaryKey});
+			}
+
+		return $childTable->setWhere($condition);
 		}
 	}

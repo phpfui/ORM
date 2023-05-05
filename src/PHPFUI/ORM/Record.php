@@ -27,6 +27,8 @@ abstract class Record extends DataObject
 
 	protected static bool $autoIncrement = false;
 
+	protected static bool $deleteChildren = true;
+
 	protected static array $displayTransforms = [];
 
 	protected bool $empty = true;
@@ -284,19 +286,16 @@ abstract class Record extends DataObject
 	 */
 	public function delete() : bool
 		{
-		// delete child records for primary key only
-		if (1 == \count(static::$primaryKeys))
+		if (static::$deleteChildren)
 			{
-			$primaryKey = \array_key_first(static::$primaryKeys);
-
-			foreach (static::$virtualFields as $relationship => $status)
+			foreach (static::$virtualFields as $field => $relationship)
 				{
-				$childTable = $this->getChildTable($relationship);
+				$relationshipClass = \array_shift($relationship);
 
-				if ($childTable)
+				if (\PHPFUI\ORM\Children::class == $relationshipClass)
 					{
-					$childTable->setWhere(new \PHPFUI\ORM\Condition($primaryKey, $this->current[$primaryKey]));
-					$childTable->delete();
+					$relationshipObject = new \PHPFUI\ORM\Children($this, $field);
+					$relationshipObject->delete($relationship);
 					}
 				}
 			}
@@ -826,20 +825,6 @@ abstract class Record extends DataObject
 			}
 
 		return $sql;
-		}
-
-	private function getChildTable(string $relationship) : ?\PHPFUI\ORM\Table
-		{
-		$children = \str_ends_with($relationship, 'Children');
-
-		if (! $children)
-			{
-			return null;
-			}
-		$recordType = \substr($relationship, 0, \strlen($relationship) - 8);
-		$type = '\\' . \PHPFUI\ORM::$tableNamespace . '\\' . $recordType;
-
-		return new $type();
 		}
 
 	/**
