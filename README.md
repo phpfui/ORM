@@ -8,7 +8,7 @@ Why another PHP ORM? In writing minimal and fast websites, it was determined tha
 ## Features
 - **Active Records** A fully type checked object interface and implement basic CRUD functionality.
 - **Active Tables** Full table operations (select, update, insert and delete) including support for where, having, limits, ordering, grouping, joins and unions.
-- **Data Cursors** Cursors implement **iterable** and **Countable** eliminating the need for full arrays read into memory.
+- **Data Cursors** Cursors implement **iterable** and **Countable** eliminating the need to read full arrays into memory.
 - **Validation** Fully customizable and translatable backend validation.
 - **Virtual Fields** Supports get and set semantics for any custom or calculated field such as Carbon dates.
 - **Migrations** Simple migrations offer atomic up and down migrations.

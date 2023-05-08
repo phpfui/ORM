@@ -704,14 +704,28 @@ abstract class Table implements \Countable
 		}
 
 	/**
+	 * Inserts current data into table or ignores duplicate key if found
+	 *
+	 * @param array<\PHPFUI\ORM\Record> $records
+	 */
+	public function insertOrIgnore(array $records) : bool
+		{
+		return $this->insert($records, 'ignore ');
+		}
+
+	/**
 	 * Mass insertion.  Does not use a transaction, so surround by a transaction if needed
 	 *
 	 * @param array<\PHPFUI\ORM\Record> $records
 	 */
-	public function insert(array $records) : bool
+	public function insert(array $records, string $ignore = '') : bool
 		{
+		if (empty($records))
+			{
+			return false;
+			}
 		$tableName = $this->getTableName();
-		$sql = "insert into `{$tableName}` (";
+		$sql = "insert {$ignore}into `{$tableName}` (";
 
 		$fields = \array_keys($this->getFields());
 		$comma = '';
