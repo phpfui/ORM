@@ -50,10 +50,12 @@ abstract class Record extends DataObject
 	/**
 	 * Construct a CRUD object
 	 *
+	 * Reads from the database based on the parameters passed to the constructor.  No parameters creates an empty object.
+	 *
 	 * ##### Possible $parameter types and values
 	 * - **int** primary key value, will load object values if the primary key value exists
 	 * - **string** primary key value, will load object values if the primary key value exists
-	 * - **array** object will be initialized to these values, but not read from the database
+	 * - **array** record is attempted to be read from database using the values of the fields provided.
 	 * - **null** (default) constructs an empty object
 	 */
 	public function __construct(int|array|null|string $parameter = null)
@@ -433,6 +435,14 @@ abstract class Record extends DataObject
 	 * @return int | bool inserted id if auto increment, true on insertion if not auto increment or false on error
 	 */
 	public function insertOrUpdate() : int | bool
+		{
+		return $this->privateInsert(true);
+		}
+
+	/**
+	 * Save the record, will either update if it exists or insert if not
+	 */
+	public function save() : int | bool
 		{
 		return $this->privateInsert(true);
 		}
