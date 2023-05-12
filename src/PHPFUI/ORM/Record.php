@@ -440,14 +440,6 @@ abstract class Record extends DataObject
 		}
 
 	/**
-	 * Save the record, will either update if it exists or insert if not
-	 */
-	public function save() : int | bool
-		{
-		return $this->privateInsert(true);
-		}
-
-	/**
 	 * @return bool  true if loaded from the disk
 	 */
 	public function loaded() : bool
@@ -544,6 +536,14 @@ abstract class Record extends DataObject
 			}
 
 		return $this->read($keys);
+		}
+
+	/**
+	 * Save the record, will either update if it exists or insert if not
+	 */
+	public function save() : int | bool
+		{
+		return $this->privateInsert(true);
 		}
 
 	/**

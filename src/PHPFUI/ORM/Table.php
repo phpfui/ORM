@@ -704,16 +704,6 @@ abstract class Table implements \Countable
 		}
 
 	/**
-	 * Inserts current data into table or ignores duplicate key if found
-	 *
-	 * @param array<\PHPFUI\ORM\Record> $records
-	 */
-	public function insertOrIgnore(array $records) : bool
-		{
-		return $this->insert($records, 'ignore ');
-		}
-
-	/**
 	 * Mass insertion.  Does not use a transaction, so surround by a transaction if needed
 	 *
 	 * @param array<\PHPFUI\ORM\Record> $records
@@ -766,6 +756,16 @@ abstract class Table implements \Countable
 		\PHPFUI\ORM::execute($this->lastSql, $this->lastInput);
 
 		return 0 == \PHPFUI\ORM::getLastErrorCode();
+		}
+
+	/**
+	 * Inserts current data into table or ignores duplicate key if found
+	 *
+	 * @param array<\PHPFUI\ORM\Record> $records
+	 */
+	public function insertOrIgnore(array $records) : bool
+		{
+		return $this->insert($records, 'ignore ');
 		}
 
 	public function setDistinct(string $distinct = 'DISTINCT') : static

@@ -4,19 +4,6 @@ namespace Tests\Unit;
 
 class DeleteTest extends \PHPUnit\Framework\TestCase
 	{
-	public function testRecordDelete() : void
-		{
-		$table = new \Tests\App\Table\Customer();
-		$this->assertEquals(29, $table->count());
-		$transaction = new \PHPFUI\ORM\Transaction();
-		$customer = new \Tests\App\Record\Customer(9);
-		$this->assertEquals('Company I', $customer->company);
-		$customer->delete();
-		$this->assertEquals(28, $table->count());
-		$this->assertTrue($transaction->rollBack());
-		$this->assertEquals(29, $table->count());
-		}
-
 	public function testDeleteChildren() : void
 		{
 		$order = new \Tests\Fixtures\Record\Order(31);
@@ -29,6 +16,19 @@ class DeleteTest extends \PHPUnit\Framework\TestCase
 		$this->assertCount(0, $orderDetailTable);
 		$this->assertTrue($transaction->rollBack());
 		$this->assertCount(3, $orderDetailTable);
+		}
+
+	public function testRecordDelete() : void
+		{
+		$table = new \Tests\App\Table\Customer();
+		$this->assertEquals(29, $table->count());
+		$transaction = new \PHPFUI\ORM\Transaction();
+		$customer = new \Tests\App\Record\Customer(9);
+		$this->assertEquals('Company I', $customer->company);
+		$customer->delete();
+		$this->assertEquals(28, $table->count());
+		$this->assertTrue($transaction->rollBack());
+		$this->assertEquals(29, $table->count());
 		}
 
 	public function testTableDelete() : void
