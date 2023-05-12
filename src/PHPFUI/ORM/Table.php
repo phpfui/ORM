@@ -826,6 +826,9 @@ abstract class Table implements \Countable
 		return $this->addOrderBy($field, $ascending);
 		}
 
+	/**
+	 * Set user defined select fields.
+	 */
 	public function setSelectFields(string $clause) : static
 		{
 		$fields = \explode(',', $clause);
