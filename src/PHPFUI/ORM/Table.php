@@ -69,7 +69,7 @@ abstract class Table implements \Countable
 				}
 			$type = $fields[$baseField][\PHPFUI\ORM\Record::PHP_TYPE_INDEX] ?? 'string';
 
-			if (\in_array($type, ['int', 'float', 'string', 'timestamp']))
+			if (\in_array($type, ['int', 'float', 'timestamp']))
 				{
 				if ($direction)
 					{
@@ -82,7 +82,7 @@ abstract class Table implements \Countable
 				}
 			elseif ('string' == $type && $value)
 				{
-				$condition->and($baseField, '%' . $parameters[$field] . '%', new \PHPFUI\ORM\Operator\Like());
+				$condition->and($baseField, '%' . $value . '%', new \PHPFUI\ORM\Operator\Like());
 				}
 			}
 		$this->setWhere($condition);
