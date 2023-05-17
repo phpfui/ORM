@@ -13,11 +13,9 @@ namespace PHPFUI\ORM;
  */
 abstract class Record extends DataObject
 	{
-	public const ALLOWS_NULL_INDEX = 4;
+	public const ALLOWS_NULL_INDEX = 3;
 
-	public const DEFAULT_INDEX = 5;
-
-	public const KEY_INDEX = 3;
+	public const DEFAULT_INDEX = 4;
 
 	public const LENGTH_INDEX = 2;
 

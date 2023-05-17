@@ -31,7 +31,7 @@ abstract class ~~CLASS~~ extends \PHPFUI\ORM\Record
 
 	/** @var array<string, array<mixed>> */
 	protected static array $fields = [
-		// MYSQL_TYPE, PHP_TYPE, LENGTH, KEY, ALLOWS_NULL, DEFAULT
+		// MYSQL_TYPE, PHP_TYPE, LENGTH, ALLOWS_NULL, DEFAULT
 ~~FIELD_ARRAY~~	];
 
 	/** @var array<string, true> */
@@ -190,7 +190,6 @@ PHP;
 			$defaultValue = (int)$field->defaultValue;
 			}
 
-		$retVal .= $this->line($field->primaryKey ? 'true' : 'false');
 		$retVal .= $this->line($allowNulls ? 'true' : 'false');
 
 		if (null !== $defaultValue)

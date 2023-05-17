@@ -24,7 +24,7 @@ class Field
 			$this->type = \strtolower($fields['Type']);
 			$this->nullable = 'YES' == $fields['Null'];
 			$this->defaultValue = $fields['Default'];
-			$this->primaryKey = 'PRI' == $fields['Key'];
+			$this->primaryKey = false;	// use indexes to find primary keys
 			$this->autoIncrement = \str_contains($fields['Extra'], 'auto_increment');
 
 			return;
