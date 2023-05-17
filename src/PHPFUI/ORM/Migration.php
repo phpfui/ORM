@@ -227,6 +227,18 @@ abstract class Migration
 		}
 
 	/**
+	 * Adds a primary key to the table.
+	 */
+	protected function addPrimaryKey(string $table, array $fields) : bool
+		{
+		$this->dropPrimaryKey($table);
+		$keys = implode('`, `', $fields);
+		$this->alters[$table] = ["ADD PRIMARY KEY (`{$keys}`)"];
+
+		return true;
+		}
+
+	/**
 	 * Adds a primary key to the table.  If $field is not specified, it will the primary key will be the table name with Id appended.  If $newFieldName is not specified, it will default to $field. This method works on an existing field only.
 	 */
 	protected function addPrimaryKeyAutoIncrement(string $table, string $field = '', string $newFieldName = '') : bool
