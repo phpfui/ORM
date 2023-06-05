@@ -143,12 +143,7 @@ abstract class Record extends DataObject
 		return (bool)(\array_key_exists($field, $this->current) || \array_key_exists($field, static::$virtualFields) || \array_key_exists($field . \PHPFUI\ORM::$idSuffix, $this->current));
 		}
 
-	/**
-	 * Allows for $object->field = $x syntax
-	 *
-	 * @return mixed  returns $value so you can string together assignments
-	 */
-	public function __set(string $field, $value)
+	public function __set(string $field, mixed $value) : void
 		{
 		$relationship = static::$virtualFields[$field] ?? false;
 
@@ -158,7 +153,7 @@ abstract class Record extends DataObject
 			$relationshipObject = new $relationshipClass($this, $field);
 			$relationshipObject->setValue($value, $relationship);
 
-			return $value;
+			return;
 			}
 
 		$id = $field . \PHPFUI\ORM::$idSuffix;
@@ -180,7 +175,7 @@ abstract class Record extends DataObject
 					$this->current[$id] = $value->{$id};
 					}
 
-				return $value;
+				return;
 				}
 
 			$haveType = \PHPFUI\ORM::getBaseClassName($haveType);
@@ -231,8 +226,6 @@ abstract class Record extends DataObject
 			}
 		$this->empty = false;
 		$this->current[$field] = $value;
-
-		return $value;
 		}
 
 	/**

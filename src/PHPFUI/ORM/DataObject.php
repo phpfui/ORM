@@ -30,7 +30,7 @@ class DataObject implements \ArrayAccess
 		throw new \PHPFUI\ORM\Exception(self::class . " {$field} is not a valid field");
 		}
 
-	public function __set(string $field, mixed $value)
+	public function __set(string $field, mixed $value) : void
 		{
 		if (! \array_key_exists($field, $this->current))
 			{
@@ -38,8 +38,6 @@ class DataObject implements \ArrayAccess
 			}
 
 		$this->current[$field] = $value;
-
-		return $value;
 		}
 
 	public function empty() : bool

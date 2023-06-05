@@ -232,7 +232,7 @@ abstract class Migration
 	protected function addPrimaryKey(string $table, array $fields) : bool
 		{
 		$this->dropPrimaryKey($table);
-		$keys = implode('`, `', $fields);
+		$keys = \implode('`, `', $fields);
 		$this->alters[$table] = ["ADD PRIMARY KEY (`{$keys}`)"];
 
 		return true;
@@ -297,7 +297,7 @@ abstract class Migration
 			foreach ($keys as $key)
 				{
 				// @phpstan-ignore-next-line
-				if (is_null($row[$key]))
+				if (null === $row[$key])
 					{
 					$where .= "{$comma}`{$key}` is null";
 					}
