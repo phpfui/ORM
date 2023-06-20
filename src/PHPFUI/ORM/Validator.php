@@ -208,6 +208,7 @@ abstract class Validator
 			$parts = \explode(':', (string)$validator);
 
 			$parameters = [];
+
 			if (\count($parts) > 1)
 				{
 				$parameters = \explode(',', $parts[1]);
