@@ -714,9 +714,9 @@ abstract class Record extends DataObject
 		}
 
 	/**
-	 * removes all non-digits (0-9) and regex separators
+	 * removes all invalid characters. (0-9) and regex separators are valid.
 	 */
-	protected function cleanPhone(string $field, string $regExSeparators = '\\-\\.') : static
+	protected function cleanPhone(string $field, string $regExSeparators = '\\-\\. ') : static
 		{
 		if (isset($this->current[$field]))
 			{
