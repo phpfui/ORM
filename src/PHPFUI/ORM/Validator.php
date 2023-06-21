@@ -38,6 +38,7 @@ namespace PHPFUI\ORM;
  * | gt_field       | Greater Than field | field, required |
  * | gte_field      | Greater Than or Equal to field | field, required |
  * | icontains      | Field must contain (case insensitive) | comma separated list of strings |
+ * | iends_with     | Field must end with (case insensitive) | comma separated list of strings |
  * | integer        | Whole number, no fractional part | None |
  * | istarts_with   | Field must start with (case insensitive) | comma separated list of strings |
  * | lt_field       | Less Than field | field, required |
