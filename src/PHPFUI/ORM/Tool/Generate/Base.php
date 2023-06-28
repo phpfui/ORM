@@ -13,6 +13,9 @@ abstract class Base
 
 	abstract protected function getLine(\PHPFUI\ORM\Schema\Field $field) : string;
 
+	/**
+	 * @return array<string, string>
+	 */
 	protected function getPrimaryKeys(string $table) : array
 		{
 		$primaryKeys = [];

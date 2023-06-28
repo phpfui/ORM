@@ -18,8 +18,6 @@ class Validator extends Base
 
 		$ucTable = \PHPFUI\ORM::getBaseClassName($table);
 
-		$keys = $this->getPrimaryKeys($table);
-
 		$classDefinition = <<<'PHP'
 <?php
 

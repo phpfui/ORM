@@ -61,8 +61,8 @@ abstract class Order extends \PHPFUI\ORM\Record
 		'taxes' => ['decimal(19,4)', 'float', 19, false, true, 0, ],
 	];
 
-	/** @var array<string, true> */
-	protected static array $primaryKeys = ['order_id' => true, ];
+	/** @var array<string> */
+	protected static array $primaryKeys = ['order_id', ];
 
 	protected static string $table = 'order';
 	}

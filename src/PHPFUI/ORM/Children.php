@@ -50,7 +50,7 @@ class Children extends \PHPFUI\ORM\VirtualField
 		$childTable = new $class();
 		$condition = new \PHPFUI\ORM\Condition();
 
-		foreach ($this->currentRecord->getPrimaryKeys() as $primaryKey => $junk)
+		foreach ($this->currentRecord->getPrimaryKeys() as $primaryKey)
 			{
 			$condition->and($primaryKey, $this->currentRecord->{$primaryKey});
 			}

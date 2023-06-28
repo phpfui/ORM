@@ -42,8 +42,8 @@ abstract class Product extends \PHPFUI\ORM\Record
 		'target_level' => ['integer', 'int', 0, false, true, null, ],
 	];
 
-	/** @var array<string, true> */
-	protected static array $primaryKeys = ['product_id' => true, ];
+	/** @var array<string> */
+	protected static array $primaryKeys = ['product_id', ];
 
 	protected static string $table = 'product';
 	}

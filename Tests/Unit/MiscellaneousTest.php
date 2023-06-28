@@ -4,6 +4,14 @@ namespace Tests\Unit;
 
 class MiscellaneousTest extends \PHPUnit\Framework\TestCase
 	{
+	public function testNoStringPrimaryKey() : void
+		{
+		$customer = new \Tests\App\Record\Customer(1);
+		$this->assertTrue($customer->loaded());
+		$this->expectException(\PHPFUI\ORM\Exception::class);
+		$customer = new \Tests\App\Record\Customer('test');
+		}
+
 	public function testRow() : void
 		{
 		$row = \PHPFUI\ORM::getRow('select * from customer');

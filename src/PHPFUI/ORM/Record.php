@@ -63,32 +63,21 @@ abstract class Record extends DataObject
 
 		switch ($type)
 		  {
+			case 'integer':
+				$type = 'int';
+				// Intentionally fall through
 			case 'string':
 
-				if (1 == \count(static::$primaryKeys))
+				if (1 == \count(static::$primaryKeys) && $type == static::$fields[static::$primaryKeys[0]][self::PHP_TYPE_INDEX])
 					{
 					$this->read($parameter);
 					}
 				else
 					{
-					throw new \PHPFUI\ORM\Exception(static::class . ' has no string primary key');
+					throw new \PHPFUI\ORM\Exception(static::class . ' has no ' . $type . ' primary key');
 					}
 
 				break;
-
-			case 'integer':
-
-				if (1 == \count(static::$primaryKeys) && 'int' == static::$fields[\array_key_first(static::$primaryKeys)][self::PHP_TYPE_INDEX])
-					{
-					$this->read($parameter);
-					}
-				else
-					{
-					throw new \PHPFUI\ORM\Exception(static::class . ' does not have an integer primary key');
-					}
-
-				break;
-
 
 			case 'array':
 
@@ -360,7 +349,7 @@ abstract class Record extends DataObject
 		}
 
 	/**
-	 * @return array  primary keys
+	 * @return array<string>  primary keys
 	 */
 	public static function getPrimaryKeys() : array
 		{
@@ -374,7 +363,7 @@ abstract class Record extends DataObject
 		{
 		$retVal = [];
 
-		foreach (static::$primaryKeys as $key => $junk)
+		foreach (static::$primaryKeys as $key)
 			{
 			$retVal[$key] = $this->current[$key] ?? null;
 			}
@@ -518,7 +507,7 @@ abstract class Record extends DataObject
 		{
 		$keys = [];
 
-		foreach (static::$primaryKeys as $key => $junk)
+		foreach (static::$primaryKeys as $key)
 			{
 			if (\array_key_exists($key, $this->current))
 				{
@@ -608,7 +597,7 @@ abstract class Record extends DataObject
 			{
 			if (isset(static::$fields[$field]))
 				{
-				if (! isset(static::$primaryKeys[$field]))
+				if (! \in_array($field, static::$primaryKeys))
 					{
 					if (empty($value) && \in_array(static::$fields[$field][self::MYSQL_TYPE_INDEX], $dateTimes))
 						{
@@ -786,7 +775,7 @@ abstract class Record extends DataObject
 
 		if (! \is_array($key))
 			{
-			$key = [\array_key_first(static::$primaryKeys) => $key];
+			$key = [static::$primaryKeys[0] => $key];
 			}
 		else
 			{ // if all primary keys are set, then use primary keys only
@@ -794,7 +783,7 @@ abstract class Record extends DataObject
 			$keys = [];
 			$all = true;
 
-			foreach (static::$primaryKeys as $keyField => $junk)
+			foreach (static::$primaryKeys as $keyField)
 				{
 				if (! isset($key[$keyField]))
 					{
@@ -854,7 +843,7 @@ abstract class Record extends DataObject
 					continue;
 					}
 
-				if (! static::$autoIncrement || ! (isset(static::$primaryKeys[$key]) && empty($value)))
+				if (! static::$autoIncrement || ! (\in_array($key, static::$primaryKeys) && empty($value)))
 					{
 					$sql .= $comma . '`' . $key . '`';
 					$input[] = $value;
@@ -883,7 +872,7 @@ abstract class Record extends DataObject
 						continue;
 						}
 
-					if (! isset(static::$primaryKeys[$key]))
+					if (! \in_array($key, static::$primaryKeys))
 						{
 						$updateSql .= $comma . '`' . $key . '` = ?';
 						$input[] = $value;
@@ -906,7 +895,7 @@ abstract class Record extends DataObject
 
 		if (static::$autoIncrement && $returnValue)
 			{
-			$this->current[\array_key_first(static::$primaryKeys)] = $returnValue = (int)\PHPFUI\ORM::lastInsertId(\array_key_first(static::$primaryKeys));
+			$this->current[static::$primaryKeys[0]] = $returnValue = (int)\PHPFUI\ORM::lastInsertId(static::$primaryKeys[0]);
 			}
 
 		$this->loaded = true;	// record is effectively read from the database now

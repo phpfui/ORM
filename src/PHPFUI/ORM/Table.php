@@ -958,7 +958,7 @@ abstract class Table implements \Countable
 
 		if (\count($primaryKeys))
 			{
-			$mainKey = \array_key_first($primaryKeys);
+			$mainKey = $primaryKeys[0];
 
 			foreach ($request[$mainKey] ?? [] as $existingKey => $index)
 				{

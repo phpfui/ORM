@@ -33,12 +33,12 @@ class ManyToMany extends \PHPFUI\ORM\VirtualField
 		$relatedTable->addJoin($junctionTableName, $relatedTableName . \PHPFUI\ORM::$idSuffix);
 		$condition = new \PHPFUI\ORM\Condition();
 
-		foreach ($this->currentRecord->getPrimaryKeys() as $primaryKey => $junk)
+		foreach ($this->currentRecord->getPrimaryKeys() as $primaryKey)
 			{
 			$condition->and($junctionTableName . '.' . $primaryKey, $this->currentRecord->{$primaryKey});
 			}
 
-		foreach ($relatedTable->getPrimaryKeys() as $primaryKey => $junk)
+		foreach ($relatedTable->getPrimaryKeys() as $primaryKey)
 			{
 			$condition->and(new \PHPFUI\ORM\Field($junctionTableName . '.' . $primaryKey), new \PHPFUI\ORM\Field($relatedTableName . '.' . $primaryKey));
 			}

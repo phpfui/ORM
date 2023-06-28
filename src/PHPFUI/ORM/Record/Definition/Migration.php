@@ -20,8 +20,8 @@ abstract class Migration extends \PHPFUI\ORM\Record
 		'ran' => ['timestamp', 'string', 20, false, null, ],
 	];
 
-	/** @var array<string, true> */
-	protected static array $primaryKeys = ['migrationId' => true, ];
+	/** @var array<string> */
+	protected static array $primaryKeys = ['migrationId', ];
 
 	protected static string $table = 'migration';
 	}
