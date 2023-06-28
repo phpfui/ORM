@@ -63,18 +63,28 @@ abstract class Record extends DataObject
 
 		switch ($type)
 		  {
-			case 'integer':
-				$type = 'int';
-				// Intentionally fall through
 			case 'string':
 
-				if (1 == \count(static::$primaryKeys) && $type == static::$fields[static::$primaryKeys[0]][self::PHP_TYPE_INDEX])
+				if (1 == \count(static::$primaryKeys))
 					{
 					$this->read($parameter);
 					}
 				else
 					{
-					throw new \PHPFUI\ORM\Exception(static::class . ' has no ' . $type . ' primary key');
+					throw new \PHPFUI\ORM\Exception(static::class . ' has no string primary key');
+					}
+
+				break;
+
+			case 'integer':
+
+				if (1 == \count(static::$primaryKeys) && 'int' == static::$fields[static::$primaryKeys[0]][self::PHP_TYPE_INDEX])
+					{
+					$this->read($parameter);
+					}
+				else
+					{
+					throw new \PHPFUI\ORM\Exception(static::class . ' does not have an integer primary key');
 					}
 
 				break;
