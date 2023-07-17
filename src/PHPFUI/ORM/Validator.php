@@ -92,6 +92,12 @@ namespace PHPFUI\ORM;
  * You want the name to be unique for a specific type in the division: *unique:type,shoes,division*
  * You want the name to be unique for a specific type and division: *unique:type,shoes,division,10*
  *
+ * ## OR Operator
+ * You can validate a field if any one of the validators passes.  Use the vertical bar (|) to separate validators. If one of the validators passes, then the the field is valid.
+ *
+ * **Example:**
+ * website|starts_with:/ will validate a fully qualified http url, or a root relative url.
+ *
  * ## Optional Validation
  * You may need to do additional checks for a specific record type.  A second parameter can be passed to the contructor which would represent the original values of the record.
  *
@@ -167,9 +173,9 @@ abstract class Validator
 	/**
 	 * Gets the errors for a value with the record definition and associated validators
 	 *
-	 * @param array<int, array<mixed>> $fieldDefinitions
+	 * @param array<int, array<string>> $fieldDefinitions
 	 *
-	 * @return array  of errors of translated text
+	 * @return array<string> of errors of translated text
 	 */
 	private function getFieldErrors(mixed $value, array $validators, array $fieldDefinitions) : array
 		{
@@ -203,35 +209,40 @@ abstract class Validator
 			return $errors;
 			}
 
+		$orErrors = [];
+
 		foreach ($validators as $validator)
 			{
-			$parts = \explode(':', (string)$validator);
+			// Implements OR logic, any rule passes, the whole rule passes
+			$orValidators = \explode('|', (string)$validator);
 
-			$parameters = [];
-
-			if (\count($parts) > 1)
+			if (\count($orValidators) > 1)
 				{
-				$parameters = \explode(',', $parts[1]);
-				}
-			$validator = $parts[0];
-			$method = 'validate_' . $validator;
+				$orErrors = [];
 
-			if (\method_exists($this, $method))
-				{
-				$error = $this->{$method}($value, $parameters, $fieldDefinitions);
-
-				if ($error)
+				foreach ($orValidators as $validator)
 					{
-					$errors[] = $error;
+					$error = $this->validateRule($validator, $value, $fieldDefinitions);
+
+					if ($error)
+						{
+						$orErrors = \array_merge($orErrors, $error);
+						}
+					else
+						{
+						$orErrors = [];
+
+						break;
+						}
 					}
 				}
 			else
 				{
-				throw new \Exception("Validator {$validator} (validate_{$validator} method) not found in class " . self::class);
+				$errors = \array_merge($errors, $this->validateRule($validator, $value, $fieldDefinitions));
 				}
 			}
 
-		return $errors;
+		return \array_merge($errors, $orErrors);
 		}
 
 	/**
@@ -872,5 +883,41 @@ abstract class Validator
 		$parts = \explode('/', \str_replace(self::$dateSeparators, '/', (string)$value));
 
 		return \checkdate((int)($parts[$month] ?? 0), $day, (int)($parts[$year] ?? 0)) ? '' : \PHPFUI\ORM::trans('.validator.year_month', ['value' => $value]);
+		}
+
+	/**
+	 * Validate one rule.
+	 *
+	 * @return array<string> of errors of translated text
+	 */
+	private function validateRule(string $validator, mixed $value, array $fieldDefinitions) : array
+		{
+		$parts = \explode(':', (string)$validator);
+
+		$parameters = $errors = [];
+
+		if (\count($parts) > 1)
+			{
+			$parameters = \explode(',', $parts[1]);
+			}
+		$validator = $parts[0];
+
+		$method = 'validate_' . $validator;
+
+		if (\method_exists($this, $method))
+			{
+			$error = $this->{$method}($value, $parameters, $fieldDefinitions);
+
+			if ($error)
+				{
+				$errors[] = $error;
+				}
+			}
+		else
+			{
+			throw new \Exception("Validator {$validator} (validate_{$validator} method) not found in class " . self::class);
+			}
+
+		return $errors;
 		}
 	}

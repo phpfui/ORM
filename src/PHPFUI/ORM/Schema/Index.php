@@ -20,9 +20,9 @@ class Index
 			}
 		else
 			{
-			$this->name = $fields['name']; /** @phpstan-ignore-line */
-			$this->extra = $fields['sql'] ?? ''; /** @phpstan-ignore-line */
-			$this->primaryKey = false; /** @phpstan-ignore-line */
+			$this->name = $fields['name'];
+			$this->extra = $fields['sql'] ?? '';
+			$this->primaryKey = false;
 			}
 		}
 	}

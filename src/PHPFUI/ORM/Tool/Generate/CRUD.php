@@ -185,11 +185,6 @@ PHP;
 				break;
 			}
 
-		if ('boolean' == \gettype($field->defaultValue))
-			{
-			$defaultValue = (int)$field->defaultValue;
-			}
-
 		$retVal .= $this->line($allowNulls ? 'true' : 'false');
 
 		if (null !== $defaultValue)

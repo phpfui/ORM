@@ -30,11 +30,11 @@ class Field
 			return;
 			}
 		// SQLite
-		$this->name = $fields['name']; /** @phpstan-ignore-line */
-		$this->type = \strtolower($fields['type']); /** @phpstan-ignore-line */
-		$this->nullable = ! (bool)$fields['notnull']; /** @phpstan-ignore-line */
-		$this->defaultValue = $fields['dflt_value']; /** @phpstan-ignore-line */
-		$this->primaryKey = (bool)$fields['pk']; /** @phpstan-ignore-line */
-		$this->autoIncrement = $autoIncrement && $this->primaryKey; /** @phpstan-ignore-line */
+		$this->name = $fields['name'];
+		$this->type = \strtolower($fields['type']);
+		$this->nullable = ! (bool)$fields['notnull'];
+		$this->defaultValue = $fields['dflt_value'];
+		$this->primaryKey = (bool)$fields['pk'];
+		$this->autoIncrement = $autoIncrement && $this->primaryKey;
 		}
 	}

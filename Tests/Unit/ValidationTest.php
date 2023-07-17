@@ -811,6 +811,24 @@ class ValidationTest extends \PHPUnit\Framework\TestCase
 		$this->assertNotEmpty($validator->getErrors());
 		}
 
+	public function testOr() : void
+		{
+		$crud = new \Tests\Fixtures\Record\Alpha();
+		$validator = new \Tests\Fixtures\Validation\LogicalOr($crud);
+
+		$crud->alpha = '/1234';
+		$validator->validate();
+		$errors = $validator->getErrors();
+		$this->assertEmpty($errors);
+
+		$crud->alpha = '1234';
+		$validator->validate();
+		$errors = $validator->getErrors();
+		$this->assertNotEmpty($errors);
+		$this->assertContains('1234 is not characters only', $errors['alpha']);
+		$this->assertContains('1234 does not start with one of (/) of the same case', $errors['alpha']);
+		}
+
 	public function testRequired() : void
 		{
 		$crud = new \Tests\Fixtures\Record\Required();
