@@ -17,7 +17,7 @@ abstract class Migration
 		"b'1'",
 	];
 
-	/** @var array<string, array> */
+	/** @var array<string, array<string>> */
 	private array $alters = [];
 
 	private string $ran = '';
@@ -93,6 +93,8 @@ abstract class Migration
 
 	/**
 	 * Runs the current SQL statement immediately
+	 *
+	 * @param array<mixed> $input
 	 */
 	public function runSQL(string $sql, array $input = []) : bool
 		{
@@ -154,6 +156,8 @@ abstract class Migration
 
 	/**
 	 * Creates a foreign key on the table referencing the given table and columns.
+	 *
+	 * @param array<string> $columns
 	 */
 	protected function addForeignKey(string $toTable, string $referenceTable, array $columns, string $onDelete = 'CASCADE', string $onUpdate = 'CASCADE') : bool
 		{
@@ -203,6 +207,8 @@ abstract class Migration
 
 	/**
 	 * Add an index on the fields in the array.
+	 *
+	 * @param array<string>|string $fields
 	 */
 	protected function addIndex(string $table, string | array $fields, string $indexType = '') : bool
 		{
@@ -228,6 +234,8 @@ abstract class Migration
 
 	/**
 	 * Adds a primary key to the table.
+	 *
+	 * @param array<string> $fields
 	 */
 	protected function addPrimaryKey(string $table, array $fields) : bool
 		{
@@ -296,8 +304,7 @@ abstract class Migration
 
 			foreach ($keys as $key)
 				{
-				// @phpstan-ignore-next-line
-				if (null === $row[$key])
+				if (null === $row[$key])	// @phpstan-ignore-line
 					{
 					$where .= "{$comma}`{$key}` is null";
 					}
@@ -352,6 +359,8 @@ abstract class Migration
 
 	/**
 	 * Drops the foreign key on the table
+	 *
+	 * @param array<string> $columns
 	 */
 	protected function dropForeignKey(string $table, array $columns) : bool
 		{
@@ -368,6 +377,8 @@ abstract class Migration
 
 	/**
 	 * Drops an index by the name used by addIndex
+	 *
+	 * @param array<string>|string $fields
 	 */
 	protected function dropIndex(string $table, string | array $fields) : bool
 		{
@@ -428,6 +439,8 @@ abstract class Migration
 
 	/**
 	 * Drops tables contained in the array
+	 *
+	 * @param array<string> $tables
 	 */
 	protected function dropTables(array $tables) : void
 		{
@@ -447,6 +460,8 @@ abstract class Migration
 
 	/**
 	 * Drops views contained in the array
+	 *
+	 * @param array<string> $views
 	 */
 	protected function dropViews(array $views) : void
 		{

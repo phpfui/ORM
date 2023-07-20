@@ -9,7 +9,7 @@ class NotIn extends \PHPFUI\ORM\Operator
 		$this->operator = 'NOT IN';
 		}
 
-	public function correctlyTyped($variable) : bool
+	public function correctlyTyped(mixed $variable) : bool
 		{
 		return \is_array($variable) || $variable instanceof \PHPFUI\ORM\Table;
 		}

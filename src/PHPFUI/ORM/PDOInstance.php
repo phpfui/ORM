@@ -4,16 +4,22 @@ namespace PHPFUI\ORM;
 
 class PDOInstance extends \PDO
 	{
+	/** @var array<string> */
 	private array $lastError = [];
 
 	private int $lastErrorCode = 0;
 
+	/** @var array<array<string,string>> */
 	private array $lastErrors = [];
 
+	/** @var array<mixed> */
 	private array $lastParameters = [];
 
 	private string $lastSql = '';
 
+	/**
+	 * @param ?array<string,string> $options
+	 */
 	public function __construct(private string $dsn, ?string $username = null, ?string $password = null, ?array $options = null)
 		{
 		parent::__construct($dsn, $username, $password, $options);
@@ -29,6 +35,9 @@ class PDOInstance extends \PDO
 		return parent::beginTransaction();
 		}
 
+	/**
+	 * @return array<\PHPFUI\ORM\Schema\Field>
+	 */
 	public function describeTable(string $table) : array
 		{
 		$fields = [];
@@ -55,6 +64,8 @@ class PDOInstance extends \PDO
 	/**
 	 * Executes the SQL string using the matching $input array
 	 *
+	 * @param array<mixed> $input
+	 *
 	 * @return bool  status of command run
 	 */
 	public function execute(string $sql, array $input = []) : bool
@@ -67,6 +78,8 @@ class PDOInstance extends \PDO
 
 	/**
 	 * Executes the query and catches any errors
+	 *
+	 * @param array<mixed> $input
 	 */
 	public function executeStatement(\PDOStatement $statement, array $input = []) : ?\PDOStatement
 		{
@@ -105,6 +118,8 @@ class PDOInstance extends \PDO
 		}
 
 	/**
+	 * @param array<mixed> $input
+	 *
 	 * @return \PHPFUI\ORM\ArrayCursor  tracking the sql and input passed
 	 */
 	public function getArrayCursor(string $sql = 'select 0 limit 0', array $input = []) : \PHPFUI\ORM\ArrayCursor
@@ -116,6 +131,8 @@ class PDOInstance extends \PDO
 		}
 
 	/**
+	 * @param array<mixed> $input
+	 *
 	 * @return \PHPFUI\ORM\DataObjectCursor  tracking the sql and input passed
 	 */
 	public function getDataObjectCursor(string $sql = 'select 0 limit 0', array $input = []) : \PHPFUI\ORM\DataObjectCursor
@@ -131,6 +148,9 @@ class PDOInstance extends \PDO
 		return $this->dsn;
 		}
 
+	/**
+	 * @return array<\PHPFUI\ORM\Schema\Index>
+	 */
 	public function getIndexes(string $table) : array
 		{
 		$fields = [];
@@ -174,7 +194,7 @@ class PDOInstance extends \PDO
 		}
 
 	/**
-	 * @return array  of all errors since the last transaction or last time cleared
+	 * @return array<array<string,string>> all errors since the last transaction or last time cleared
 	 */
 	public function getLastErrors() : array
 		{
@@ -182,7 +202,7 @@ class PDOInstance extends \PDO
 		}
 
 	/**
-	 * @return array  of parameters from the last operation
+	 * @return array<mixed> parameters from the last operation
 	 */
 	public function getLastParameters() : array
 		{
@@ -198,7 +218,9 @@ class PDOInstance extends \PDO
 		}
 
 	/**
-	 * @return \PHPFUI\ORM\RecordCursor  tracking the sql and input passed
+	 * @param array<mixed> $input
+	 *
+	 * @return \PHPFUI\ORM\RecordCursor tracking the sql and input passed
 	 */
 	public function getRecordCursor(\PHPFUI\ORM\Record $crud, string $sql = 'select 0 limit 0', array $input = []) : \PHPFUI\ORM\RecordCursor
 		{
@@ -209,6 +231,8 @@ class PDOInstance extends \PDO
 		}
 
 	/**
+	 * @param array<mixed> $input
+	 *
 	 * @return array<string, string> a single row of the first matching record or an empty array if an error
 	 */
 	public function getRow(string $sql, array $input = []) : array
@@ -236,6 +260,10 @@ class PDOInstance extends \PDO
 	 * Similar to getArrayCursor except returns a fully populated array
 	 *
 	 * It is recommended to use getArrayCursor if you don't need array functionality
+	 *
+	 * @param array<mixed> $input
+	 *
+	 * @return array<array<string,string>>
 	 */
 	public function getRows(string $sql, array $input = [], int $fetchType = \PDO::FETCH_ASSOC) : array
 		{
@@ -257,6 +285,9 @@ class PDOInstance extends \PDO
 		return $returnValue;
 		}
 
+	/**
+	 * @return array<string>
+	 */
 	public function getTables() : array
 		{
 		if (\str_starts_with($this->dsn, 'mysql'))
@@ -278,6 +309,8 @@ class PDOInstance extends \PDO
 		}
 
 	/**
+	 * @param array<mixed> $input
+	 *
 	 * @return string value returned from the first field in the first row returned by the querry, or blank if error
 	 */
 	public function getValue(string $sql, array $input = []) : string
@@ -301,6 +334,8 @@ class PDOInstance extends \PDO
 		}
 
 	/**
+	 * @param array<mixed> $input
+	 *
 	 * @return array<mixed> of the first value in each row from the query
 	 */
 	public function getValueArray(string $sql, array $input = []) : array
@@ -320,6 +355,8 @@ class PDOInstance extends \PDO
 
 	/**
 	 * Logs array of errors via logger
+	 *
+	 * @param array<mixed> $context
 	 */
 	public function log(string $level, string $message, array $context = []) : void
 		{
@@ -340,6 +377,8 @@ class PDOInstance extends \PDO
 
 	/**
 	 * Runs the query and sets and records errors
+	 *
+	 * @param array<mixed> $input
 	 */
 	private function run(string $sql, array $input = []) : ?\PDOStatement
 		{

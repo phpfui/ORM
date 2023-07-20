@@ -18,6 +18,9 @@ namespace PHPFUI\ORM;
  */
 class Children extends \PHPFUI\ORM\VirtualField
 	{
+	/**
+	 * @param array<string> $parameters
+	 */
 	public function delete(array $parameters) : void
 		{
 		$table = $this->getTable(\array_shift($parameters));
@@ -30,8 +33,10 @@ class Children extends \PHPFUI\ORM\VirtualField
 
 	/**
 	 * @param array<string, string> $parameters containing **\PHPFUI\ORM\Children::class** followed by the child table, then the optional parameters of an order by column and sort order (defaults to ASC).
+	 *
+	 * @return \PHPFUI\ORM\RecordCursor
 	 */
-	public function getValue(array $parameters) : mixed
+	public function getValue(array $parameters) : \PHPFUI\ORM\RecordCursor
 		{
 		$childTable = $this->getTable(\array_shift($parameters));
 		$orderBy = \array_shift($parameters);

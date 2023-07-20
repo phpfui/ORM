@@ -27,22 +27,27 @@ abstract class Record extends DataObject
 
 	protected static bool $deleteChildren = true;
 
+	/** @var array<string,array<callable>> */
 	protected static array $displayTransforms = [];
 
 	protected bool $empty = true;
 
+	/** @var array<string,array<mixed>> */
 	protected static array $fields = [];
 
 	protected bool $loaded = false;
 
+	/** @var array<string> */
 	protected static array $primaryKeys = [];
 
+	/** @var array<string,array<callable>> */
 	protected static array $setTransforms = [];
 
 	protected static string $table = '';
 
 	protected string $validator = '';
 
+	/** @var array<string,array<string>> */
 	protected static array $virtualFields = [];
 
 	/**
@@ -55,6 +60,8 @@ abstract class Record extends DataObject
 	 * - **string** primary key value, will load object values if the primary key value exists
 	 * - **array** record is attempted to be read from database using the values of the fields provided.
 	 * - **null** (default) constructs an empty object
+	 *
+	 * @param  int|array<string,mixed>|null|string $parameter
 	 */
 	public function __construct(int|array|null|string $parameter = null)
 		{
@@ -309,7 +316,7 @@ abstract class Record extends DataObject
 	/**
 	 * Transform a field for display
 	 */
-	public function displayTransform(string $field, $value = null)
+	public function displayTransform(string $field, mixed $value = null) : mixed
 		{
 		if (null === $value)
 			{
@@ -341,7 +348,7 @@ abstract class Record extends DataObject
 		}
 
 	/**
-	 * @return array  of fields properties indexed by field name
+	 * @return array<string,array<mixed>> of fields properties indexed by field name
 	 */
 	public static function getFields() : array
 		{
@@ -439,6 +446,8 @@ abstract class Record extends DataObject
 
 	/**
 	 * Load first from SQL query
+	 *
+	 * @param array<mixed> $input
 	 */
 	public function loadFromSQL(string $sql, array $input = []) : bool
 		{
@@ -497,7 +506,7 @@ abstract class Record extends DataObject
  /**
   * Read a record from the db. If more than one match, only the first is loaded.
   *
-  * @param array|int|string $fields if int|string, primary key, otherwise a key => value array to match on. Multiple field value pairs are anded into the where clause.
+  * @param array<string,mixed>|int|string $fields if int|string, primary key, otherwise a key => value array to match on. Multiple field value pairs are anded into the where clause.
   *
   * @return bool  true if a record found
   */
@@ -565,6 +574,8 @@ abstract class Record extends DataObject
 
 	/**
 	 * Sets the object to values in the array.  Invalid array values are ignored.
+	 *
+	 * @param array<string,mixed> $values
 	 *
 	 * @param bool $loaded set to true if you want to simulated being loaded from the db.
 	 */
@@ -640,7 +651,7 @@ abstract class Record extends DataObject
 		}
 
 	/**
-	 * Return array of validation errors indexed by offending field containing an array of translated errors
+	 * @return array<string,array<string>> validation errors indexed by offending field containing an array of translated errors
 	 */
 	public function validate(string $optionalMethod = '', ?self $originalRecord = null) : array
 		{
@@ -772,7 +783,8 @@ abstract class Record extends DataObject
 	/**
 	 * Build a where clause
 	 *
-	 * @param int|array|string $key if int|string, primary key, otherwise a key => value array of fields to match
+	 * @param int|array<string,mixed>|string $key if int|string, primary key, otherwise a key => value array of fields to match
+	 * @param array<mixed> &$input
 	 *
 	 * @return string  starting with " where"
 	 */

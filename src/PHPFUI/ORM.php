@@ -19,10 +19,12 @@ class ORM
 
 	private static int | string | null $currentInstance = null;
 
+	/** @var array<\PHPFUI\ORM\PDOInstance> */
 	private static array $instances = [];
 
 	private static ?\Psr\Log\AbstractLogger $logger = null;
 
+	/** @var ?callable */
 	private static $translationCallback = null;
 
 	/**
@@ -60,6 +62,9 @@ class ORM
 		return self::getInstance()->commit();
 		}
 
+	/**
+	 * @return array<\PHPFUI\ORM\Schema\Field>
+	 */
 	public static function describeTable(string $table) : array
 		{
 		return self::getInstance()->describeTable($table);
@@ -67,6 +72,8 @@ class ORM
 
 	/**
 	 * Executes the SQL string using the matching $input array
+	 *
+	 * @param array<mixed> $input
 	 *
 	 * @return bool  status of command run
 	 */
@@ -77,6 +84,8 @@ class ORM
 
 	/**
 	 * Executes the query and catches any errors
+	 *
+	 * @param array<mixed> $input
 	 */
 	public static function executeStatement(\PDOStatement $statement, array $input = []) : ?\PDOStatement
 		{
@@ -84,6 +93,8 @@ class ORM
 		}
 
 	/**
+	 * @param array<mixed> $input
+	 *
 	 * @return \PHPFUI\ORM\ArrayCursor  tracking the sql and input passed
 	 */
 	public static function getArrayCursor(string $sql = 'select 0 limit 0', array $input = []) : \PHPFUI\ORM\ArrayCursor
@@ -115,6 +126,8 @@ class ORM
 		}
 
 	/**
+	 * @param array<mixed> $input
+	 *
 	 * @return \PHPFUI\ORM\DataObjectCursor  tracking the sql and input passed
 	 */
 	public static function getDataObjectCursor(string $sql = 'select 0 limit 0', array $input = []) : \PHPFUI\ORM\DataObjectCursor
@@ -122,6 +135,9 @@ class ORM
 		return self::getInstance()->getDataObjectCursor($sql, $input);
 		}
 
+	/**
+	 * @return array<\PHPFUI\ORM\Schema\Index>
+	 */
 	public static function getIndexes(string $table) : array
 		{
 		return self::getInstance()->getIndexes($table);
@@ -154,7 +170,7 @@ class ORM
 		}
 
 	/**
-	 * @return array  of all errors since the last transaction or last time cleared
+	 * @return array<array<string,string>> of all errors since the last transaction or last time cleared
 	 */
 	public static function getLastErrors() : array
 		{
@@ -162,7 +178,7 @@ class ORM
 		}
 
 	/**
-	 * @return array  of parameters from the last operation
+	 * @return array<mixed> of parameters from the last operation
 	 */
 	public static function getLastParameters() : array
 		{
@@ -183,7 +199,9 @@ class ORM
 		}
 
 	/**
-	 * @return \PHPFUI\ORM\RecordCursor  tracking the sql and input passed
+	 * @param array<mixed> $input
+	 *
+	 * @return \PHPFUI\ORM\RecordCursor tracking the sql and input passed
 	 */
 	public static function getRecordCursor(\PHPFUI\ORM\Record $crud, string $sql = 'select 0 limit 0', array $input = []) : \PHPFUI\ORM\RecordCursor
 		{
@@ -196,6 +214,8 @@ class ORM
 		}
 
 	/**
+	 * @param array<mixed> $input
+	 *
 	 * @return array<string, string> a single row of the first matching record or an empty array if an error
 	 */
 	public static function getRow(string $sql, array $input = []) : array
@@ -207,6 +227,10 @@ class ORM
 	 * Similar to getArrayCursor except returns a fully populated array
 	 *
 	 * It is recommended to use getArrayCursor if you don't need array functionality
+	 *
+	 * @param array<mixed> $input
+	 *
+	 * @return array<array<string, string>>
 	 */
 	public static function getRows(string $sql, array $input = [], int $fetchType = \PDO::FETCH_ASSOC) : array
 		{
@@ -218,12 +242,17 @@ class ORM
 		return self::filePath(self::$namespaceRoot . '/' . self::$tableNamespace);
 		}
 
+	/**
+	 * @return array<string>
+	 */
 	public static function getTables() : array
 		{
 		return self::getInstance()->getTables();
 		}
 
 	/**
+	 * @param array<mixed> $input
+	 *
 	 * @return string value returned from the first field in the first row returned by the querry, or blank if error
 	 */
 	public static function getValue(string $sql, array $input = []) : string
@@ -232,6 +261,8 @@ class ORM
 		}
 
 	/**
+	 * @param array<mixed> $input
+	 *
 	 * @return array<mixed> of the first value in each row from the query
 	 */
 	public static function getValueArray(string $sql, array $input = []) : array
@@ -249,6 +280,8 @@ class ORM
 
 	/**
 	 * Logs array of errors via error_log
+	 *
+	 * @param array<mixed> $context
 	 */
 	public static function log(string $type, string $message, array $context = []) : void
 		{
@@ -287,6 +320,9 @@ class ORM
 		self::$logger = $logger;
 		}
 
+	/**
+	 * @param callable $callback
+	 */
 	public static function setTranslationCallback($callback) : void
 		{
 		self::$translationCallback = $callback;

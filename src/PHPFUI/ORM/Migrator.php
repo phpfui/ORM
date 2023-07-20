@@ -4,6 +4,7 @@ namespace PHPFUI\ORM;
 
 class Migrator implements \Countable
 	{
+	/** @var array<string|array<string,string>> */
 	private array $errors = [];
 
 	private readonly \PHPFUI\ORM\Table\Migration $migrationTable;
@@ -44,6 +45,9 @@ class Migrator implements \Countable
 		return 0;
 		}
 
+	/**
+	 * @return array<string|array<string,string>>
+	 */
 	public function getErrors() : array
 		{
 		return $this->errors;
@@ -52,7 +56,7 @@ class Migrator implements \Countable
 	/**
 	 * Get a specific migration class instance
 	 */
- public function getMigrationObject(int $migrationId) : ?\PHPFUI\ORM\Migration
+	public function getMigrationObject(int $migrationId) : ?\PHPFUI\ORM\Migration
 		{
 		$className = \PHPFUI\ORM::$migrationNamespace . "\\Migration_{$migrationId}";
 

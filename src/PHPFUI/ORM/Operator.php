@@ -17,7 +17,7 @@ abstract class Operator implements \Stringable
 	/**
 	 * Return true if the variable passed is of the correct type for the operator.  Normally a scalar, but LIKE needs a string and IN needs an array.
 	 */
-	public function correctlyTyped($variable) : bool
+	public function correctlyTyped(mixed $variable) : bool
 		{
 		return \is_scalar($variable);
 		}

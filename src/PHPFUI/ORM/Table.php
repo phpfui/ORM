@@ -8,14 +8,17 @@ abstract class Table implements \Countable
 
 	protected string $distinct = '';
 
+	/** @var array<string,bool> */
 	protected array $groupBys = [];
 
 	protected ?\PHPFUI\ORM\Condition $havingCondition = null;
 
 	protected \PHPFUI\ORM\Record $instance;
 
+	/** @var array<string,array<mixed>> */
 	protected array $joins = [];
 
+	/** @var array<mixed> */
 	protected array $lastInput = [];
 
 	protected string $lastSql = '';
@@ -24,18 +27,22 @@ abstract class Table implements \Countable
 
 	protected ?int $offset = null;
 
+	/** @var array<string,string> */
 	protected array $orderBys = [];
 
 	protected ?int $page = null;
 
+	/** @var array<string,string> */
 	protected array $selects = [];
 
+	/** @var array<string,array<mixed>> */
 	protected array $unions = [];
 
 	protected ?\PHPFUI\ORM\Condition $whereCondition = null;
 
 	private bool $fullJoinSelects = false;
 
+	/** @var ?callable */
 	private static $translationCallback = null;
 
 	public function __construct()
@@ -43,6 +50,9 @@ abstract class Table implements \Countable
 		$this->instance = new static::$className();
 		}
 
+	/**
+	 * @param array<string,mixed> $parameters
+	 */
 	public function addFind(array $parameters) : \PHPFUI\ORM\DataObjectCursor
 		{
 		$this->lastInput = [];
@@ -300,7 +310,7 @@ abstract class Table implements \Countable
 	/**
 	 * transform any field or table.field from join
 	 */
-	public function displayTransform(string $field, $value = null) : mixed
+	public function displayTransform(string $field, mixed $value = null) : mixed
 		{
 		$parts = \explode('_', $field);
 
@@ -319,6 +329,9 @@ abstract class Table implements \Countable
 		return $this->instance->displayTransform($field, $value);
 		}
 
+	/**
+	 * @param array<string,mixed> $parameters
+	 */
 	public function find(array $parameters) : \PHPFUI\ORM\DataObjectCursor
 		{
 		// reset find condition
@@ -329,6 +342,10 @@ abstract class Table implements \Countable
 
 	/**
 	 * Get all tables in the application
+	 *
+	 * @param array<string> $skipTables
+	 *
+	 * @return array<string,\PHPFUI\ORM\Table>
 	 */
 	public static function getAllTables(array $skipTables = []) : array
 		{
@@ -380,6 +397,9 @@ abstract class Table implements \Countable
 		return \PHPFUI\ORM::getDataObjectCursor($this->lastSql, $this->lastInput)->setCountSQL($this->getCountSQL($totalInput))->setTotalCountSQL($this->getTotalSQL($totalInput));
 		}
 
+	/**
+	 * @return array<string,array<mixed>>
+	 */
 	public function getFields() : array
 		{
 		return $this->instance->getFields();
@@ -420,7 +440,7 @@ abstract class Table implements \Countable
 	/**
 	 * Return the string starting with "having" for the query
 	 *
-	 * @param  array  $input array reference. Current contents will remain, and new contents appended to the array
+	 * @param array<mixed> $input array reference. Current contents will remain, and new contents appended to the array
 	 *
 	 * @return string " HAVING condition"
 	 */
@@ -446,6 +466,9 @@ abstract class Table implements \Countable
 		return $this->havingCondition;
 		}
 
+	/**
+	 * @return array<mixed>
+	 */
 	public function getLastInput() : array
 		{
 		return $this->lastInput;
@@ -529,6 +552,9 @@ abstract class Table implements \Countable
 		return (int)$this->page;
 		}
 
+	/**
+	 * @return array<string>
+	 */
 	public function getPrimaryKeys() : array
 		{
 		return $this->instance->getPrimaryKeys();
@@ -541,6 +567,8 @@ abstract class Table implements \Countable
 
 	/**
 	 * Return a Record collection matching the requested parameters
+	 *
+	 * @return \PHPFUI\ORM\RecordCursor
 	 */
 	public function getRecordCursor() : \PHPFUI\ORM\RecordCursor
 		{
@@ -553,7 +581,7 @@ abstract class Table implements \Countable
 		}
 
 	/**
-	 * Return a array of record matching the requested parameters
+	 * @return array<array<string,string>> records matching the requested parameters
 	 */
 	public function getRows() : array
 		{
@@ -631,6 +659,8 @@ abstract class Table implements \Countable
 		}
 
 	/**
+	 * @param array<mixed> &$input
+	 *
 	 * Sets up lastSql and lastInput variable for use in returning cursors
 	 */
 	public function getSQL(array &$input, bool $limited = true) : string
@@ -677,7 +707,7 @@ abstract class Table implements \Countable
 	/**
 	 * Return the string starting with "where" for the query
 	 *
-	 * @param  array  $input array reference. Current contents will remain, and new contents appended to the array
+	 * @param array<mixed> &$input array reference. Current contents will remain, and new contents appended to the array
 	 *
 	 * @return string " where condition"
 	 */
@@ -924,7 +954,7 @@ abstract class Table implements \Countable
 	/**
 	 * Update all record matching the requested parameters with the variables passed
 	 *
-	 * @param array $variables key => value array of variables to set
+	 * @param array<string,mixed> $variables key => value array of variables to set
 	 */
 	public function update(array $variables) : static
 		{
@@ -948,6 +978,9 @@ abstract class Table implements \Countable
 		return $this;
 		}
 
+	/**
+	 * @param array<string,mixed> $request
+	 */
 	public function updateFromTable(array $request) : bool
 		{
 		$fields = $this->instance->getFields();
@@ -1004,11 +1037,17 @@ abstract class Table implements \Countable
 		return self::capitalSplit(\implode('', $parts));
 		}
 
+	/**
+	 * @param array<mixed> &$input
+	 */
 	private function getCountSQL(array &$input) : string
 		{
 		return 'SELECT COUNT(*) from (' . $this->getSql($input) . ') countAlias';
 		}
 
+	/**
+	 * @param array<mixed> &$input
+	 */
 	private function getJoins(array &$input) : string
 		{
 		$joins = '';
@@ -1030,6 +1069,9 @@ abstract class Table implements \Countable
 		return $joins;
 		}
 
+	/**
+	 * @param array<mixed> &$input
+	 */
 	private function getTotalSQL(array &$input) : string
 		{
 		$input = [];

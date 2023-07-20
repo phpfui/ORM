@@ -9,6 +9,7 @@ namespace PHPFUI\ORM;
  */
 class ArrayCursor extends \PHPFUI\ORM\BaseCursor
 	{
+	/** @var array<string,?string> */
 	private array $current = [];
 
 	/**

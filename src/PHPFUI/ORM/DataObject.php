@@ -2,6 +2,9 @@
 
 namespace PHPFUI\ORM;
 
+/**
+ * @implements \ArrayAccess<string,string>
+ */
 class DataObject implements \ArrayAccess
 	{
 	/** @param array<string, string> $current */

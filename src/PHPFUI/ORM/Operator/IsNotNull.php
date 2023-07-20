@@ -9,7 +9,7 @@ class IsNotNull extends \PHPFUI\ORM\Operator
 		$this->operator = 'IS NOT NULL';
 		}
 
-	public function correctlyTyped($variable) : bool
+	public function correctlyTyped(mixed $variable) : bool
 		{
 		return null === $variable;
 		}

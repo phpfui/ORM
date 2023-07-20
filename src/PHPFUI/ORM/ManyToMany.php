@@ -22,7 +22,7 @@ class ManyToMany extends \PHPFUI\ORM\VirtualField
 	/**
 	 * @param array<string, string[]> $parameters Key is the field name, values should be **\PHPFUI\ORM\ManyToMany::class**, followed by the junction table class name, then related table class name. Two additional parameters can be specified, the order by column and sort order (defaults to ASC).
 	 */
-	public function getValue(array $parameters) : mixed
+	public function getValue(array $parameters) : \PHPFUI\ORM\Record
 		{
 		$junctionTableClass = \array_shift($parameters);
 		$junctionTable = new $junctionTableClass();

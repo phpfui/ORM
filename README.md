@@ -1,4 +1,4 @@
-# PHPFUI\ORM [![Tests](https://github.com/phpfui/ORM/actions/workflows/tests.yml/badge.svg)](https://github.com/phpfui/ORM/actions?query=workflow%3Atests) [![Latest Packagist release](https://img.shields.io/packagist/v/phpfui/ORM.svg)](https://packagist.org/packages/phpfui/ORM) ![](https://img.shields.io/badge/PHPStan-level%205-brightgreen.svg?style=flat)
+# PHPFUI\ORM [![Tests](https://github.com/phpfui/ORM/actions/workflows/tests.yml/badge.svg)](https://github.com/phpfui/ORM/actions?query=workflow%3Atests) [![Latest Packagist release](https://img.shields.io/packagist/v/phpfui/ORM.svg)](https://packagist.org/packages/phpfui/ORM) ![](https://img.shields.io/badge/PHPStan-level%206-brightgreen.svg?style=flat)
 
 ### PHPFUI\ORM a minimal Object Relational Mapper (ORM) for MySQL, MariaDB and SQLite3
 Why another PHP ORM? In writing minimal and fast websites, it was determined that existing PHP ORM solutions were overly complex. **PHPFUI\ORM** is a little more than 6K lines of code in under 50 files.  It is designed to have a minimal memory footprint and excellent execution times for most database needs.

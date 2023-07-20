@@ -8,6 +8,8 @@ class StandardErrorLogger extends \Psr\Log\AbstractLogger
 	{
 	/**
 	 * Logs with an arbitrary level to standard error
+	 *
+	 * @param array<mixed> $context
 	 */
 	public function log($level, \Stringable | string $message, array $context = []) : void
 		{

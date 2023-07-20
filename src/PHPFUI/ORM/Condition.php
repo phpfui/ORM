@@ -13,7 +13,7 @@ namespace PHPFUI\ORM;
  */
 class Condition implements \Countable, \Stringable
 	{
-	/** @var array<array> $conditions */
+	/** @var array<array<mixed>> $conditions */
 	private array $conditions = [];
 
 	/**
@@ -235,13 +235,18 @@ class Condition implements \Countable, \Stringable
 		return $this;
 		}
 
+	/**
+	 * @param array<array<mixed>> $conditions
+	 *
+	 * @return array<array<mixed>>
+	 */
 	private function getConditionArray(array $conditions) : array
 		{
 		$data = [];
 
 		foreach ($conditions as $condition)
 			{
-			if (4 == (\is_countable($condition) ? \count($condition) : 0))
+			if (4 == (\is_countable($condition) ? \count($condition) : 0)) // @phpstan-ignore-line
 				{
 				// convert operator to string
 				$condition[2] = $condition[2]->getOperatorString();

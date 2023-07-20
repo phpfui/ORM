@@ -4,6 +4,9 @@ namespace PHPFUI\ORM;
 
 class RelatedRecord extends \PHPFUI\ORM\VirtualField
 	{
+	/**
+	 * @param array<string> $parameters
+	 */
 	public function getValue(array $parameters) : mixed
 		{
 		$class = \array_shift($parameters);
@@ -11,6 +14,9 @@ class RelatedRecord extends \PHPFUI\ORM\VirtualField
 		return new $class($this->currentRecord[$this->fieldName . \PHPFUI\ORM::$idSuffix]);
 		}
 
+	/**
+	 * @param array<string> $parameters
+	 */
 	public function setValue(mixed $value, array $parameters) : void
 		{
 		$class = \array_shift($parameters);

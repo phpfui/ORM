@@ -9,7 +9,7 @@ class In extends \PHPFUI\ORM\Operator
 		$this->operator = 'IN';
 		}
 
-	public function correctlyTyped($variable) : bool
+	public function correctlyTyped(mixed $variable) : bool
 		{
 		return \is_array($variable) || $variable instanceof \PHPFUI\ORM\Table;
 		}

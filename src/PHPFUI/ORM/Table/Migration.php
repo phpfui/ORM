@@ -16,7 +16,7 @@ class Migration extends \PHPFUI\ORM\Table
 		return $record;
 		}
 
-	public function paginate(int $page, int $perPage) : iterable
+	public function paginate(int $page, int $perPage) : \PHPFUI\ORM\ArrayCursor
 		{
 		$offset = ($page - 1) * $perPage;
 		$sql = "select * from migration order by migrationId desc limit {$offset} {$perPage}";

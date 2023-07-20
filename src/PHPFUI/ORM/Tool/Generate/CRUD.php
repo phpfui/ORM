@@ -196,6 +196,9 @@ PHP;
 		return $retVal;
 		}
 
+	/**
+	 * @param array<string,true> &$commentedFields
+	 */
 	private function getComment(\PHPFUI\ORM\Schema\Field $field, array &$commentedFields) : ?string
 		{
 		$fieldName = $field->name;

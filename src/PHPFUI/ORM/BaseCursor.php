@@ -7,7 +7,7 @@ namespace PHPFUI\ORM;
  *
  * Since it is iterable, it can be used in a foreach statement.  The index or key will be an integer starting at 0 for the first record returned.
  */
-abstract class BaseCursor implements \Countable, \Iterator
+abstract class BaseCursor implements \Countable, \Iterator	// @phpstan-ignore-line
 	{
 	protected int $index = -1;
 

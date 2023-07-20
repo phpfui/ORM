@@ -12,6 +12,7 @@ namespace PHPFUI\ORM;
  */
 class DataObjectCursor extends \PHPFUI\ORM\BaseCursor
 	{
+	/** @var array<string,string> */
 	private array $current;
 
 	/**

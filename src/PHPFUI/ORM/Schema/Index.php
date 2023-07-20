@@ -10,6 +10,9 @@ class Index
 
 	public readonly bool $primaryKey;
 
+	/**
+	 * @param array<string,mixed> $fields
+	 */
 	public function __construct(\PHPFUI\ORM\PDOInstance $pdo, array $fields)
 		{
 		if (\str_starts_with($pdo->getDSN(), 'mysql'))

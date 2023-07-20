@@ -105,16 +105,17 @@ namespace PHPFUI\ORM;
  */
 abstract class Validator
 	{
-	/** @var string[] */
+	/** @var array<string> */
 	public static array $dateSeparators = ['-', '.', '_', ':', '/'];
 
+	/** @var array<string,array<string>> */
 	public static array $validators = [];
 
 	private string $currentField = '';
 
 	private bool $currentRequired = false;
 
-	/** @var array<string, string[]> */
+	/** @var array<string, array<string>> */
 	private array $errors = [];
 
 	/** @var array<string, array<mixed>> */
@@ -128,7 +129,7 @@ abstract class Validator
 	/**
 	 * Return any errors.
 	 *
-	 * @return array<string, string[]>  indexed by field(s) with error and array of translated errors.
+	 * @return array<string, array<string>>  indexed by field(s) with error and array of translated errors.
 	 */
 	public function getErrors() : array
 		{
@@ -173,6 +174,7 @@ abstract class Validator
 	/**
 	 * Gets the errors for a value with the record definition and associated validators
 	 *
+	 * @param array<string> $validators
 	 * @param array<int, array<string>> $fieldDefinitions
 	 *
 	 * @return array<string> of errors of translated text
@@ -275,7 +277,7 @@ abstract class Validator
 	/**
 	 * @param array<int, array<mixed>> $fieldDefinitions
 	 */
-	private function validate_card($number, array $fieldDefinitions) : string
+	private function validate_card(string $number, array $fieldDefinitions) : string
 		{
 		// Strip any non-digits (useful for credit card numbers with spaces and hyphens)
 		$number = \preg_replace('/\D/', '', (string)$number);
@@ -887,6 +889,8 @@ abstract class Validator
 
 	/**
 	 * Validate one rule.
+	 *
+	 * @param array<int, array<mixed>> $fieldDefinitions
 	 *
 	 * @return array<string> of errors of translated text
 	 */

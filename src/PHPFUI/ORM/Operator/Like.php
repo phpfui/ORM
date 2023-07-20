@@ -9,7 +9,7 @@ class Like extends \PHPFUI\ORM\Operator
 		$this->operator = 'LIKE';
 		}
 
-	public function correctlyTyped($variable) : bool
+	public function correctlyTyped(mixed $variable) : bool
 		{
 		return \is_string($variable);
 		}

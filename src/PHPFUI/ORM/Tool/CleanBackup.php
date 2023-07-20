@@ -4,10 +4,12 @@ namespace PHPFUI\ORM\Tool;
 
 class CleanBackup
 	{
+	/** @var resource */
 	private $backupHandle;
 
 	private string $error = '';
 
+	/** @var resource */
 	private $targetHandle;
 
 	public function __construct(string $backupPath, string $targetPath)
