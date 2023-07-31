@@ -9,7 +9,7 @@ namespace PHPFUI\ORM;
  */
 abstract class BaseCursor implements \Countable, \Iterator	// @phpstan-ignore-line
 	{
-	protected int $index = -1;
+	protected ?int $index = null;
 
 	private ?int $count = null;
 
@@ -27,7 +27,7 @@ abstract class BaseCursor implements \Countable, \Iterator	// @phpstan-ignore-li
 	public function __destruct()
 		{
 		$this->statement?->closeCursor();
-		$this->index = -1;
+		$this->index = null;
 		$this->total = null;
 		$this->count = null;
 		}
@@ -68,7 +68,7 @@ abstract class BaseCursor implements \Countable, \Iterator	// @phpstan-ignore-li
 		{
 		$this->init();
 
-		return $this->index;
+		return (int)$this->index;
 		}
 
 	/**
@@ -81,7 +81,7 @@ abstract class BaseCursor implements \Countable, \Iterator	// @phpstan-ignore-li
 	 */
 	public function rewind() : void
 		{
-		$this->index = 0;
+		$this->index = -1;
 
 		if (! $this->statement)
 			{
@@ -158,7 +158,7 @@ abstract class BaseCursor implements \Countable, \Iterator	// @phpstan-ignore-li
 	 */
 	protected function init() : void
 		{
-		if (-1 == $this->index)
+		if (null === $this->index)
 			{
 			$this->rewind();
 			}
