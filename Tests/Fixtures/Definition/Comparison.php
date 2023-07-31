@@ -16,6 +16,15 @@ abstract class Comparison extends \PHPFUI\ORM\Record
 		'eq_field' => ['sqltype', 'string', 50, false, '', false, ],
 		'neq_field' => ['sqltype', 'string', 50, false, '', false, ],
 		'date' => ['date', 'string', 50, false, '', false, ],
+		'not_equal' => ['sqltype', 'string', 50, false, '', false, ],
+		'not_not_equal' => ['sqltype', 'string', 50, false, '', false, ],
+		'not_gt_field' => ['sqltype', 'string', 50, false, '', false, ],
+		'not_gte_field' => ['sqltype', 'string', 50, false, '', false, ],
+		'not_lt_field' => ['sqltype', 'string', 50, false, '', false, ],
+		'not_lte_field' => ['sqltype', 'string', 50, false, '', false, ],
+		'not_eq_field' => ['sqltype', 'string', 50, false, '', false, ],
+		'not_neq_field' => ['sqltype', 'string', 50, false, '', false, ],
+		'not_date' => ['date', 'string', 50, false, '', false, ],
 	];
 
 	public static string $primaryKey = '';

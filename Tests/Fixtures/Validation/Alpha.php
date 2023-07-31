@@ -6,5 +6,6 @@ class Alpha extends \PHPFUI\ORM\Validator
 	{
 	public static array $validators = [
 		'alpha' => ['alpha'],
+		'not_alpha' => ['!alpha'],
 	];
 	}

@@ -8,6 +8,7 @@ abstract class Maxvalue extends \PHPFUI\ORM\Record
 
 	public static array $fields = [
 		'maxvalue' => ['sqltype', 'string', 19, false, '', false, ],
+		'not_maxvalue' => ['!sqltype', 'string', 19, false, '', false, ],
 		'value' => ['sqltype', 'string', 19, false, '', false, ],
 	];
 

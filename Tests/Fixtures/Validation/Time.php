@@ -6,5 +6,6 @@ class Time extends \PHPFUI\ORM\Validator
 	{
 	public static array $validators = [
 		'time' => ['time'],
+		'not_time' => ['!time'],
 	];
 	}

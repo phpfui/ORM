@@ -8,6 +8,7 @@ abstract class Minlength extends \PHPFUI\ORM\Record
 
 	public static array $fields = [
 		'minlength' => ['sqltype', 'string', 19, false, '', false, ],
+		'not_minlength' => ['!sqltype', 'string', 19, false, '', false, ],
 	];
 
 	public static string $primaryKey = '';

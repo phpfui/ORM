@@ -21,17 +21,40 @@ class ValidationTest extends \PHPUnit\Framework\TestCase
 		$validator->validate();
 		$this->assertEmpty($validator->getErrors());
 
+		// not tests
+		$crud = new \Tests\Fixtures\Record\Alpha();
+		$validator = new \Tests\Fixtures\Validation\Alpha($crud);
+		$crud->not_alpha = '1234';
+		$validator->validate();
+		$this->assertEmpty($validator->getErrors());
+
+		$crud->not_alpha = '_!@#$%^&';
+		$validator->validate();
+		$this->assertEmpty($validator->getErrors());
+
 		// invalid tests
+		$crud = new \Tests\Fixtures\Record\Alpha();
+		$validator = new \Tests\Fixtures\Validation\Alpha($crud);
 		$crud->alpha = '1234';
 		$validator->validate();
 		$errors = $validator->getErrors();
-		$this->assertNotEmpty($errors);
 		$this->assertArrayHasKey('alpha', $errors);
 		$this->assertContains('1234 is not characters only', $errors['alpha']);
 
 		$crud->alpha = '_!@#$%^&';
 		$validator->validate();
 		$this->assertNotEmpty($validator->getErrors());
+
+		// invalid not tests
+		$crud = new \Tests\Fixtures\Record\Alpha();
+		$validator = new \Tests\Fixtures\Validation\Alpha($crud);
+		$crud->not_alpha = 'abcd';
+		$validator->validate();
+		$errors = $validator->getErrors();
+		$this->assertNotEmpty($errors);
+		$this->assertArrayHasKey('not_alpha', $errors);
+		$this->assertContains('abcd can not be characters only', $errors['not_alpha']);
+
 		}
 
 	public function testAlphaNumeric() : void

@@ -48,8 +48,6 @@ namespace PHPFUI\ORM;
  * | minvalue       | Must be less than or equal | value, required |
  * | month_day_year | Loosely formatted date (M-D-Y) | None |
  * | month_year     | Loosely formatted Month Year | None |
- * | neq_field      | Not Equal to field | field, required |
- * | not_equal      | Value must not be equal | value, required |
  * | number         | Floating point number or whole number | None |
  * | required       | Field is required, can't be null or blank, 0 is OK | None |
  * | starts_with    | Field must start with (case sensitive) | comma separated list of strings |
@@ -66,9 +64,8 @@ namespace PHPFUI\ORM;
  * * gte_field
  * * lte_field
  * * eq_field
- * * neq_field
  *
- * Field validators take another field name as a parameter and perform the specified condition test. To compare against a specific value, use minvalue, maxvalue, equal or not_equal.
+ * Field validators take another field name as a parameter and perform the specified condition test. To compare against a specific value, use minvalue, maxvalue, or equal.
  *
  * ## Unique Parameters
  * Without any parameters, the **unique** validator will make sure no other record has a matching value for the field being validated. The current record is always exempted from the unique test so it can be updated.
@@ -92,6 +89,12 @@ namespace PHPFUI\ORM;
  * You want the name to be unique for a specific type in the division: *unique:type,shoes,division*
  * You want the name to be unique for a specific type and division: *unique:type,shoes,division,10*
  *
+ * ## NOT Operator
+ * You can reverse any validator by preceding the validator with an ! (exclamation mark).
+ *
+ * **Example:**
+ * !starts_with:/ will fail if the field starts with a /
+ *
  * ## OR Operator
  * You can validate a field if any one of the validators passes.  Use the vertical bar (|) to separate validators. If one of the validators passes, then the the field is valid.
  *
@@ -111,21 +114,23 @@ abstract class Validator
 	/** @var array<string,array<string>> */
 	public static array $validators = [];
 
-	/** @var array<string, array<string>> */
-	private array $errors = [];
-
-	/** @var array<string, array<mixed>> */
-	protected array $fieldDefinitions = [];
-
-	protected bool $currentRequired = false;
-
 	protected string $currentField = '';
+
+	/** @var array<int, array<mixed>> */
+	protected array $currentFieldDefinitions = [];
+
+	protected bool $currentNot = false;
 
 	/** @var array<string> */
 	protected array $currentParameters = [];
 
-	/** @var array<int, array<mixed>> */
-	protected array $currentFieldDefinitions = [];
+	protected bool $currentRequired = false;
+
+	/** @var array<string, array<mixed>> */
+	protected array $fieldDefinitions = [];
+
+	/** @var array<string, array<string>> */
+	private array $errors = [];
 
 	public function __construct(protected \PHPFUI\ORM\Record $record, protected ?\PHPFUI\ORM\Record $originalRecord = null)
 		{
@@ -175,6 +180,21 @@ abstract class Validator
 			}
 
 		return empty($this->errors);
+		}
+
+	/**
+	 * @param array<string, mixed> $values
+	 */
+	protected function testIt(bool $condition, string $token, array $values = []) : string
+		{
+		$a = (int)$condition;
+		$b = (int)$this->currentNot;
+		if ($condition xor $this->currentNot)
+			{
+			return '';
+			}
+		$token = '.validator.' . ($this->currentNot ? 'not.' : '') . $token;
+		return \PHPFUI\ORM::trans($token, $values);
 		}
 
 	/**
@@ -255,17 +275,17 @@ abstract class Validator
 
 	private function validate_alpha(mixed $value) : string
 		{
-		return \ctype_alpha((string)$value) ? '' : \PHPFUI\ORM::trans('.validator.alpha', ['value' => $value]);
+		return $this->testIt(\ctype_alpha((string)$value), 'alpha', ['value' => $value]);
 		}
 
 	private function validate_alpha_numeric(mixed $value) : string
 		{
-		return \ctype_alnum((string)$value) ? '' : \PHPFUI\ORM::trans('.validator.alnum', ['value' => $value]);
+		return $this->testIt(\ctype_alnum((string)$value), 'alnum', ['value' => $value]);
 		}
 
 	private function validate_bool(mixed $value) : string
 		{
-		return \ctype_digit((string)$value) && (0 == $value || 1 == $value) ? '' : \PHPFUI\ORM::trans('.validator.bool', ['value' => $value]);
+		return $this->testIt(\ctype_digit((string)$value) && (0 == $value || 1 == $value), 'bool', ['value' => $value]);
 		}
 
 	private function validate_card(string $number) : string
@@ -298,7 +318,7 @@ abstract class Validator
 			}
 
 		// If the total mod 10 equals 0, the number is valid
-		return (0 == $total % 10) ? '' : \PHPFUI\ORM::trans('.validator.card', ['value' => $number]);
+		return $this->testIt(0 == $total % 10, 'card', ['value' => $number]);
 		}
 
 	private function validate_color(mixed $value) : string
@@ -312,7 +332,7 @@ abstract class Validator
 			$len = \strlen((string)$testValue);
 			}
 
-		return 3 == $len || 6 == $len ? '' : \PHPFUI\ORM::trans('.validator.color', ['value' => $value]);
+		return $this->testIt(3 == $len || 6 == $len, 'color', ['value' => $value]);
 		}
 
 	private function validate_contains(mixed $value) : string
@@ -324,14 +344,14 @@ abstract class Validator
 			$valid |= \str_contains($value, $text);
 			}
 
-		return $valid ? '' : \PHPFUI\ORM::trans('.validator.contains', ['value' => $value, 'set' => \implode(',', $this->currentParameters)]);
+		return $this->testIt($valid, 'contains', ['value' => $value, 'set' => \implode(',', $this->currentParameters)]);
 		}
 
 	private function validate_cvv(mixed $value) : string
 		{
 		$int = (int)$value;
 
-		return $int >= 100 && $int <= 9999 ? '' : \PHPFUI\ORM::trans('.validator.cvv', ['value' => $value]);
+		return $this->testIt($int >= 100 && $int <= 9999, 'cvv', ['value' => $value]);
 		}
 
 	private function validate_date(mixed $value) : string
@@ -346,7 +366,7 @@ abstract class Validator
 			return '';
 			}
 
-		return \checkdate((int)($parts[$month] ?? 0), (int)($parts[$day] ?? 0), (int)($parts[$year] ?? 0)) ? '' : \PHPFUI\ORM::trans('.validator.date', ['value' => $value]);
+		return $this->testIt(\checkdate((int)($parts[$month] ?? 0), (int)($parts[$day] ?? 0), (int)($parts[$year] ?? 0)), 'date', ['value' => $value]);
 		}
 
 	private function validate_dateISO(mixed $value) : string
@@ -359,7 +379,7 @@ abstract class Validator
 		$month = \sprintf('%02d', (int)($parts[$month] ?? 0));
 		$day = \sprintf('%02d', (int)($parts[$day] ?? 0));
 
-		return (4 == \strlen($year) && 2 == \strlen($month) && 2 == \strlen($day) && \checkdate((int)$month, (int)$day, (int)$year)) ? '' : \PHPFUI\ORM::trans('.validator.dateISO', ['value' => $value]);
+		return $this->testIt(4 == \strlen($year) && 2 == \strlen($month) && 2 == \strlen($day) && \checkdate((int)$month, (int)$day, (int)$year), 'dateISO', ['value' => $value]);
 		}
 
 	private function validate_datetime(mixed $value) : string
@@ -395,17 +415,17 @@ abstract class Validator
 			return '';
 			}
 
-		return \checkdate((int)($parts[$month] ?? 0), (int)($parts[$day] ?? 0), (int)($parts[$year] ?? 0)) ? '' : \PHPFUI\ORM::trans('.validator.day_month_year', ['value' => $value]);
+		return $this->testIt(\checkdate((int)($parts[$month] ?? 0), (int)($parts[$day] ?? 0), (int)($parts[$year] ?? 0)), 'day_month_year', ['value' => $value]);
 		}
 
 	private function validate_domain(mixed $value) : string
 		{
-		return false !== \filter_var($value, \FILTER_VALIDATE_DOMAIN, \FILTER_FLAG_HOSTNAME) ? '' : \PHPFUI\ORM::trans('.validator.domain', ['value' => $value]);
+		return $this->testIt(false !== \filter_var($value, \FILTER_VALIDATE_DOMAIN, \FILTER_FLAG_HOSTNAME), 'domain', ['value' => $value]);
 		}
 
 	private function validate_email(mixed $value) : string
 		{
-		return false !== \filter_var($value, \FILTER_VALIDATE_EMAIL) ? '' : \PHPFUI\ORM::trans('.validator.email', ['value' => $value]);
+		return $this->testIt(false !== \filter_var($value, \FILTER_VALIDATE_EMAIL), 'email', ['value' => $value]);
 		}
 
 	private function validate_ends_with(mixed $value) : string
@@ -417,7 +437,7 @@ abstract class Validator
 			$valid |= \str_ends_with($value, $end);
 			}
 
-		return $valid ? '' : \PHPFUI\ORM::trans('.validator.ends_with', ['value' => $value, 'set' => \implode(',', $this->currentParameters)]);
+		return $this->testIt($valid, 'ends_with', ['value' => $value, 'set' => \implode(',', $this->currentParameters)]);
 		}
 
 	private function validate_enum(mixed $value) : string
@@ -430,12 +450,12 @@ abstract class Validator
 			$parametersUC[] = \strtoupper((string)$enum);
 			}
 
-		return \in_array($valueUC, $parametersUC) ? '' : \PHPFUI\ORM::trans('.validator.enum', ['value' => $value, 'valid' => \implode(',', $this->currentParameters)]);
+		return $this->testIt(\in_array($valueUC, $parametersUC), 'enum', ['value' => $value, 'valid' => \implode(',', $this->currentParameters)]);
 		}
 
 	private function validate_enum_exact(mixed $value) : string
 		{
-		return \in_array($value, $this->currentParameters) ? '' : \PHPFUI\ORM::trans('.validator.enum', ['value' => $value, 'valid' => \implode(',', $this->currentParameters)]);
+		return $this->testIt(\in_array($value, $this->currentParameters), 'enum', ['value' => $value, 'valid' => \implode(',', $this->currentParameters)]);
 		}
 
 	private function validate_eq_field(mixed $value) : string
@@ -443,14 +463,14 @@ abstract class Validator
 		$field = $this->currentParameters[0] ?? '';
 		$compare = $this->record[$field];
 
-		return empty($compare) || $value == $compare ? '' : \PHPFUI\ORM::trans('.validator.eq_field', ['value' => $value, 'field' => $field, 'compare' => $compare]);
+		return $this->testIt(empty($compare) || $value == $compare, 'eq_field', ['value' => $value, 'field' => $field, 'compare' => $compare]);
 		}
 
 	private function validate_equal(mixed $value) : string
 		{
 		$required = $this->currentParameters[0] ?? '';
 
-		return $required == $value ? '' : \PHPFUI\ORM::trans('.validator.equal', ['value' => $value, 'required' => $required]);
+		return $this->testIt($required == $value, 'equal', ['value' => $value, 'required' => $required]);
 		}
 
 	private function validate_gt_field(mixed $value) : string
@@ -458,7 +478,7 @@ abstract class Validator
 		$field = $this->currentParameters[0] ?? '';
 		$compare = $this->record[$field];
 
-		return empty($compare) || $value > $compare ? '' : \PHPFUI\ORM::trans('.validator.gt_field', ['value' => $value, 'field' => $field, 'compare' => $compare]);
+		return $this->testIt(empty($compare) || $value > $compare, 'gt_field', ['value' => $value, 'field' => $field, 'compare' => $compare]);
 		}
 
 	private function validate_gte_field(mixed $value) : string
@@ -466,7 +486,7 @@ abstract class Validator
 		$field = $this->currentParameters[0] ?? '';
 		$compare = $this->record[$field];
 
-		return empty($compare) || $value >= $compare ? '' : \PHPFUI\ORM::trans('.validator.gte_field', ['value' => $value, 'field' => $field, 'compare' => $compare]);
+		return $this->testIt(empty($compare) || $value >= $compare, 'gte_field', ['value' => $value, 'field' => $field, 'compare' => $compare]);
 		}
 
 	private function validate_icontains(mixed $value) : string
@@ -479,7 +499,7 @@ abstract class Validator
 			$valid |= \str_contains($test, \strtolower($text));
 			}
 
-		return $valid ? '' : \PHPFUI\ORM::trans('.validator.icontains', ['value' => $value, 'set' => \implode(',', $this->currentParameters)]);
+		return $this->testIt($valid, 'icontains', ['value' => $value, 'set' => \implode(',', $this->currentParameters)]);
 		}
 
 	private function validate_iends_with(mixed $value) : string
@@ -492,12 +512,12 @@ abstract class Validator
 			$valid |= \str_ends_with($test, \strtolower($end));
 			}
 
-		return $valid ? '' : \PHPFUI\ORM::trans('.validator.iends_with', ['value' => $value, 'set' => \implode(',', $this->currentParameters)]);
+		return $this->testIt($valid, 'iends_with', ['value' => $value, 'set' => \implode(',', $this->currentParameters)]);
 		}
 
 	private function validate_integer(mixed $value) : string
 		{
-		return false !== \filter_var($value, \FILTER_VALIDATE_INT) ? '' : \PHPFUI\ORM::trans('.validator.integer', ['value' => $value]);
+		return $this->testIt(false !== \filter_var($value, \FILTER_VALIDATE_INT), 'integer', ['value' => $value]);
 		}
 
 	private function validate_istarts_with(mixed $value) : string
@@ -510,7 +530,7 @@ abstract class Validator
 			$valid |= \str_starts_with($test, \strtolower($start));
 			}
 
-		return $valid ? '' : \PHPFUI\ORM::trans('.validator.istarts_with', ['value' => $value, 'set' => \implode(',', $this->currentParameters)]);
+		return $this->testIt($valid, 'istarts_with', ['value' => $value, 'set' => \implode(',', $this->currentParameters)]);
 		}
 
 	private function validate_lt_field(mixed $value) : string
@@ -518,7 +538,7 @@ abstract class Validator
 		$field = $this->currentParameters[0] ?? '';
 		$compare = $this->record[$field];
 
-		return empty($compare) || $value < $compare ? '' : \PHPFUI\ORM::trans('.validator.lt_field', ['value' => $value, 'field' => $field, 'compare' => $compare]);
+		return $this->testIt(empty($compare) || $value < $compare, 'lt_field', ['value' => $value, 'field' => $field, 'compare' => $compare]);
 		}
 
 	private function validate_lte_field(mixed $value) : string
@@ -526,7 +546,7 @@ abstract class Validator
 		$field = $this->currentParameters[0] ?? '';
 		$compare = $this->record[$field];
 
-		return empty($compare) || $value <= $compare ? '' : \PHPFUI\ORM::trans('.validator.lte_field', ['value' => $value, 'field' => $field, 'compare' => $compare]);
+		return $this->testIt(empty($compare) || $value <= $compare, 'lte_field', ['value' => $value, 'field' => $field, 'compare' => $compare]);
 		}
 
 	private function validate_maxlength(mixed $value) : string
@@ -534,7 +554,7 @@ abstract class Validator
 		$length = $this->currentParameters[0] ?? $this->currentFieldDefinitions[\PHPFUI\ORM\Record::LENGTH_INDEX];
 
 		// @phpstan-ignore-next-line
-		return \strlen((string)$value) <= $length ? '' : \PHPFUI\ORM::trans('.validator.maxlength', ['value' => $value, 'length' => $length]);
+		return $this->testIt(\strlen((string)$value) <= $length, 'maxlength', ['value' => $value, 'length' => $length]);
 		}
 
 	private function validate_maxvalue(mixed $value) : string
@@ -544,7 +564,7 @@ abstract class Validator
 			return '';
 			}
 
-		return $this->currentParameters[0] >= $value ? '' : \PHPFUI\ORM::trans('.validator.maxvalue', ['value' => $value, 'max' => $this->currentParameters[0]]);
+		return $this->testIt($this->currentParameters[0] >= $value, 'maxvalue', ['value' => $value, 'max' => $this->currentParameters[0]]);
 		}
 
 	private function validate_minlength(mixed $value) : string
@@ -552,7 +572,7 @@ abstract class Validator
 		$length = $this->currentParameters[0] ?? $this->currentFieldDefinitions[\PHPFUI\ORM\Record::LENGTH_INDEX];
 
 		// @phpstan-ignore-next-line
-		return \strlen((string)$value) >= $length ? '' : \PHPFUI\ORM::trans('.validator.minlength', ['value' => $value, 'length' => $length]);
+		return $this->testIt(\strlen((string)$value) >= $length, 'minlength', ['value' => $value, 'length' => $length]);
 		}
 
 	private function validate_minvalue(mixed $value) : string
@@ -562,7 +582,7 @@ abstract class Validator
 			return '';
 			}
 
-		return $this->currentParameters[0] <= $value ? '' : \PHPFUI\ORM::trans('.validator.minvalue', ['value' => $value, 'min' => $this->currentParameters[0]]);
+		return $this->testIt($this->currentParameters[0] <= $value, 'minvalue', ['value' => $value, 'min' => $this->currentParameters[0]]);
 		}
 
 	private function validate_month_day_year(mixed $value) : string
@@ -577,7 +597,7 @@ abstract class Validator
 			return '';
 			}
 
-		return \checkdate((int)($parts[$month] ?? 0), (int)($parts[$day] ?? 0), (int)($parts[$year] ?? 0)) ? '' : \PHPFUI\ORM::trans('.validator.month_day_year', ['value' => $value]);
+		return $this->testIt(\checkdate((int)($parts[$month] ?? 0), (int)($parts[$day] ?? 0), (int)($parts[$year] ?? 0)), 'month_day_year', ['value' => $value]);
 		}
 
 	private function validate_month_year(mixed $value) : string
@@ -587,7 +607,7 @@ abstract class Validator
 		$day = 1;
 		$parts = \explode('/', \str_replace(self::$dateSeparators, '/', (string)$value));
 
-		return \checkdate((int)($parts[$month] ?? 0), $day, (int)($parts[$year] ?? 0)) ? '' : \PHPFUI\ORM::trans('.validator.month_year', ['value' => $value]);
+		return $this->testIt(\checkdate((int)($parts[$month] ?? 0), $day, (int)($parts[$year] ?? 0)), 'month_year', ['value' => $value]);
 		}
 
 	private function validate_neq_field(mixed $value) : string
@@ -595,24 +615,24 @@ abstract class Validator
 		$field = $this->currentParameters[0] ?? '';
 		$compare = $this->record[$field];
 
-		return empty($compare) || $value != $compare ? '' : \PHPFUI\ORM::trans('.validator.neq_field', ['value' => $value, 'field' => $field, 'compare' => $compare]);
+		return $this->testIt(empty($compare) || $value != $compare, 'neq_field', ['value' => $value, 'field' => $field, 'compare' => $compare]);
 		}
 
 	private function validate_not_equal(mixed $value) : string
 		{
 		$required = $this->currentParameters[0] ?? '';
 
-		return $required != $value ? '' : \PHPFUI\ORM::trans('.validator.not_equal', ['value' => $value, 'required' => $required]);
+		return $this->testIt($required != $value, 'not_equal', ['value' => $value, 'required' => $required]);
 		}
 
 	private function validate_number(mixed $value) : string
 		{
-		return false !== \filter_var($value, \FILTER_VALIDATE_FLOAT) ? '' : \PHPFUI\ORM::trans('.validator.number', ['value' => $value]);
+		return $this->testIt(false !== \filter_var($value, \FILTER_VALIDATE_FLOAT), 'number', ['value' => $value]);
 		}
 
 	private function validate_required(mixed $value) : string
 		{
-		return \strlen("{$value}") ? '' : \PHPFUI\ORM::trans('.validator.required');
+		return $this->testIt(\strlen("{$value}") > 0, 'required');
 		}
 
 	private function validate_starts_with(mixed $value) : string
@@ -624,7 +644,7 @@ abstract class Validator
 			$valid |= \str_starts_with($value, $start);
 			}
 
-		return $valid ? '' : \PHPFUI\ORM::trans('.validator.starts_with', ['value' => $value, 'set' => \implode(',', $this->currentParameters)]);
+		return $this->testIt($valid, 'starts_with', ['value' => $value, 'set' => \implode(',', $this->currentParameters)]);
 		}
 
 	private function validate_time(mixed $value) : string
@@ -700,12 +720,12 @@ abstract class Validator
 
 		$table->setWhere($condition);
 
-		return 0 == (\is_countable($table) ? \count($table) : 0) ? '' : \PHPFUI\ORM::trans('.validator.unique', ['value' => $value]);
+		return $this->testIt(0 == (\is_countable($table) ? \count($table) : 0), 'unique', ['value' => $value]);
 		}
 
 	private function validate_url(mixed $value) : string
 		{
-		return false !== \filter_var($value, \FILTER_VALIDATE_URL) ? '' : \PHPFUI\ORM::trans('.validator.url', ['value' => $value]);
+		return $this->testIt(false !== \filter_var($value, \FILTER_VALIDATE_URL), 'url', ['value' => $value]);
 		}
 
 	private function validate_website(mixed $value) : string
@@ -713,7 +733,7 @@ abstract class Validator
 		$parts = \explode('://', \strtolower((string)$value));
 		$error = 2 != \count($parts) || ! \in_array($parts[0], ['http', 'https']);
 
-		return (! $error && false !== \filter_var($value, \FILTER_VALIDATE_URL)) ? '' : \PHPFUI\ORM::trans('.validator.website', ['value' => $value]);
+		return $this->testIt(! $error && false !== \filter_var($value, \FILTER_VALIDATE_URL), 'website', ['value' => $value]);
 		}
 
 	private function validate_year_month(mixed $value) : string
@@ -723,7 +743,7 @@ abstract class Validator
 		$day = 1;
 		$parts = \explode('/', \str_replace(self::$dateSeparators, '/', (string)$value));
 
-		return \checkdate((int)($parts[$month] ?? 0), $day, (int)($parts[$year] ?? 0)) ? '' : \PHPFUI\ORM::trans('.validator.year_month', ['value' => $value]);
+		return $this->testIt(\checkdate((int)($parts[$month] ?? 0), $day, (int)($parts[$year] ?? 0)), 'year_month', ['value' => $value]);
 		}
 
 	/**
@@ -737,6 +757,12 @@ abstract class Validator
 		{
 		$this->currentFieldDefinitions = $fieldDefinitions;
 		$this->currentNot = false;
+
+		if ('!' == $validator[0])
+			{
+			$this->currentNot = true;
+			$validator = \substr($validator, 1);
+			}
 
 		$parts = \explode(':', (string)$validator);
 

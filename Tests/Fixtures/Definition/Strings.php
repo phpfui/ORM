@@ -13,6 +13,12 @@ abstract class Strings extends \PHPFUI\ORM\Record
 		'istarts_with' => ['sqltype', 'string', 50, false, '', false, ],
 		'iends_with' => ['sqltype', 'string', 50, false, '', false, ],
 		'icontains' => ['sqltype', 'string', 50, false, '', false, ],
+		'not_starts_with' => ['sqltype', 'string', 50, false, '', false, ],
+		'not_ends_with' => ['sqltype', 'string', 50, false, '', false, ],
+		'not_contains' => ['sqltype', 'string', 50, false, '', false, ],
+		'not_istarts_with' => ['sqltype', 'string', 50, false, '', false, ],
+		'not_iends_with' => ['sqltype', 'string', 50, false, '', false, ],
+		'not_icontains' => ['sqltype', 'string', 50, false, '', false, ],
 	];
 
 	public static string $primaryKey = '';

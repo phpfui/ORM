@@ -8,6 +8,7 @@ abstract class Enum extends \PHPFUI\ORM\Record
 
 	public static array $fields = [
 		'enum' => ['sqltype', 'string', 19, false, '', false, ],
+		'not_enum' => ['!sqltype', 'string', 19, false, '', false, ],
 	];
 
 	public static string $primaryKey = '';

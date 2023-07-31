@@ -6,5 +6,6 @@ class Color extends \PHPFUI\ORM\Validator
 	{
 	public static array $validators = [
 		'color' => ['color'],
+		'not_color' => ['!color'],
 	];
 	}

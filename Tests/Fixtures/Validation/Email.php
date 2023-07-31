@@ -6,5 +6,6 @@ class Email extends \PHPFUI\ORM\Validator
 	{
 	public static array $validators = [
 		'email' => ['email'],
+		'not_email' => ['!email'],
 	];
 	}

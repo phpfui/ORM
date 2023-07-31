@@ -8,6 +8,7 @@ abstract class Day_month_year extends \PHPFUI\ORM\Record
 
 	public static array $fields = [
 		'day_month_year' => ['sqltype', 'string', 19, false, '', false, ],
+		'not_day_month_year' => ['!sqltype', 'string', 19, false, '', false, ],
 	];
 
 	public static string $primaryKey = '';

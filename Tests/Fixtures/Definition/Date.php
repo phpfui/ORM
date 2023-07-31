@@ -8,6 +8,7 @@ abstract class Date extends \PHPFUI\ORM\Record
 
 	public static array $fields = [
 		'date' => ['sqltype', 'string', 19, false, '', false, ],
+		'not_date' => ['!sqltype', 'string', 19, false, '', false, ],
 	];
 
 	public static string $primaryKey = '';

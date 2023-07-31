@@ -8,6 +8,7 @@ abstract class Maxlength extends \PHPFUI\ORM\Record
 
 	public static array $fields = [
 		'maxlength' => ['sqltype', 'string', 19, false, '', false, ],
+		'not_maxlength' => ['!sqltype', 'string', 19, false, '', false, ],
 		'length' => ['sqltype', 'string', 19, false, '', false, ],
 	];
 

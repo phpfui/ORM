@@ -6,5 +6,6 @@ class Url extends \PHPFUI\ORM\Validator
 	{
 	public static array $validators = [
 		'url' => ['url'],
+		'not_url' => ['!url'],
 	];
 	}

@@ -6,5 +6,6 @@ class Cvv extends \PHPFUI\ORM\Validator
 	{
 	public static array $validators = [
 		'cvv' => ['cvv'],
+		'not_cvv' => ['!cvv'],
 	];
 	}

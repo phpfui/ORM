@@ -8,6 +8,7 @@ abstract class DateISO extends \PHPFUI\ORM\Record
 
 	public static array $fields = [
 		'dateISO' => ['sqltype', 'string', 19, false, '', false, ],
+		'not_dateISO' => ['!sqltype', 'string', 19, false, '', false, ],
 	];
 
 	public static string $primaryKey = '';

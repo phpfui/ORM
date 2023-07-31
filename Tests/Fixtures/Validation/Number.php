@@ -6,5 +6,6 @@ class Number extends \PHPFUI\ORM\Validator
 	{
 	public static array $validators = [
 		'number' => ['number'],
+		'not_number' => ['!number'],
 	];
 	}

@@ -8,6 +8,7 @@ abstract class Domain extends \PHPFUI\ORM\Record
 
 	public static array $fields = [
 		'domain' => ['sqltype', 'string', 19, false, '', false, ],
+		'not_domain' => ['!sqltype', 'string', 19, false, '', false, ],
 	];
 
 	public static string $primaryKey = '';
