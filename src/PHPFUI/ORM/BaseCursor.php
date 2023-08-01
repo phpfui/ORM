@@ -81,13 +81,12 @@ abstract class BaseCursor implements \Countable, \Iterator	// @phpstan-ignore-li
 	 */
 	public function rewind() : void
 		{
-		$this->index = -1;
-
 		if (! $this->statement)
 			{
 			return;
 			}
 
+		$this->index = -1;
 		$this->statement->closeCursor();
 
 		$result = \PHPFUI\ORM::executeStatement($this->statement, $this->input);

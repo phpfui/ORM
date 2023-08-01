@@ -34,7 +34,6 @@ class Children extends \PHPFUI\ORM\VirtualField
 	/**
 	 * @param array<string, string> $parameters containing **\PHPFUI\ORM\Children::class** followed by the child table, then the optional parameters of an order by column and sort order (defaults to ASC).
 	 *
-	 * @return \PHPFUI\ORM\RecordCursor
 	 */
 	public function getValue(array $parameters) : \PHPFUI\ORM\RecordCursor
 		{

@@ -568,7 +568,6 @@ abstract class Table implements \Countable
 	/**
 	 * Return a Record collection matching the requested parameters
 	 *
-	 * @return \PHPFUI\ORM\RecordCursor
 	 */
 	public function getRecordCursor() : \PHPFUI\ORM\RecordCursor
 		{

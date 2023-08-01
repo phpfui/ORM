@@ -10,6 +10,7 @@ class CursorTest extends \PHPUnit\Framework\TestCase
 		$table->addOrderBy('customer_id');
 
 		$index = 0;
+
 		foreach ($table->getRecordCursor() as $key => $record)
 			{
 			$this->assertEquals($index++, $key, 'RecordCursor key is not correct');
@@ -18,6 +19,7 @@ class CursorTest extends \PHPUnit\Framework\TestCase
 			}
 
 		$index = 0;
+
 		foreach ($table->getArrayCursor() as $key => $record)
 			{
 			$this->assertEquals($index++, $key, 'ArrayCursor key is not correct');
@@ -25,6 +27,7 @@ class CursorTest extends \PHPUnit\Framework\TestCase
 			}
 
 		$index = 0;
+
 		foreach ($table->getDataObjectCursor() as $key => $record)
 			{
 			$this->assertEquals($index++, $key, 'DataObjectCursor key is not correct');
