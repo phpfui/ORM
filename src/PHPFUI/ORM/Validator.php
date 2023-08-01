@@ -129,7 +129,6 @@ namespace PHPFUI\ORM;
  * ```php
  * class Order extends \PHPFUI\ORM\Validator
  *   {
- *   /** @var array<string, string[]> */
  *   public static array $validators = [
  *     'order_date' => ['required', 'maxlength', 'datetime', 'minvalue:2000-01-01', 'maxvalue:2099-12-31'],
  *     ];
@@ -219,11 +218,13 @@ abstract class Validator
 		{
 		$a = (int)$condition;
 		$b = (int)$this->currentNot;
+
 		if ($condition xor $this->currentNot)
 			{
 			return '';
 			}
 		$token = '.validator.' . ($this->currentNot ? 'not.' : '') . $token;
+
 		return \PHPFUI\ORM::trans($token, $values);
 		}
 
