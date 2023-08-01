@@ -10,12 +10,27 @@ namespace PHPFUI\ORM;
  * ## Usage
  *
  * ```php
- * $record = new \PHPFUI\ORM\Record\Example($_POST);
+ * $record = new \App\Record\Example();
+ * $record->setFrom($_POST);
  * $validationErrors = $record->validate();
+ * if (! validationErrors)
+ *   {
+ *   $insertedId = $record->insert();
+ *   }
  * ```
- * <br>$validationErrors is an array indexed by field name containing an array of translated errors.
+ * **$validationErrors** is an array indexed by field name containing an array of translated errors.
+ * ```php
+ * foreach ($validationErrors as $field => $fieldErrors)
+ *   {
+ *   echo "Field {$field} has the following errors:\n";
+ *   foreach ($fieldErrors as $error)
+ *     {
+ *     echo $error . "\n";
+ *     }
+ *   }
+ * ```
  *
- * | Validator Name  | Description | Parameters |
+ * | Validator Name | Description | Parameters  |
  * | -------------- | ----------- | ----------- |
  * | alnum          | Numbers and characters only (ctype_alnum) | None |
  * | alpha          | Characters only (ctype_alpha) | None |
@@ -38,6 +53,7 @@ namespace PHPFUI\ORM;
  * | gt_field       | Greater Than field | field, required |
  * | gte_field      | Greater Than or Equal to field | field, required |
  * | icontains      | Field must contain (case insensitive) | comma separated list of strings |
+ * | iends_with     | Field must end with (case insensitive) | comma separated list of strings |
  * | integer        | Whole number, no fractional part | None |
  * | istarts_with   | Field must start with (case insensitive) | comma separated list of strings |
  * | lt_field       | Less Than field | field, required |
@@ -48,6 +64,8 @@ namespace PHPFUI\ORM;
  * | minvalue       | Must be less than or equal | value, required |
  * | month_day_year | Loosely formatted date (M-D-Y) | None |
  * | month_year     | Loosely formatted Month Year | None |
+ * | neq_field      | Not Equal to field | field, required |
+ * | not_equal      | Value must not be equal | value, required |
  * | number         | Floating point number or whole number | None |
  * | required       | Field is required, can't be null or blank, 0 is OK | None |
  * | starts_with    | Field must start with (case sensitive) | comma separated list of strings |
@@ -58,14 +76,15 @@ namespace PHPFUI\ORM;
  * | year_month     | Loosely formatted Year Month | None |
  *
  * ## Field Comparison Validators
- * You can compare one field to another on the same Record with the field validators.
+ * You can compare one field to another on the same **\App\Record** with the field validators.
  * * gt_field
  * * lt_field
  * * gte_field
  * * lte_field
  * * eq_field
+ * * neq_field
  *
- * Field validators take another field name as a parameter and perform the specified condition test. To compare against a specific value, use minvalue, maxvalue, or equal.
+ * Field validators take another field name as a parameter and perform the specified condition test. To compare against a specific value, use minvalue, maxvalue, equal or not_equal.
  *
  * ## Unique Parameters
  * Without any parameters, the **unique** validator will make sure no other record has a matching value for the field being validated. The current record is always exempted from the unique test so it can be updated.
@@ -105,6 +124,17 @@ namespace PHPFUI\ORM;
  * You may need to do additional checks for a specific record type.  A second parameter can be passed to the contructor which would represent the original values of the record.
  *
  * You can also pass an optional method to validate to perform more complex validation. If you use an optional method, the validator will not perform the standard validations unless you specifically call the validate() method again without the optional method parameter.
+ *
+ * ## Multi Validator Example
+ * ```php
+ * class Order extends \PHPFUI\ORM\Validator
+ *   {
+ *   /** @var array<string, string[]> */
+ *   public static array $validators = [
+ *     'order_date' => ['required', 'maxlength', 'datetime', 'minvalue:2000-01-01', 'maxvalue:2099-12-31'],
+ *     ];
+ *   }
+ * ```
  */
 abstract class Validator
 	{

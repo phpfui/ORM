@@ -13,7 +13,7 @@ Why another PHP ORM? In writing minimal and fast websites, it was determined tha
 - **Virtual Fields** Supports get and set semantics for any custom or calculated field such as Carbon dates.
 - **Migrations** Simple migrations offer atomic up and down migrations.
 - **Relations** Parent, children, one to one, many to many, and custom relationships.
-- **Transactions** Object based transaction meaning exceptions can not leave an open transacton.
+- **Transactions** Object based transactions meaning exceptions will not leave an open transacton.
 - **Type Safe** Prevents stupid type errors.
 - **Injection Safe** Uses PDO placeholders and field sanitation to prevent injection attacks.
 - **Raw SQL Query Support** Execute any valid SQL command.
