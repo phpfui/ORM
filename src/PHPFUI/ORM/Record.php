@@ -59,14 +59,15 @@ abstract class Record extends DataObject
 	 * - **int** primary key value, will load object values if the primary key value exists
 	 * - **string** primary key value, will load object values if the primary key value exists
 	 * - **array** record is attempted to be read from database using the values of the fields provided.
+	 * - **\PHPFUI\ORM\DataObject** record is constructed from an existing DataObject
 	 * - **null** (default) constructs an empty object
 	 *
 	 * @param  int|array<string,mixed>|null|string $parameter
 	 */
-	public function __construct(int|array|null|string $parameter = null)
+	public function __construct(int|array|null|string|\PHPFUI\ORM\DataObject $parameter = null)
 		{
 		$this->setEmpty();
-		$type = \gettype($parameter);
+		$type = \get_debug_type($parameter);
 
 		switch ($type)
 		  {
@@ -83,7 +84,7 @@ abstract class Record extends DataObject
 
 				break;
 
-			case 'integer':
+			case 'int':
 
 				if (1 == \count(static::$primaryKeys) && 'int' == static::$fields[static::$primaryKeys[0]][self::PHP_TYPE_INDEX])
 					{
@@ -101,6 +102,12 @@ abstract class Record extends DataObject
 				$this->read($parameter);
 
 				break;
+
+			case \PHPFUI\ORM\DataObject::class:
+				$this->current = array_intersect_key($parameter->current, static::$fields);
+
+				break;
+
 			}
 		}
 

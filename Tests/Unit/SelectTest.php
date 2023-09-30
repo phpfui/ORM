@@ -11,17 +11,24 @@ class SelectTest extends \PHPUnit\Framework\TestCase
 		$recordCursor = $table->getRecordCursor();
 		$this->assertEquals(29, $recordCursor->count());
 		$this->assertEquals(29, \count($recordCursor));
-		$this->assertEquals('Company A', $recordCursor->current()->company);
+		$customer = $recordCursor->current();
+		$this->assertEquals('Company A', $customer->company);
 
 		$arrayCursor = $table->getArrayCursor();
 		$this->assertEquals(29, $arrayCursor->count());
 		$this->assertEquals(29, \count($arrayCursor));
 		$this->assertEquals('Company A', $arrayCursor->current()['company']);
+		$arrayRecord = new \Tests\App\Record\Customer();
+		$arrayRecord->setFrom($arrayCursor->current());
+		$this->assertEquals($customer->toArray(), $arrayRecord->toArray());
 
 		$dataObjectCursor = $table->getDataObjectCursor();
 		$this->assertEquals(29, $dataObjectCursor->count());
 		$this->assertEquals(29, \count($dataObjectCursor));
-		$this->assertEquals('Company A', $dataObjectCursor->current()->company);
+		$dataObject = $dataObjectCursor->current();
+		$this->assertEquals('Company A', $dataObject->company);
+		$dataRecord = new \Tests\App\Record\Customer($dataObject);
+		$this->assertEquals($customer->toArray(), $dataRecord->toArray());
 		}
 
 	public function testSelectGroupBy() : void
