@@ -924,7 +924,11 @@ abstract class Record extends DataObject
 
 		if (static::$autoIncrement && $returnValue)
 			{
-			$this->current[static::$primaryKeys[0]] = $returnValue = (int)\PHPFUI\ORM::lastInsertId(static::$primaryKeys[0]);
+			$returnValue = (int)\PHPFUI\ORM::lastInsertId(static::$primaryKeys[0]);
+			if ($returnValue)
+				{
+				$this->current[static::$primaryKeys[0]] = $returnValue;
+				}
 			}
 
 		$this->loaded = true;	// record is effectively read from the database now
