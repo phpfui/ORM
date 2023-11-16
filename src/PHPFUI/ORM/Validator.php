@@ -334,10 +334,12 @@ abstract class Validator
 		for ($i = 0; $i < $number_length; ++$i)
 			{
 			$digit = (int)$number[$i];
+
 			// Multiply alternate digits by two
 			if ($i % 2 == $parity)
 				{
 				$digit *= 2;
+
 				// If the sum is two digits, add them together (in effect)
 				if ($digit > 9)
 					{
@@ -391,6 +393,7 @@ abstract class Validator
 		$month = 1;
 		$day = 2;
 		$parts = \explode('/', \str_replace(self::$dateSeparators, '/', (string)$value));
+
 		// allow zero dates if not required
 		if (! $this->currentRequired && ! \array_sum($parts))
 			{
@@ -440,6 +443,7 @@ abstract class Validator
 		$month = 1;
 		$day = 0;
 		$parts = \explode('/', \str_replace(self::$dateSeparators, '/', (string)$value));
+
 		// allow zero dates if not required
 		if (! $this->currentRequired && ! \array_sum($parts))
 			{
@@ -622,6 +626,7 @@ abstract class Validator
 		$month = 0;
 		$day = 1;
 		$parts = \explode('/', \str_replace(self::$dateSeparators, '/', (string)$value));
+
 		// allow zero dates if not required
 		if (! $this->currentRequired && ! \array_sum($parts))
 			{

@@ -17,7 +17,7 @@ class RelatedRecord extends \PHPFUI\ORM\VirtualField
 
 		if ($field)
 			{
-			return new $class($this->currentRecord->$field);
+			return new $class($this->currentRecord->{$field});
 			}
 
 		return new $class($this->currentRecord[$this->fieldName . \PHPFUI\ORM::$idSuffix]);

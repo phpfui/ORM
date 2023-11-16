@@ -619,6 +619,7 @@ abstract class Table implements \Countable
 			$columns = [];
 			// make explicit column names for joined tables since we don't have explicit selects
 			$sql = "\n`{$this->instance->getTableName()}`.*";
+
 			// set column names from explicit select
 			foreach ($this->getFields() as $field => $data)
 				{

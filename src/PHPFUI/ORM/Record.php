@@ -104,7 +104,7 @@ abstract class Record extends DataObject
 				break;
 
 			case \PHPFUI\ORM\DataObject::class:
-				$this->current = array_intersect_key($parameter->current, static::$fields);
+				$this->current = \array_intersect_key($parameter->current, static::$fields);
 
 				break;
 
@@ -213,6 +213,7 @@ abstract class Record extends DataObject
 			{
 			$message = static::class . "::{$field} is of type {$expectedType} but being assigned a type of {$haveType}";
 			\PHPFUI\ORM::log(\Psr\Log\LogLevel::WARNING, $message);
+
 			// do the conversion
 			switch ($expectedType)
 				{
@@ -925,6 +926,7 @@ abstract class Record extends DataObject
 		if (static::$autoIncrement && $returnValue)
 			{
 			$returnValue = (int)\PHPFUI\ORM::lastInsertId(static::$primaryKeys[0]);
+
 			if ($returnValue)
 				{
 				$this->current[static::$primaryKeys[0]] = $returnValue;
