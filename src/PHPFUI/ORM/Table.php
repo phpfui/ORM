@@ -398,6 +398,17 @@ abstract class Table implements \Countable
 		}
 
 	/**
+	 * Return an array of the explain query
+	 */
+	public function getExplainRows() : array
+		{
+		$this->lastInput = [];
+		$this->lastSql = 'explain ' . $this->getSQL($this->lastInput);
+
+		return \PHPFUI\ORM::getRows($this->lastSql, $this->lastInput);
+		}
+
+	/**
 	 * @return array<string,array<mixed>>
 	 */
 	public function getFields() : array
