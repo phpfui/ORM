@@ -399,6 +399,8 @@ abstract class Table implements \Countable
 
 	/**
 	 * Return an array of the explain query
+	 *
+	 * @return array<array<string,mixed>>
 	 */
 	public function getExplainRows() : array
 		{
