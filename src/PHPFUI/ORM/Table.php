@@ -1010,6 +1010,7 @@ abstract class Table implements \Countable
 				{
 				$data = [];
 
+				$record = new static::$className($existingKey);
 				foreach ($fields as $field => $typeInfo)
 					{
 					if (isset($request[$field]))
@@ -1024,7 +1025,7 @@ abstract class Table implements \Countable
 							}
 						}
 					}
-				$this->instance->setEmpty()->setFrom($data)->insertOrUpdate();
+				$record->setFrom($data)->insertOrUpdate();
 				}
 			}
 
