@@ -897,11 +897,6 @@ abstract class Record extends DataObject
 					{
 					$definition = static::$fields[$key];
 
-					if (\array_key_exists(self::DEFAULT_INDEX, $definition) && $value === $definition[self::DEFAULT_INDEX])
-						{
-						continue;
-						}
-
 					if (! \in_array($key, static::$primaryKeys))
 						{
 						$updateSql .= $comma . '`' . $key . '` = ?';
