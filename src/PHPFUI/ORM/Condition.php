@@ -5,9 +5,9 @@ namespace PHPFUI\ORM;
 /**
  * Conditions are used for the WHERE part of the query. Think of each Condition as enclosed in parentheses ().
  *
- * You start with an initial test: Field Operator Value (FOV) tupple.
+ * You start with an initial test: Field Value Operator (FVO) tupple.
  *
- * You can then add additional FOV tupples with a logical operator (AND, OR, AND NOT, OR NOT) separating the previous FOV tupple.
+ * You can then add additional FVO tupples with a logical operator (AND, OR, AND NOT, OR NOT) separating the previous FVO tupple.
  *
  * To add a sub condition in parentheses, add another Condition with the same logical operator separator.
  */
@@ -17,12 +17,12 @@ class Condition implements \Countable, \Stringable
 	private array $conditions = [];
 
 	/**
-	 * Start a Condition with a Field Operator Value (FOV) tupple.
+	 * Start a Condition with a Field Value Operator (FVO) tupple.
 	 *
-	 * Will try to parse FOV from string if $operator is null.
+	 * Will try to parse FVO from string if $operator is null.
 	 *
-	 * @param ?string    $field    single name (no .) of a field existing the the table.  Will try to parse FOV from string if $operator is null.
-	 * @param mixed     $value    to test field against.  Must be string for LIKE operators and an array for IN operators.
+	 * @param ?string $field single name (no .) of a field existing the the table.  Will try to parse FVO from string if $operator is null.
+	 * @param mixed $value to test field against.  Must be string for LIKE operators and an array for IN operators.
 	 * @param \PHPFUI\ORM\Operator $operator comparision of your choice
 	 */
 	public function __construct(?string $field = null, mixed $value = null, \PHPFUI\ORM\Operator $operator = new \PHPFUI\ORM\Operator\Equal())
@@ -90,7 +90,7 @@ class Condition implements \Countable, \Stringable
 		}
 
 	/**
-	 * Add logical AND between FOV tupples or Condition
+	 * Add logical AND between FVO tupples or Condition
 	 */
 	public function and(string | \PHPFUI\ORM\Condition $condition, mixed $value = null, \PHPFUI\ORM\Operator $operator = new \PHPFUI\ORM\Operator\Equal()) : self
 		{
@@ -98,7 +98,7 @@ class Condition implements \Countable, \Stringable
 		}
 
 	/**
-	 * Add logical AND NOT between FOV tupples or Condition
+	 * Add logical AND NOT between FVO tupples or Condition
 	 */
 	public function andNot(string | \PHPFUI\ORM\Condition $condition, mixed $value = null, \PHPFUI\ORM\Operator $operator = new \PHPFUI\ORM\Operator\Equal()) : self
 		{
@@ -106,7 +106,7 @@ class Condition implements \Countable, \Stringable
 		}
 
 	/**
-	 * @return int  the number of FOV tupples in the condition
+	 * @return int  the number of FVO tupples in the condition
 	 */
 	public function count() : int
 		{
@@ -116,7 +116,7 @@ class Condition implements \Countable, \Stringable
 	/**
 	 * @return string[]  of all the fields used by the condition
 	 */
-	public function getFields(?self $condition = null) : array
+	public function getFields() : array
 		{
 		$retVal = [];
 
@@ -182,7 +182,7 @@ class Condition implements \Countable, \Stringable
 		}
 
 	/**
-	 * Add logical OR between FOV tupples or Condition
+	 * Add logical OR between FVO tupples or Condition
 	 */
 	public function or(string | \PHPFUI\ORM\Condition $condition, mixed $value = null, \PHPFUI\ORM\Operator $operator = new \PHPFUI\ORM\Operator\Equal()) : self
 		{
@@ -190,7 +190,7 @@ class Condition implements \Countable, \Stringable
 		}
 
 	/**
-	 * Add logical OR NOT between FOV tupples or Condition
+	 * Add logical OR NOT between FVO tupples or Condition
 	 */
 	public function orNot(string | \PHPFUI\ORM\Condition $condition, mixed $value = null, \PHPFUI\ORM\Operator $operator = new \PHPFUI\ORM\Operator\Equal()) : self
 		{

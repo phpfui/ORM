@@ -30,6 +30,8 @@ class CursorTest extends \PHPUnit\Framework\TestCase
 
 		foreach ($table->getDataObjectCursor() as $key => $record)
 			{
+			$customer = new \Tests\App\Record\Customer($record);
+			$this->assertFalse($customer->empty(), 'Record constructed from DataObject is empty');
 			$this->assertEquals($index++, $key, 'DataObjectCursor key is not correct');
 			$this->assertEquals($index, $record->customer_id, 'DataObjectCursor record is not correct');
 			$this->assertEquals($index, $record['customer_id'], 'DataObjectCursor array access is not correct');
