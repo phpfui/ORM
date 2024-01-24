@@ -151,7 +151,7 @@ class Condition implements \Countable, \Stringable
 				if ($value instanceof \PHPFUI\ORM\Table)
 					{
 					$input = [];
-					$sql = $value->getSQL($input);
+					$sql = $value->getSelectSQL($input);
 					$retVal = \array_merge($retVal, \PHPFUI\ORM::getValueArray($sql, $input));
 					}
 				elseif (\is_array($value))

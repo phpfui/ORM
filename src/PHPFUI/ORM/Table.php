@@ -301,7 +301,9 @@ abstract class Table implements \Countable
 		$this->lastInput = [];
 		$where = $this->getWhere($this->lastInput);
 		$limit = $this->getLimitClause();
-		$this->lastSql = "DELETE FROM `{$table}`{$where}{$limit}";
+		$orderBy = $this->getOrderBy();
+
+		$this->lastSql = "DELETE FROM `{$table}`{$where}{$orderBy}{$limit}";
 		\PHPFUI\ORM::execute($this->lastSql, $this->lastInput);
 
 		return $this;
@@ -378,7 +380,7 @@ abstract class Table implements \Countable
 	public function getArrayCursor() : \PHPFUI\ORM\ArrayCursor
 		{
 		$this->lastInput = [];
-		$this->lastSql = $this->getSQL($this->lastInput);
+		$this->lastSql = $this->getSelectSQL($this->lastInput);
 
 		$totalInput = [];
 
@@ -391,7 +393,7 @@ abstract class Table implements \Countable
 	public function getDataObjectCursor() : \PHPFUI\ORM\DataObjectCursor
 		{
 		$this->lastInput = [];
-		$this->lastSql = $this->getSQL($this->lastInput);
+		$this->lastSql = $this->getSelectSQL($this->lastInput);
 		$totalInput = [];
 
 		return \PHPFUI\ORM::getDataObjectCursor($this->lastSql, $this->lastInput)->setCountSQL($this->getCountSQL($totalInput))->setTotalCountSQL($this->getTotalSQL($totalInput));
@@ -405,7 +407,7 @@ abstract class Table implements \Countable
 	public function getExplainRows() : array
 		{
 		$this->lastInput = [];
-		$this->lastSql = 'explain ' . $this->getSQL($this->lastInput);
+		$this->lastSql = 'explain ' . $this->getSelectSQL($this->lastInput);
 
 		return \PHPFUI\ORM::getRows($this->lastSql, $this->lastInput);
 		}
@@ -585,7 +587,7 @@ abstract class Table implements \Countable
 	public function getRecordCursor() : \PHPFUI\ORM\RecordCursor
 		{
 		$this->lastInput = [];
-		$this->lastSql = $this->getSQL($this->lastInput);
+		$this->lastSql = $this->getSelectSQL($this->lastInput);
 
 		$totalInput = [];
 
@@ -598,7 +600,7 @@ abstract class Table implements \Countable
 	public function getRows() : array
 		{
 		$this->lastInput = [];
-		$this->lastSql = $this->getSQL($this->lastInput);
+		$this->lastSql = $this->getSelectSQL($this->lastInput);
 
 		return \PHPFUI\ORM::getRows($this->lastSql, $this->lastInput);
 		}
@@ -606,7 +608,7 @@ abstract class Table implements \Countable
 	/**
 	 * @return string  the current select string, '*' if nothing specified, or a comma delimited field list
 	 */
-	public function getSelect() : string
+	public function getSelectFields() : string
 		{
 		$sql = '';
 		$comma = '';
@@ -676,10 +678,10 @@ abstract class Table implements \Countable
 	 *
 	 * Sets up lastSql and lastInput variable for use in returning cursors
 	 */
-	public function getSQL(array &$input, bool $limited = true) : string
+	public function getSelectSQL(array &$input, bool $limited = true) : string
 		{
 		$table = $this->instance->getTableName();
-		$select = $this->getSelect();
+		$select = $this->getSelectFields();
 		$joins = $this->getJoins($input);
 		$where = $this->getWhere($input);
 		$groupBy = $this->getGroupBy();
@@ -699,7 +701,7 @@ abstract class Table implements \Countable
 					{
 					$sql .= 'ANY ';
 					}
-				$sql .= ' ' . $table->getSQL($input, $limited) . ' ';
+				$sql .= ' ' . $table->getSelectSQL($input, $limited) . ' ';
 				}
 			}
 		$sql .= $orderBy;
@@ -830,7 +832,7 @@ abstract class Table implements \Countable
 	 *
 	 * @param bool $rollup can be applied to any group by field, but affects the entire group by clause
 	 */
-	public function setGroupBy(string $field, bool $rollup = false) : self
+	public function setGroupBy(string $field, bool $rollup = false) : static
 		{
 		$this->groupBys = [];
 
@@ -862,7 +864,7 @@ abstract class Table implements \Countable
 		return $this;
 		}
 
-	public function setOrderBy(string $field, string $ascending = 'ASC') : self
+	public function setOrderBy(string $field, string $ascending = 'ASC') : static
 		{
 		$this->orderBys = [];
 
@@ -983,9 +985,10 @@ abstract class Table implements \Countable
 			}
 
 		$where = $this->getWhere($this->lastInput);
+		$orderBy = $this->getOrderBy();
 		$limit = $this->getLimitClause();
 
-		$this->lastSql .= $where . $limit;
+		$this->lastSql .= $where . $orderBy . $limit;
 		\PHPFUI\ORM::execute($this->lastSql, $this->lastInput);
 
 		return $this;
@@ -1011,6 +1014,7 @@ abstract class Table implements \Countable
 				$data = [];
 
 				$record = new static::$className($existingKey);
+
 				foreach ($fields as $field => $typeInfo)
 					{
 					if (isset($request[$field]))
@@ -1056,7 +1060,7 @@ abstract class Table implements \Countable
 	 */
 	private function getCountSQL(array &$input) : string
 		{
-		return 'SELECT COUNT(*) from (' . $this->getSql($input) . ') countAlias';
+		return 'SELECT COUNT(*) from (' . $this->getSelectSQL($input) . ') countAlias';
 		}
 
 	/**
@@ -1090,6 +1094,6 @@ abstract class Table implements \Countable
 		{
 		$input = [];
 
-		return 'SELECT COUNT(*) from (' . $this->getSql($input, false) . ') countAlias';
+		return 'SELECT COUNT(*) from (' . $this->getSelectSQL($input, false) . ') countAlias';
 		}
 	}
