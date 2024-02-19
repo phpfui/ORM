@@ -752,6 +752,7 @@ abstract class Table implements \Countable
 	 * Mass insertion.  Does not use a transaction, so surround by a transaction if needed
 	 *
 	 * @param array<\PHPFUI\ORM\Record> $records
+	 * @param string $ignore Pass "ignore" to not error on duplicate records
 	 */
 	public function insert(array $records, string $ignore = '') : bool
 		{
@@ -760,7 +761,7 @@ abstract class Table implements \Countable
 			return false;
 			}
 		$tableName = $this->getTableName();
-		$sql = "insert {$ignore}into `{$tableName}` (";
+		$sql = "insert {$ignore} into `{$tableName}` (";
 
 		$fields = \array_keys($this->getFields());
 		$comma = '';
