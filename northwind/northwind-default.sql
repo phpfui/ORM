@@ -519,6 +519,14 @@ create table dateRecord (
 drop table if exists migration;
 create table migration (migrationId int NOT NULL primary key, ran TIMESTAMP DEFAULT CURRENT_TIMESTAMP);
 
+DROP TABLE IF EXISTS image;
+CREATE TABLE `image` (
+	`imageId` INTEGER NOT NULL AUTO_INCREMENT,
+	`imageableId` INTEGER,
+	`imageable_type` VARCHAR(128),
+	`path` VARCHAR(128) NOT NULL,
+	PRIMARY KEY (imageId));
+
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;

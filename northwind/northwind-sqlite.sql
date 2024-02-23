@@ -506,6 +506,14 @@ create table dateRecord (
   timestampDefaultCurrentNullable timestamp DEFAULT CURRENT_TIMESTAMP,
   timestampDefaultCurrentNotNull timestamp not null default CURRENT_TIMESTAMP);
 
+
+DROP TABLE IF EXISTS image;
+CREATE TABLE `image` (
+	`image_id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+	`imageable_id` INTEGER,
+	`imageable_type` VARCHAR(128),
+	`path` VARCHAR(128) NOT NULL);
+
 drop table if exists migration;
 create table migration (migrationId int NOT NULL primary key, ran TIMESTAMP DEFAULT CURRENT_TIMESTAMP);
 
