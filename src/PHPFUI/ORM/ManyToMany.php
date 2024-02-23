@@ -20,7 +20,7 @@ namespace PHPFUI\ORM;
 class ManyToMany extends \PHPFUI\ORM\VirtualField
 	{
 	/**
-	 * @param array<string, string[]> $parameters Key is the field name, values should be **\PHPFUI\ORM\ManyToMany::class**, followed by the junction table class name, then related table class name. Two additional parameters can be specified, the order by column and sort order (defaults to ASC).
+	 * @param array<string> $parameters values are the junction table class name, then related table class name. Two additional parameters can be specified, the order by column and sort order (defaults to ASC).
 	 */
 	public function getValue(array $parameters) : \PHPFUI\ORM\RecordCursor
 		{
@@ -54,5 +54,27 @@ class ManyToMany extends \PHPFUI\ORM\VirtualField
 			}
 
 		return $relatedTable->getRecordCursor();
+		}
+
+	/**
+	 * @param mixed $value to set
+	 * @param array<string> $parameters values are the junction table class name, then related table class name. Two additional parameters can be specified, the order by column and sort order (defaults to ASC).
+	 */
+	public function setValue(mixed $value, array $parameters) : void
+		{
+		$junctionTableClass = \array_shift($parameters);
+		$junctionTable = new $junctionTableClass();
+		$junctionRecord = clone $junctionTable->getRecord();
+
+		foreach ($this->currentRecord->getPrimaryKeys() as $key)
+			{
+			$junctionRecord->{$key} = $this->currentRecord->{$key};
+			}
+
+		foreach ($value->getPrimaryKeys() as $key)
+			{
+			$junctionRecord->{$key} = $value->{$key};
+			}
+		$junctionRecord->insert();
 		}
 	}
