@@ -913,6 +913,10 @@ abstract class Table implements \Countable
 				$parts = \explode(' as ', $field);
 				$this->addSelect($parts[0], $parts[1]);
 				}
+			else
+				{
+				$this->addSelect($field);
+				}
 			}
 
 		return $this;
