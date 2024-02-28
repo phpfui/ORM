@@ -13,7 +13,7 @@ namespace Tests\Fixtures\Record\Definition;
  * @property ?int $minimum_reorder_quantity MySQL type integer
  * @property ?string $product_code MySQL type varchar(25)
  * @property int $product_id MySQL type integer
- * @property \Tests\App\Record\Product $product_ related record
+ * @property \Tests\App\Record\Product $product related record
  * @property ?string $product_name MySQL type varchar(50)
  * @property ?string $quantity_per_unit MySQL type varchar(50)
  * @property ?int $reorder_level MySQL type integer

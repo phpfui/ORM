@@ -8,17 +8,17 @@ namespace Tests\Fixtures\Record\Definition;
  * @property ?string $date_allocated MySQL type datetime
  * @property float $discount MySQL type double
  * @property ?int $inventory_transaction_id MySQL type integer
- * @property \Tests\App\Record\InventoryTransaction $inventory_transaction_ related record
+ * @property \Tests\App\Record\InventoryTransaction $inventory_transaction related record
  * @property int $order_detail_id MySQL type integer
- * @property \Tests\Fixtures\Record\OrderDetail $order_detail_ related record
+ * @property \Tests\Fixtures\Record\OrderDetail $order_detail related record
  * @property ?int $order_detail_status_id MySQL type integer
- * @property \Tests\Fixtures\Record\OrderDetailStatus $order_detail_status_ related record
+ * @property \Tests\Fixtures\Record\OrderDetailStatus $order_detail_status related record
  * @property int $order_id MySQL type integer
- * @property \Tests\App\Record\Order $order_ related record
+ * @property \Tests\App\Record\Order $order related record
  * @property ?int $product_id MySQL type integer
- * @property \Tests\App\Record\Product $product_ related record
+ * @property \Tests\App\Record\Product $product related record
  * @property ?int $purchase_order_id MySQL type integer
- * @property \Tests\App\Record\PurchaseOrder $purchase_order_ related record
+ * @property \Tests\App\Record\PurchaseOrder $purchase_order related record
  * @property float $quantity MySQL type decimal(18,4)
  * @property ?float $unit_price MySQL type decimal(19,4)
  */

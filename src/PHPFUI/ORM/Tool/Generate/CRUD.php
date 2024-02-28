@@ -217,7 +217,7 @@ PHP;
 
 		if (\str_ends_with($fieldName, \PHPFUI\ORM::$idSuffix))
 			{
-			$var = \substr($fieldName, 0, \strlen($fieldName) - 2);
+			$var = \substr($fieldName, 0, \strlen($fieldName) - \strlen(\PHPFUI\ORM::$idSuffix));
 
 			if (! isset($commentedFields[$var]))
 				{
