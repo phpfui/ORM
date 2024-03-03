@@ -58,6 +58,7 @@ abstract class Table implements \Countable
 		$this->lastInput = [];
 
 		$fields = $this->getFields();
+		$tableName = $this->getTableName() . '.';
 
 		$condition = $this->getWhereCondition();
 
@@ -83,16 +84,16 @@ abstract class Table implements \Countable
 				{
 				if ($direction)
 					{
-					$condition->and($baseField, $parameters[$field], 'min' == $direction ? new \PHPFUI\ORM\Operator\GreaterThanEqual() : new \PHPFUI\ORM\Operator\LessThanEqual());
+					$condition->and($tableName . $baseField, $parameters[$field], 'min' == $direction ? new \PHPFUI\ORM\Operator\GreaterThanEqual() : new \PHPFUI\ORM\Operator\LessThanEqual());
 					}
 				elseif ($parameters[$field])
 					{
-					$condition->and($baseField, $parameters[$field]);
+					$condition->and($tableName . $baseField, $parameters[$field]);
 					}
 				}
 			elseif ('string' == $type && $value)
 				{
-				$condition->and($baseField, '%' . $value . '%', new \PHPFUI\ORM\Operator\Like());
+				$condition->and($tableName . $baseField, '%' . $value . '%', new \PHPFUI\ORM\Operator\Like());
 				}
 			}
 		$this->setWhere($condition);
