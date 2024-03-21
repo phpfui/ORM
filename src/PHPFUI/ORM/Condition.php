@@ -21,11 +21,11 @@ class Condition implements \Countable, \Stringable
 	 *
 	 * Will try to parse FVO from string if $operator is null.
 	 *
-	 * @param ?string $field single name (no .) of a field existing the the table.  Will try to parse FVO from string if $operator is null.
+	 * @param string|\PHPFUI\ORM\Literal|null $field single name (no .) of a field existing the the table.  Will try to parse FVO from string if $operator is null.
 	 * @param mixed $value to test field against.  Must be string for LIKE operators and an array for IN operators.
 	 * @param \PHPFUI\ORM\Operator $operator comparision of your choice
 	 */
-	public function __construct(?string $field = null, mixed $value = null, \PHPFUI\ORM\Operator $operator = new \PHPFUI\ORM\Operator\Equal())
+	public function __construct(string|\PHPFUI\ORM\Literal|null $field = null, mixed $value = null, \PHPFUI\ORM\Operator $operator = new \PHPFUI\ORM\Operator\Equal())
 		{
 		if ($field)
 			{
@@ -43,7 +43,8 @@ class Condition implements \Countable, \Stringable
 
 		foreach ($this->conditions as $parts)
 			{
-			if (! \is_object($parts[1]))
+
+			if (! \is_object($parts[1]) || $parts[1] instanceof \PHPFUI\ORM\Literal)
 				{
 				if ($parts[0])
 					{
@@ -55,7 +56,14 @@ class Condition implements \Countable, \Stringable
 
 				if ($parts[2]->correctlyTyped($value))
 					{
-					$escapedField = '`' . \str_replace('.', '`.`', (string)$field) . '`';
+					if ($field instanceof \PHPFUI\ORM\Literal)
+						{
+						$escapedField = (string)$field;
+						}
+					else
+						{
+						$escapedField = '`' . \str_replace('.', '`.`', (string)$field) . '`';
+						}
 					$retVal .= "{$first}{$escapedField}{$operator} ";
 					$first = ' ';
 
@@ -92,7 +100,7 @@ class Condition implements \Countable, \Stringable
 	/**
 	 * Add logical AND between FVO tupples or Condition
 	 */
-	public function and(string | \PHPFUI\ORM\Condition $condition, mixed $value = null, \PHPFUI\ORM\Operator $operator = new \PHPFUI\ORM\Operator\Equal()) : self
+	public function and(string | \PHPFUI\ORM\Condition | \PHPFUI\ORM\Literal $condition, mixed $value = null, \PHPFUI\ORM\Operator $operator = new \PHPFUI\ORM\Operator\Equal()) : self
 		{
 		return $this->add('AND', $condition, $operator, $value);
 		}
@@ -100,7 +108,7 @@ class Condition implements \Countable, \Stringable
 	/**
 	 * Add logical AND NOT between FVO tupples or Condition
 	 */
-	public function andNot(string | \PHPFUI\ORM\Condition $condition, mixed $value = null, \PHPFUI\ORM\Operator $operator = new \PHPFUI\ORM\Operator\Equal()) : self
+	public function andNot(string | \PHPFUI\ORM\Condition | \PHPFUI\ORM\Literal $condition, mixed $value = null, \PHPFUI\ORM\Operator $operator = new \PHPFUI\ORM\Operator\Equal()) : self
 		{
 		return $this->add('AND NOT', $condition, $operator, $value);
 		}
@@ -144,7 +152,7 @@ class Condition implements \Countable, \Stringable
 
 		foreach ($this->conditions as $parts)
 			{
-			if (! \is_object($parts[1]))
+			if (! \is_object($parts[1]) || $parts[1] instanceof \PHPFUI\ORM\Literal)
 				{
 				$value = $parts[3];
 
@@ -184,7 +192,7 @@ class Condition implements \Countable, \Stringable
 	/**
 	 * Add logical OR between FVO tupples or Condition
 	 */
-	public function or(string | \PHPFUI\ORM\Condition $condition, mixed $value = null, \PHPFUI\ORM\Operator $operator = new \PHPFUI\ORM\Operator\Equal()) : self
+	public function or(string | \PHPFUI\ORM\Condition | \PHPFUI\ORM\Literal $condition, mixed $value = null, \PHPFUI\ORM\Operator $operator = new \PHPFUI\ORM\Operator\Equal()) : self
 		{
 		return $this->add('OR', $condition, $operator, $value);
 		}
@@ -192,7 +200,7 @@ class Condition implements \Countable, \Stringable
 	/**
 	 * Add logical OR NOT between FVO tupples or Condition
 	 */
-	public function orNot(string | \PHPFUI\ORM\Condition $condition, mixed $value = null, \PHPFUI\ORM\Operator $operator = new \PHPFUI\ORM\Operator\Equal()) : self
+	public function orNot(string | \PHPFUI\ORM\Condition | \PHPFUI\ORM\Literal $condition, mixed $value = null, \PHPFUI\ORM\Operator $operator = new \PHPFUI\ORM\Operator\Equal()) : self
 		{
 		return $this->add('OR NOT', $condition, $operator, $value);
 		}
@@ -200,7 +208,7 @@ class Condition implements \Countable, \Stringable
 	/**
 	 * Internal method to type check $condition parameter
 	 */
-	private function add(string $logical, string | \PHPFUI\ORM\Condition $condition, \PHPFUI\ORM\Operator $operator, mixed $value) : static
+	private function add(string $logical, string | \PHPFUI\ORM\Condition | \PHPFUI\ORM\Literal $condition, \PHPFUI\ORM\Operator $operator, mixed $value) : static
 		{
 		if (null === $value && ! $operator->correctlyTyped($value))
 			{
@@ -219,7 +227,7 @@ class Condition implements \Countable, \Stringable
 			$logical = '';
 			}
 
-		if ('string' == \gettype($condition))
+		if ('string' == \gettype($condition) || \PHPFUI\ORM\Literal::class == $condition::class)
 			{
 			$this->conditions[] = [$logical, $condition, $operator, $value];
 			}
