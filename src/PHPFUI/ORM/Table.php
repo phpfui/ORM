@@ -979,9 +979,13 @@ abstract class Table implements \Countable
 	 */
 	public function update(array $variables) : static
 		{
-		$this->lastSql = 'UPDATE ' . $this->instance->getTableName() . ' SET';
-		$comma = '';
+		$this->lastSql = 'UPDATE ' . $this->instance->getTableName();
+
 		$this->lastInput = [];
+		$this->lastSql .= ' ' . $this->getJoins($this->lastInput);
+
+		$this->lastSql .= ' SET';
+		$comma = '';
 
 		foreach ($variables as $field => $value)
 			{
@@ -994,7 +998,7 @@ abstract class Table implements \Countable
 		$orderBy = $this->getOrderBy();
 		$limit = $this->getLimitClause();
 
-		$this->lastSql .= $where . $orderBy . $limit;
+		$this->lastSql .= "{$where} {$orderBy} {$limit}";
 		\PHPFUI\ORM::execute($this->lastSql, $this->lastInput);
 
 		return $this;
