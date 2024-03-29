@@ -134,8 +134,13 @@ abstract class Table implements \Countable
 	 * Add a join with another table
 	 *
 	 * @param string $table name of the table to join, case sensitive
-	 * @param string | \PHPFUI\ORM\Condition $on condition.  If string, name of field on the $table.  Defaults to table name appended with Id. Or \PHPFUI\ORM\Condition for complex joins
-	 * @param string $type of join
+	 * @param string | \PHPFUI\ORM\Condition $on condition.
+	 *  - If $on is empty, then the following defaults are tried:
+	 *  	* Join on the primary key of the join table if it exists on both tables
+	 *  	* If field does not exist on both tables, then use the primary key of the main table
+	 *  - If $on is a non-empty string, use as the join field
+	 *  - Use \PHPFUI\ORM\Condition for complex joins
+	 * @param string $type of join (LEFT, INNER, OUTER, RIGHT, FULL, CROSS)
 	 */
 	public function addJoin(string $table, string | \PHPFUI\ORM\Condition $on = '', string $type = 'LEFT', string $as = '') : static
 		{
@@ -167,6 +172,23 @@ abstract class Table implements \Countable
 			if (empty($on))
 				{
 				$on = $joinField;
+				}
+			$thisFields = $this->getFields();
+			$joinFields = $joinTable->getFields();
+			$keys = $this->getPrimaryKeys();
+			$thisPrimaryKey = array_shift($keys);
+			if (array_key_exists($on, $thisFields) && array_key_exists($on, $joinFields))
+				{
+				// do nothing here, just exclude this case
+				}
+			else if (array_key_exists($thisPrimaryKey, $joinFields))
+				{
+				// join on master table primary key
+				$on = $thisPrimaryKey;
+				}
+			else
+				{
+				throw new \PHPFUI\ORM\Exception("Table {$table} does not have a field to join on (tried {$on} and {$thisPrimaryKey})");
 				}
 			$onCondition = new \PHPFUI\ORM\Condition(new \PHPFUI\ORM\Field($table . '.' . $on), new \PHPFUI\ORM\Field($this->getTableName() . '.' . $on));
 			}
