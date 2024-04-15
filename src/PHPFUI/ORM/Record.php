@@ -505,11 +505,23 @@ abstract class Record extends DataObject
 		return true;
 		}
 
-	public function offsetGet(mixed $offset) : mixed
+	/**
+	 * Low level get access to underlying data to implement ArrayAccess
+	 */
+	public function offsetGet($offset) : mixed
 		{
 		$this->validateFieldExists($offset);
 
 		return $this->current[$offset] ?? null;
+		}
+
+	/**
+	 * Low level set access to underlying data to implement ArrayAccess
+	 */
+	public function offsetSet($offset, $value) : void
+		{
+		$this->validateFieldExists($offset);
+		$this->current[$offset] = $value;
 		}
 
  /**

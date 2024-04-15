@@ -176,12 +176,13 @@ abstract class Table implements \Countable
 			$thisFields = $this->getFields();
 			$joinFields = $joinTable->getFields();
 			$keys = $this->getPrimaryKeys();
-			$thisPrimaryKey = array_shift($keys);
-			if (array_key_exists($on, $thisFields) && array_key_exists($on, $joinFields))
+			$thisPrimaryKey = \array_shift($keys);
+
+			if (\array_key_exists($on, $thisFields) && \array_key_exists($on, $joinFields))
 				{
 				// do nothing here, just exclude this case
 				}
-			else if (array_key_exists($thisPrimaryKey, $joinFields))
+			elseif (\array_key_exists($thisPrimaryKey, $joinFields))
 				{
 				// join on master table primary key
 				$on = $thisPrimaryKey;

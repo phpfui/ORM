@@ -4,11 +4,11 @@ namespace Tests\Unit;
 
 class JoinTest extends \PHPUnit\Framework\TestCase
 	{
-	public function testBadTableJoin() : void
+	public function testBadJoin() : void
 		{
 		$this->expectException(\PHPFUI\ORM\Exception::class);
 		$table = new \Tests\App\Table\InventoryTransaction();
-		$table->addJoin('fred');
+		$table->addJoin('employee');
 		}
 
 	public function testBadJoinType() : void
@@ -19,11 +19,10 @@ class JoinTest extends \PHPUnit\Framework\TestCase
 		$table->addJoin('fred', type:'fred');
 		}
 
-	public function testBadJoin() : void
+	public function testBadTableJoin() : void
 		{
 		$this->expectException(\PHPFUI\ORM\Exception::class);
 		$table = new \Tests\App\Table\InventoryTransaction();
-		$table->addJoin('employee');
+		$table->addJoin('fred');
 		}
 	}
-
