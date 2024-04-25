@@ -2,8 +2,42 @@
 
 namespace Tests\Unit;
 
+enum TestEnum : int
+	{
+	case NO = 0;
+	case YES = 1;
+	}
+
 class MiscellaneousTest extends \PHPUnit\Framework\TestCase
 	{
+	public function testEnumCondition() : void
+		{
+		$condition = new \PHPFUI\ORM\Condition('field', TestEnum::YES);
+		$input = $condition->getInput();
+		$this->assertIsArray($input);
+		$this->assertCount(1, $input);
+		$this->assertContains(1, $input);
+		}
+
+	public function testInOperator() : void
+		{
+		$in = new \PHPFUI\ORM\Operator\In();
+		$this->assertTrue($in->correctlyTyped([1, 2]));
+		$this->assertFalse($in->correctlyTyped([]));
+		$this->assertFalse($in->correctlyTyped(1));
+
+		$notIn = new \PHPFUI\ORM\Operator\NotIn();
+		$this->assertTrue($notIn->correctlyTyped([1, 2]));
+		$this->assertFalse($notIn->correctlyTyped([]));
+		$this->assertFalse($notIn->correctlyTyped(1));
+		}
+
+	public function testLiteralCondition() : void
+		{
+		$condition = new \PHPFUI\ORM\Condition('field', new \PHPFUI\ORM\Literal('invoiceItem.storeItemId'));
+		$this->assertEquals('field = invoiceItem.storeItemId', (string)$condition);
+		}
+
 	public function testRow() : void
 		{
 		$row = \PHPFUI\ORM::getRow('select * from customer');

@@ -1069,6 +1069,51 @@ abstract class Table implements \Countable
 		return $transation->commit();
 		}
 
+	/**
+	 * @param array<string,mixed> $request
+	 *
+	 * @return array<string,string> errors
+	 */
+	public function validateFromTable(array $request) : array
+		{
+		$fields = $this->instance->getFields();
+
+		$primaryKeys = $this->getPrimaryKeys();
+
+		$errors = [];
+
+		if (\count($primaryKeys))
+			{
+			$mainKey = $primaryKeys[0];
+
+			foreach ($request[$mainKey] ?? [] as $existingKey => $index)
+				{
+				$data = [];
+
+				$record = new static::$className($existingKey);
+
+				foreach ($fields as $field => $typeInfo)
+					{
+					if (isset($request[$field]))
+						{
+						if (\is_array($request[$field]))
+							{
+							$data[$field] = $request[$field][$index];
+							}
+						else
+							{
+							$data[$field] = $request[$field];
+							}
+						}
+					}
+				$record->setFrom($data);
+				$errors = \array_merge($errors, $record->validate());
+				}
+			}
+
+		return $errors;
+		}
+
 	private function doTranslation(string $text) : string
 		{
 		$translationCallback = null;
