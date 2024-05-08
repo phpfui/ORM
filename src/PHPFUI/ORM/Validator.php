@@ -711,7 +711,7 @@ abstract class Validator
 
 	private function validate_unique(mixed $value) : string
 		{
-		$class = '\\' . \PHPFUI\ORM::$tableNamespace . '\\' . $this->record->getTableName();
+		$class = '\\' . \PHPFUI\ORM::$tableNamespace . '\\' . \PHPFUI\ORM::getBaseClassName($this->record->getTableName());
 		$table = new $class();
 		// look up the record in the table.  Can't be itself.
 		$condition = new \PHPFUI\ORM\Condition();
@@ -756,7 +756,7 @@ abstract class Validator
 
 		$table->setWhere($condition);
 
-		return $this->testIt(0 == (\is_countable($table) ? \count($table) : 0), 'unique', ['value' => $value]);
+		return $this->testIt(0 == (\is_countable($table) ? \count($table) : 0), 'unique', ['value' => $this->record->{$this->currentField}]);
 		}
 
 	private function validate_url(mixed $value) : string
