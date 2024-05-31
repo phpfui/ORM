@@ -474,31 +474,34 @@ abstract class Record extends DataObject
 		// cast to correct values as ints, floats, etc are read in from PDO as strings
 		foreach (static::$fields as $field => $row)
 			{
-			switch ($row[1])
+			if (null !== $this->current[$field]) // @phpstan-ignore-line
 				{
-				case 'int':
-					if (\array_key_exists($field, $this->current))
-						{
-						$this->current[$field] = (int)$this->current[$field];
-						}
+				switch ($row[1])
+					{
+					case 'int':
+						if (\array_key_exists($field, $this->current))
+							{
+							$this->current[$field] = (int)$this->current[$field];
+							}
 
-					break;
+						break;
 
-				case 'float':
-					if (\array_key_exists($field, $this->current))
-						{
-						$this->current[$field] = (float)$this->current[$field];
-						}
+					case 'float':
+						if (\array_key_exists($field, $this->current))
+							{
+							$this->current[$field] = (float)$this->current[$field];
+							}
 
-					break;
+						break;
 
-				case 'bool':
-					if (\array_key_exists($field, $this->current))
-						{
-						$this->current[$field] = (bool)$this->current[$field];
-						}
+					case 'bool':
+						if (\array_key_exists($field, $this->current))
+							{
+							$this->current[$field] = (bool)$this->current[$field];
+							}
 
-					break;
+						break;
+					}
 				}
 			}
 
