@@ -58,10 +58,10 @@ namespace PHPFUI\ORM;
  * | istarts_with   | Field must start with (case insensitive) | comma separated list of strings |
  * | lt_field       | Less Than field | field, required |
  * | lte_field      | Less Than or Equal to field | field, required |
- * | maxlength      | Length must be greater or equal | Optional length, else MySQL limit |
- * | maxvalue       | Value must be greater or equal | value, required |
- * | minlength      | Must be less than or equal | number, default field size |
- * | minvalue       | Must be less than or equal | value, required |
+ * | maxlength      | Length must be less than or equal | Optional length, else MySQL limit |
+ * | maxvalue       | Value must be less than or equal | value, required |
+ * | minlength      | Must be greater than or equal | number, default field size |
+ * | minvalue       | Must be greater than or equal | value, required |
  * | month_day_year | Loosely formatted date (M-D-Y) | None |
  * | month_year     | Loosely formatted Month Year | None |
  * | neq_field      | Not Equal to field | field, required |
