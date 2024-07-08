@@ -3,6 +3,8 @@
 ### PHPFUI\ORM a minimal Object Relational Mapper (ORM) for MySQL, MariaDB and SQLite3
 Why another PHP ORM? In writing minimal and fast websites, it was determined that existing PHP ORM solutions were overly complex. **PHPFUI\ORM** is a little more than 6.5K lines of code in under 50 files.  It is designed to have a minimal memory footprint and excellent execution times for most database needs.
 
+Performance [comparison of PHPFUI\ORM to Eloquent](https://github.com/phpfui/php-orm-sql-benchmarks) for different SQL implementations.
+
 **PHPFUI\ORM** is not an attempt to write an abstraction around SQL as other ORMs do, rather it is a way to work with SQL that closely matches the semantics of SQL, with the power of PHP objects.  It allows PHP to manipulate SQL queries without having to write SQL in plain text. This is very useful for queries generated via user interfaces where the user is given a lot of flexability in how a query is defined.
 
 ## Features
