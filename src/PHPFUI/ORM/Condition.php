@@ -69,7 +69,16 @@ class Condition implements \Countable, \Stringable
 
 					if (\is_array($value) || $value instanceof \PHPFUI\ORM\Table)
 						{
-						$retVal .= '(' . \implode(',', \array_fill(0, \count($value), '?')) . ')';
+						$count = \count($value);
+
+						if ($count)
+							{
+							$retVal .= '(' . \implode(',', \array_fill(0, $count, '?')) . ')';
+							}
+						else	// in clause with empty set, can not be a match, return false
+							{
+							$retVal = 'FALSE';
+							}
 						}
 					elseif (null !== $value)
 						{

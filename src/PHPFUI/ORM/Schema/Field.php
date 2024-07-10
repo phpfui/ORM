@@ -8,6 +8,8 @@ class Field
 
 	public readonly ?string $defaultValue;
 
+	public readonly string $extra;
+
 	public readonly string $name;
 
 	public readonly bool $nullable;
@@ -15,8 +17,6 @@ class Field
 	public readonly bool $primaryKey;
 
 	public readonly string $type;
-
-	public readonly string $extra;
 
 	/**
 	 * @param array<string,mixed> $fields
@@ -31,7 +31,8 @@ class Field
 			$this->defaultValue = $fields['Default'];
 			$this->primaryKey = false;	// use indexes to find primary keys
 			$this->autoIncrement = \str_contains($fields['Extra'], 'auto_increment');
-			$this->extra = str_replace('auto_increment', '', $fields['Extra']);
+			$this->extra = \str_replace('auto_increment', '', $fields['Extra']);
+
 			return;
 			}
 		// SQLite

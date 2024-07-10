@@ -474,7 +474,7 @@ abstract class Record extends DataObject
 		// cast to correct values as ints, floats, etc are read in from PDO as strings
 		foreach (static::$fields as $field => $row)
 			{
-			if (null !== $this->current[$field]) // @phpstan-ignore-line
+			if (null !== $this->current[$field])
 				{
 				switch ($row[1])
 					{
