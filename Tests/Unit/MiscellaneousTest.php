@@ -23,13 +23,26 @@ class MiscellaneousTest extends \PHPUnit\Framework\TestCase
 		{
 		$in = new \PHPFUI\ORM\Operator\In();
 		$this->assertTrue($in->correctlyTyped([1, 2]));
-		$this->assertFalse($in->correctlyTyped([]));
+		$this->assertTrue($in->correctlyTyped([]));
 		$this->assertFalse($in->correctlyTyped(1));
 
 		$notIn = new \PHPFUI\ORM\Operator\NotIn();
 		$this->assertTrue($notIn->correctlyTyped([1, 2]));
-		$this->assertFalse($notIn->correctlyTyped([]));
+		$this->assertTrue($notIn->correctlyTyped([]));
 		$this->assertFalse($notIn->correctlyTyped(1));
+		}
+
+	public function testInSelectOperator() : void
+		{
+		$productTable = new \Tests\Fixtures\Table\Product();
+		$productTable->addSelect('product_id');
+		$productTable->setWhere(new \PHPFUI\ORM\Condition('product_name', '%dried%', new \PHPFUI\ORM\Operator\Like()));
+		$orderDetailTable = new \Tests\Fixtures\Table\OrderDetail();
+		$orderDetailTable->setWhere(new \PHPFUI\ORM\Condition('product_id', $productTable, new \PHPFUI\ORM\Operator\In()));
+
+		$this->assertCount(8, $orderDetailTable);
+		$orderDetailTable->setWhere(new \PHPFUI\ORM\Condition('product_id', $productTable, new \PHPFUI\ORM\Operator\NotIn()));
+		$this->assertCount(50, $orderDetailTable);
 		}
 
 	public function testLiteralCondition() : void

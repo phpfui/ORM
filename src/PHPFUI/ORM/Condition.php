@@ -67,7 +67,7 @@ class Condition implements \Countable, \Stringable
 					$retVal .= "{$first}{$escapedField}{$operator} ";
 					$first = ' ';
 
-					if (\is_array($value) || $value instanceof \PHPFUI\ORM\Table)
+					if (\is_array($value))
 						{
 						$count = \count($value);
 
@@ -79,6 +79,11 @@ class Condition implements \Countable, \Stringable
 							{
 							$retVal = 'FALSE';
 							}
+						}
+					elseif ($value instanceof \PHPFUI\ORM\Table)
+						{
+						$input = [];
+						$retVal .= '(' . $value->getSelectSQL($input) . ')';
 						}
 					elseif (null !== $value)
 						{
@@ -167,9 +172,7 @@ class Condition implements \Countable, \Stringable
 
 				if ($value instanceof \PHPFUI\ORM\Table)
 					{
-					$input = [];
-					$sql = $value->getSelectSQL($input);
-					$retVal = \array_merge($retVal, \PHPFUI\ORM::getValueArray($sql, $input));
+					$value->getSelectSQL($retVal);
 					}
 				elseif (\is_array($value))
 					{

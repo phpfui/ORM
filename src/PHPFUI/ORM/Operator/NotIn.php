@@ -11,6 +11,6 @@ class NotIn extends \PHPFUI\ORM\Operator
 
 	public function correctlyTyped(mixed $variable) : bool
 		{
-		return (\is_array($variable) && \count($variable)) || $variable instanceof \PHPFUI\ORM\Table;
+		return \is_array($variable) || $variable instanceof \PHPFUI\ORM\Table;
 		}
 	}
