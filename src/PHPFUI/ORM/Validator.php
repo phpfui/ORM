@@ -84,6 +84,21 @@ namespace PHPFUI\ORM;
  * * eq_field
  * * neq_field
  *
+ * **Example:**
+ * ```php
+ * class Event extends \PHPFUI\ORM\Validator
+ *   {
+ *   public static array $validators = [
+ *     'endTime' => ['maxlength', 'gt_field:startTime'],
+ *     'lastRegistrationDate' => ['required', 'date', 'lte_field:eventDate'],
+ *     'newMemberDiscount' => ['required', 'number', 'lte_field:price'],
+ *     'publicDate' => ['date', 'lte_field:registrationStartDate', 'lte_field:eventDate'],
+ *     'registrationStartDate' => ['date', 'lte_field:lastRegistrationDate', 'lte_field:eventDate'],
+ *     'startTime' => ['maxlength', 'lt_field:endTime'],
+ *   ];
+ *   }
+ * ```
+ *
  * Field validators take another field name as a parameter and perform the specified condition test. To compare against a specific value, use minvalue, maxvalue, equal or not_equal.
  *
  * ## Unique Parameters
