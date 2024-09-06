@@ -76,7 +76,7 @@ PHP;
 		$length = $this->getTypeLength($type);
 		$validators = [];
 
-		if (! $field->nullable)
+		if (! $field->nullable && ! $field->autoIncrement)
 			{
 			$validators[] = 'required';
 			}
