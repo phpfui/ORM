@@ -26,7 +26,7 @@ Performance [comparison of PHPFUI\ORM to Eloquent](https://github.com/phpfui/php
 ### Setup
 ```php
 $pdo = new \PHPFUI\ORM\PDOInstance($yourConnectionString);
-// permform any custom configuration settings needed on $pdo
+// perform any custom configuration settings needed on $pdo
 \PHPFUI\ORM::addConnection($pdo);
 ```
 

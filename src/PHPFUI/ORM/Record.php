@@ -127,11 +127,11 @@ abstract class Record extends DataObject
 		}
 
 	/**
-	 * Allows for empty($object->field) to work correctly
+	 * @inherit
 	 */
 	public function __isset(string $field) : bool
 		{
-		return (bool)(\array_key_exists($field, $this->current) || \array_key_exists($field, static::$virtualFields) || \array_key_exists($field . \PHPFUI\ORM::$idSuffix, $this->current));
+		return (bool)(parent::__isset($field) || \array_key_exists($field, static::$virtualFields));
 		}
 
 	public function __set(string $field, mixed $value) : void
@@ -153,8 +153,14 @@ abstract class Record extends DataObject
 			{
 			$haveType = $value->getTableName();
 
-			if ($value instanceof \PHPFUI\ORM\Record && $field == $haveType)
+			if ($field == $haveType)
 				{
+				if ($value->empty())
+					{
+					$this->current[$id] = 0;
+
+					return;
+					}
 				$this->empty = false;
 
 				if (empty($value->{$id}))
@@ -443,25 +449,6 @@ abstract class Record extends DataObject
 		return true;
 		}
 
-	/**
-	 * Low level get access to underlying data to implement ArrayAccess
-	 */
-	public function offsetGet($offset) : mixed
-		{
-		$this->validateFieldExists($offset);
-
-		return $this->current[$offset] ?? null;
-		}
-
-	/**
-	 * Low level set access to underlying data to implement ArrayAccess
-	 */
-	public function offsetSet($offset, $value) : void
-		{
-		$this->validateFieldExists($offset);
-		$this->current[$offset] = $value;
-		}
-
  /**
   * Read a record from the db. If more than one match, only the first is loaded.
   *
@@ -734,6 +721,17 @@ abstract class Record extends DataObject
 		return \date('Y-m-d g:i a', $timeStamp);
 		}
 
+	protected function validateFieldExists(string $field) : void
+		{
+		if (! isset(static::$fields[$field]))
+			{
+			$message = static::class . "::{$field} is not a valid field";
+			\PHPFUI\ORM::log(\Psr\Log\LogLevel::ERROR, $message);
+
+			throw new \PHPFUI\ORM\Exception($message);
+			}
+		}
+
 	/**
 	 * Build a where clause
 	 *
@@ -877,16 +875,5 @@ abstract class Record extends DataObject
 		$this->loaded = true;	// record is effectively read from the database now
 
 		return $returnValue;
-		}
-
-	private function validateFieldExists(string $field) : void
-		{
-		if (! isset(static::$fields[$field]))
-			{
-			$message = static::class . "::{$field} is not a valid field";
-			\PHPFUI\ORM::log(\Psr\Log\LogLevel::ERROR, $message);
-
-			throw new \PHPFUI\ORM\Exception($message);
-			}
 		}
 	}
