@@ -334,28 +334,6 @@ abstract class Table implements \Countable
 		}
 
 	/**
-	 * transform any field or table.field from join
-	 */
-	public function displayTransform(string $field, mixed $value = null) : mixed
-		{
-		$parts = \explode('_', $field);
-
-		if (2 <= \count($parts))
-			{
-			$field = $parts[1];
-
-			if (isset($this->joins[$parts[0]]))
-				{
-				$joinedTable = $this->joins[$parts[0]][0];
-
-				return $joinedTable->displayTransform($field, $value);
-				}
-			}
-
-		return $this->instance->displayTransform($field, $value);
-		}
-
-	/**
 	 * @param array<string,mixed> $parameters
 	 */
 	public function find(array $parameters) : \PHPFUI\ORM\DataObjectCursor

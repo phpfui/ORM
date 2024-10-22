@@ -27,9 +27,6 @@ abstract class Record extends DataObject
 
 	protected static bool $deleteChildren = true;
 
-	/** @var array<string,array<callable>> */
-	protected static array $displayTransforms = [];
-
 	protected bool $empty = true;
 
 	/** @var array<string,array<mixed>> */
@@ -39,9 +36,6 @@ abstract class Record extends DataObject
 
 	/** @var array<string> */
 	protected static array $primaryKeys = [];
-
-	/** @var array<string,array<callable>> */
-	protected static array $setTransforms = [];
 
 	protected static string $table = '';
 
@@ -129,24 +123,7 @@ abstract class Record extends DataObject
 			return $relationshipObject->getValue($relationship);
 			}
 
-		if (isset(static::$fields[$field]))
-			{
-			return $this->displayTransform($field);
-			}
-
-		$id = $field . \PHPFUI\ORM::$idSuffix;
-
-		if (\array_key_exists($id, $this->current))
-			{
-			$type = '\\' . \PHPFUI\ORM::$recordNamespace . '\\' . \PHPFUI\ORM::getBaseClassName($field);
-
-			if (\class_exists($type))
-				{
-				return new $type($this->current[$id]);
-				}
-			}
-
-		throw new \PHPFUI\ORM\Exception(static::class . "::{$field} is not a valid field");
+		return parent::__get($field);
 		}
 
 	/**
@@ -201,12 +178,6 @@ abstract class Record extends DataObject
 			}
 
 		$this->validateFieldExists($field);
-
-		if (isset(static::$setTransforms[$field]))
-			{
-			$value = static::$setTransforms[$field]($value);
-			}
-
 		$expectedType = static::$fields[$field][self::PHP_TYPE_INDEX];
 		$haveType = \get_debug_type($value);
 
@@ -241,24 +212,6 @@ abstract class Record extends DataObject
 			}
 		$this->empty = false;
 		$this->current[$field] = $value;
-		}
-
-	/**
-	 * Add a transform for get.  Callback is passed value.
-	 */
-	public static function addDisplayTransform(string $field, callable $callback) : void
-		{
-		static::$displayTransforms[$field] = $callback;
-		}
-
-	/**
-	 * Add a transform for set.  Callback is passed value.
-	 */
-	public function addSetTransform(string $field, callable $callback) : static
-		{
-		static::$setTransforms[$field] = $callback;
-
-		return $this;
 		}
 
 	public function blankDate(?string $date) : string
@@ -320,24 +273,6 @@ abstract class Record extends DataObject
 		$sql = "delete from `{$table}` " . $where;
 
 		return \PHPFUI\ORM::execute($sql, $input);
-		}
-
-	/**
-	 * Transform a field for display
-	 */
-	public function displayTransform(string $field, mixed $value = null) : mixed
-		{
-		if (null === $value)
-			{
-			$value = $this->current[$field] ?? null;
-			}
-
-		if (! isset(static::$displayTransforms[$field]))
-			{
-			return $value;
-			}
-
-		return static::$displayTransforms[$field]($value);
 		}
 
 	/**
@@ -612,11 +547,6 @@ abstract class Record extends DataObject
 			if (isset(static::$fields[$field]))
 				{
 				$this->empty = false;
-
-				if (isset(static::$setTransforms[$field]))
-					{
-					$value = static::$setTransforms[$field]($value);
-					}
 				$this->current[$field] = $value;
 				}
 			}
