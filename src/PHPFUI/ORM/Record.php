@@ -98,8 +98,7 @@ abstract class Record extends DataObject
 				break;
 
 			case \PHPFUI\ORM\DataObject::class:
-				$this->current = \array_intersect_key($parameter->current, static::$fields);
-				$this->empty = false;
+				$this->setFrom($parameter->current);
 
 				break;
 
