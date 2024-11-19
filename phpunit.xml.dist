@@ -5,7 +5,7 @@
 	processIsolation="false"
 	stopOnFailure="false"
 	failOnWarning="true"
-	failOnDeprecation="true"
+	displayDetailsOnTestsThatTriggerDeprecations="true"
 	failOnNotice="true"
 	bootstrap="./Tests/bootstrap.php"
 	xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.1/phpunit.xsd"

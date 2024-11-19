@@ -61,7 +61,7 @@ abstract class Record extends DataObject
 	public function __construct(int|array|null|string|\PHPFUI\ORM\DataObject $parameter = null)
 		{
 		$this->setEmpty();
-		$type = \get_debug_type($parameter);
+		$type = $parameter instanceof \PHPFUI\ORM\DataObject ? \PHPFUI\ORM\DataObject::class : \get_debug_type($parameter);
 
 		switch ($type)
 		  {
