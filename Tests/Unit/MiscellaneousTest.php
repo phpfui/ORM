@@ -10,6 +10,24 @@ enum TestEnum : int
 
 class MiscellaneousTest extends \PHPUnit\Framework\TestCase
 	{
+	public function testNullAssignment() : void
+		{
+		$po = new \Tests\App\Record\PurchaseOrder();
+		$po->payment_method = 'Cash';
+		$this->assertNotNull($po->payment_method);
+		$po->payment_method = null;
+		$this->assertNull($po->payment_method);
+		}
+
+	public function testNullAssignmentError() : void
+		{
+		$po = new \Tests\App\Record\PurchaseOrder();
+		$this->assertIsFloat($po->shipping_fee);
+		$this->assertEquals(0.0, $po->shipping_fee);
+		$this->expectException(\PHPFUI\ORM\Exception::class);
+		$po->shipping_fee = null;
+		}
+
 	public function testEnumCondition() : void
 		{
 		$condition = new \PHPFUI\ORM\Condition('field', TestEnum::YES);

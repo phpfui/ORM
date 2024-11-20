@@ -890,7 +890,6 @@ class ValidationTest extends \PHPUnit\Framework\TestCase
 		$this->assertArrayHasKey('required', $errors);
 		$this->assertContains('This field is required', $errors['required']);
 
-		$crud->required = null;
 		$validator->validate();
 		$this->assertNotEmpty($validator->getErrors());
 		}

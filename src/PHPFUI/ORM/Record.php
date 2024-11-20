@@ -186,7 +186,17 @@ abstract class Record extends DataObject
 		$expectedType = static::$fields[$field][self::PHP_TYPE_INDEX];
 		$haveType = \get_debug_type($value);
 
-		if (null !== $value && $haveType != $expectedType)
+		if (null === $value)
+			{
+			if (! static::$fields[$field][self::ALLOWS_NULL_INDEX])
+				{
+				$message = static::class . "::{$field} does not allow nulls";
+				\PHPFUI\ORM::log(\Psr\Log\LogLevel::WARNING, $message);
+
+				throw new \PHPFUI\ORM\Exception($message);
+				}
+			}
+		elseif ($haveType != $expectedType)
 			{
 			$message = static::class . "::{$field} is of type {$expectedType} but being assigned a type of {$haveType}";
 			\PHPFUI\ORM::log(\Psr\Log\LogLevel::WARNING, $message);
@@ -741,11 +751,6 @@ abstract class Record extends DataObject
 	 */
 	private function buildWhere(array|int|string $key, array &$input) : string
 		{
-		if ('*' === $key)
-			{
-			return '';
-			}
-
 		if (! \is_array($key))
 			{
 			$key = [static::$primaryKeys[0] => $key];
