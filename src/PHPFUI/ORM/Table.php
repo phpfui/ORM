@@ -311,7 +311,7 @@ abstract class Table implements \Countable
 		}
 
 	/**
-	 * Delete record matching the requested parameters
+	 * Delete record matching the current where clause
 	 */
 	public function delete(bool $allowDeleteAll = false) : static
 		{

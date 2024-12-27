@@ -7,7 +7,7 @@ namespace PHPFUI\ORM;
  */
 class DataObject implements \ArrayAccess
 	{
-	/** @param array<string, string> $current */
+	/** @param array<string, string | null | int | bool | float> $current */
 	public function __construct(protected array $current)
 		{
 		}

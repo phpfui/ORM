@@ -275,14 +275,8 @@ class PDOInstance extends \PDO
 			{
 			return [];
 			}
-		$returnValue = $statement->fetchAll($fetchType);
 
-		if (! \is_array($returnValue))
-			{
-			$returnValue = [];
-			}
-
-		return $returnValue;
+		return $statement->fetchAll($fetchType);
 		}
 
 	/**

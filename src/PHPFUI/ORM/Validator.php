@@ -415,7 +415,7 @@ abstract class Validator
 			return '';
 			}
 
-		return $this->testIt(\checkdate((int)($parts[$month] ?? 0), (int)($parts[$day] ?? 0), (int)($parts[$year] ?? 0)), 'date', ['value' => $value]);
+		return $this->testIt(\checkdate((int)($parts[$month] ?? 0), (int)($parts[$day] ?? 0), (int)$parts[$year]), 'date', ['value' => $value]);
 		}
 
 	private function validate_dateISO(mixed $value) : string
@@ -424,7 +424,7 @@ abstract class Validator
 		$month = 1;
 		$day = 2;
 		$parts = \explode('-', (string)$value);
-		$year = \sprintf('%04d', (int)($parts[$year] ?? 0));
+		$year = \sprintf('%04d', (int)$parts[$year]);
 		$month = \sprintf('%02d', (int)($parts[$month] ?? 0));
 		$day = \sprintf('%02d', (int)($parts[$day] ?? 0));
 
@@ -465,7 +465,7 @@ abstract class Validator
 			return '';
 			}
 
-		return $this->testIt(\checkdate((int)($parts[$month] ?? 0), (int)($parts[$day] ?? 0), (int)($parts[$year] ?? 0)), 'day_month_year', ['value' => $value]);
+		return $this->testIt(\checkdate((int)($parts[$month] ?? 0), (int)$parts[$day], (int)($parts[$year] ?? 0)), 'day_month_year', ['value' => $value]);
 		}
 
 	private function validate_domain(mixed $value) : string
@@ -648,7 +648,7 @@ abstract class Validator
 			return '';
 			}
 
-		return $this->testIt(\checkdate((int)($parts[$month] ?? 0), (int)($parts[$day] ?? 0), (int)($parts[$year] ?? 0)), 'month_day_year', ['value' => $value]);
+		return $this->testIt(\checkdate((int)$parts[$month], (int)($parts[$day] ?? 0), (int)($parts[$year] ?? 0)), 'month_day_year', ['value' => $value]);
 		}
 
 	private function validate_month_year(mixed $value) : string
@@ -658,7 +658,7 @@ abstract class Validator
 		$day = 1;
 		$parts = \explode('/', \str_replace(self::$dateSeparators, '/', (string)$value));
 
-		return $this->testIt(\checkdate((int)($parts[$month] ?? 0), $day, (int)($parts[$year] ?? 0)), 'month_year', ['value' => $value]);
+		return $this->testIt(\checkdate((int)$parts[$month], $day, (int)($parts[$year] ?? 0)), 'month_year', ['value' => $value]);
 		}
 
 	private function validate_neq_field(mixed $value) : string
@@ -794,7 +794,7 @@ abstract class Validator
 		$day = 1;
 		$parts = \explode('/', \str_replace(self::$dateSeparators, '/', (string)$value));
 
-		return $this->testIt(\checkdate((int)($parts[$month] ?? 0), $day, (int)($parts[$year] ?? 0)), 'year_month', ['value' => $value]);
+		return $this->testIt(\checkdate((int)($parts[$month] ?? 0), $day, (int)$parts[$year]), 'year_month', ['value' => $value]);
 		}
 
 	/**

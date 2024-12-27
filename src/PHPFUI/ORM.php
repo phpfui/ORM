@@ -216,7 +216,7 @@ class ORM
 	/**
 	 * @param array<mixed> $input
 	 *
-	 * @return array<string, string> a single row of the first matching record or an empty array if an error
+	 * @return array<string, ?string> a single row of the first matching record or an empty array if an error
 	 */
 	public static function getRow(string $sql, array $input = []) : array
 		{
