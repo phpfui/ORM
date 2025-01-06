@@ -179,7 +179,7 @@ PHP;
 			case 'float':
 				if (null !== $field->defaultValue)
 					{
-					$temp = str_replace("'", '', $field->defaultValue);
+					$temp = \str_replace("'", '', $field->defaultValue);
 					$defaultValue = 'NULL' !== $field->defaultValue ? $temp : 'NULL';
 					}
 
