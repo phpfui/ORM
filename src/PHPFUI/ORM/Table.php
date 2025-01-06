@@ -64,7 +64,7 @@ abstract class Table implements \Countable
 
 		foreach ($parameters as $field => $value)
 			{
-			$baseField = $field;
+			$baseField = $this->cleanField($field);
 			$parts = \explode(':', $field);
 			$direction = '';
 
@@ -229,6 +229,11 @@ abstract class Table implements \Countable
 		else
 			{
 			$parts = \explode('.', $field);
+
+			foreach ($parts as $index => $part)
+				{
+				$parts[$index] = $this->cleanField($part);
+				}
 			$field = \implode('`.`', $parts);
 			$this->selects['`' . $field . '`'] = $as;
 			}
@@ -296,7 +301,19 @@ abstract class Table implements \Countable
 
 	public function cleanField(string $fieldName) : string
 		{
-		return \preg_replace('/[^[a-zA-Z_][a-zA-Z0-9_.$@-]{0,63}$]/', '', $fieldName);  // string invalid characters since we can't use a placeholder in order and group by
+		// Remove invalid characters (replace with underscore)
+		$sanitized = \preg_replace('/[^a-zA-Z0-9_$]/', '', $fieldName);
+
+		// Remove leading/trailing underscores
+		$sanitized = \trim($sanitized, '_');
+
+		// If the string is empty after sanitization, use field
+		if (! \strlen($sanitized))
+			{
+			$sanitized = 'field';
+			}
+
+		return $sanitized;
 		}
 
 	/**
