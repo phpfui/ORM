@@ -301,16 +301,16 @@ abstract class Table implements \Countable
 
 	public function cleanField(string $fieldName) : string
 		{
-		// Remove invalid characters (replace with space) but allow . for fully specified fields
-		$sanitized = \preg_replace('/[^a-zA-Z0-9_$.]/', '', $fieldName);
+		// Remove invalid characters (replace with space) but allow * and . for fully specified fields
+		$sanitized = \preg_replace('/[^a-zA-Z0-9_$.*]/', '', $fieldName);
 
 		// Remove leading/trailing underscores
 		$sanitized = \trim($sanitized, '_');
 
-		// If the string is empty after sanitization, use field
+		// If the string is empty after sanitization, use *
 		if (! \strlen($sanitized))
 			{
-			$sanitized = 'field';
+			$sanitized = '*';
 			}
 
 		return $sanitized;
