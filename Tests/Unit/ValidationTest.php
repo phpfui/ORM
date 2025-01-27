@@ -1022,16 +1022,16 @@ class ValidationTest extends \PHPUnit\Framework\TestCase
 	public function testUnique() : void
 		{
 		$crud = new \Tests\Fixtures\Record\Product(90);
-		$this->assertEquals('NWTCFV-90', $crud->product_code);
+		$this->assertEquals('NWTCFV-90', $crud->product_code, 'product_code should be NWTCFV-90');
 		$validator = new \Tests\Fixtures\Record\Validation\Product($crud);
 		// empty test
 		$validator->validate();
-		$this->assertEmpty($validator->getErrors());
+		$this->assertEmpty($validator->getErrors(), 'Validation produced errors');
 		$crud->product_code = 'NWTCFV-91';
 		$validator->validate();
 		$errors = $validator->getErrors();
-		$this->assertCount(1, $errors);
-		$this->assertContains('NWTCFV-91 is not unique', $errors['product_code']);
+		$this->assertCount(1, $errors, 'validation should produce one error');
+		$this->assertContains('NWTCFV-91 is not unique', $errors['product_code'], 'wrong validation error returned');
 		}
 
 	public function testUrl() : void

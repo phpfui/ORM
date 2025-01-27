@@ -7,12 +7,12 @@ class RecordTest extends \PHPUnit\Framework\TestCase
 	public function testBadField() : void
 		{
 		$order = new \Tests\Fixtures\Record\Order();
-		$this->assertFalse($order->loaded());
-		$this->assertFalse(empty($order->ship_address));
-		$order->ship_address = '';
-		$this->assertTrue(empty($order->ship_address));
-		$this->assertTrue(empty($order->fred));
-		$this->assertFalse(isset($order->fred));
+		$this->assertFalse($order->loaded(), 'Record should not be loaded');
+		$this->assertTrue(empty($order->ship_address), 'ship_address should be empty');
+		$order->ship_address = 'fred';
+		$this->assertFalse(empty($order->ship_address), 'ship_address should be set');
+		$this->assertTrue(empty($order->fred), 'fred should be empty');
+		$this->assertFalse(isset($order->fred), 'fred should not exist');
 		$this->expectException(\PHPFUI\ORM\Exception::class);
 		$order->fred = 'Fred';
 		}

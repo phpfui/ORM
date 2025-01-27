@@ -13,7 +13,6 @@ namespace Tests\Fixtures\Record\Definition;
  * @property ?int $minimum_reorder_quantity MySQL type integer
  * @property ?string $product_code MySQL type varchar(25)
  * @property int $product_id MySQL type integer
- * @property \Tests\App\Record\Product $product related record
  * @property ?string $product_name MySQL type varchar(50)
  * @property ?string $quantity_per_unit MySQL type varchar(50)
  * @property ?int $reorder_level MySQL type integer
@@ -26,20 +25,20 @@ abstract class Product extends \PHPFUI\ORM\Record
 
 	/** @var array<string, array<mixed>> */
 	protected static array $fields = [
-		// MYSQL_TYPE, PHP_TYPE, LENGTH, KEY, ALLOWS_NULL, DEFAULT
-		'attachments' => ['longblob', 'string', 0, false, true, 'NULL', ],
-		'category' => ['varchar(50)', 'string', 50, false, true, 'NULL', ],
-		'description' => ['longtext', 'string', 4294967295, false, true, 'NULL', ],
-		'discontinued' => ['integer', 'int', 0, false, false, 0, ],
-		'list_price' => ['decimal(19,4)', 'float', 19, false, false, 0, ],
-		'minimum_reorder_quantity' => ['integer', 'int', 0, false, true, null, ],
-		'product_code' => ['varchar(25)', 'string', 25, false, true, 'NULL', ],
-		'product_id' => ['integer', 'int', 0, true, false, ],
-		'product_name' => ['varchar(50)', 'string', 50, false, true, 'NULL', ],
-		'quantity_per_unit' => ['varchar(50)', 'string', 50, false, true, 'NULL', ],
-		'reorder_level' => ['integer', 'int', 0, false, true, null, ],
-		'standard_cost' => ['decimal(19,4)', 'float', 19, false, true, 0, ],
-		'target_level' => ['integer', 'int', 0, false, true, null, ],
+		// MYSQL_TYPE, PHP_TYPE, LENGTH, ALLOWS_NULL, DEFAULT
+		'attachments' => ['longblob', 'string', 0, true, NULL, ],
+		'category' => ['varchar(50)', 'string', 50, true, NULL, ],
+		'description' => ['longtext', 'string', 4294967295, true, NULL, ],
+		'discontinued' => ['integer', 'int', 0, false, 0, ],
+		'list_price' => ['decimal(19,4)', 'float', 19, false, 0.0000, ],
+		'minimum_reorder_quantity' => ['integer', 'int', 0, true, NULL, ],
+		'product_code' => ['varchar(25)', 'string', 25, true, NULL, ],
+		'product_id' => ['integer', 'int', 0, false, ],
+		'product_name' => ['varchar(50)', 'string', 50, true, NULL, ],
+		'quantity_per_unit' => ['varchar(50)', 'string', 50, true, NULL, ],
+		'reorder_level' => ['integer', 'int', 0, true, NULL, ],
+		'standard_cost' => ['decimal(19,4)', 'float', 19, true, 0.0000, ],
+		'target_level' => ['integer', 'int', 0, true, NULL, ],
 	];
 
 	/** @var array<string> */

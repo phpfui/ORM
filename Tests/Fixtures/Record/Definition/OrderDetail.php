@@ -10,9 +10,8 @@ namespace Tests\Fixtures\Record\Definition;
  * @property ?int $inventory_transaction_id MySQL type integer
  * @property \Tests\App\Record\InventoryTransaction $inventory_transaction related record
  * @property int $order_detail_id MySQL type integer
- * @property \Tests\Fixtures\Record\OrderDetail $order_detail related record
  * @property ?int $order_detail_status_id MySQL type integer
- * @property \Tests\Fixtures\Record\OrderDetailStatus $order_detail_status related record
+ * @property \Tests\App\Record\OrderDetailStatus $order_detail_status related record
  * @property int $order_id MySQL type integer
  * @property \Tests\App\Record\Order $order related record
  * @property ?int $product_id MySQL type integer
@@ -28,17 +27,17 @@ abstract class OrderDetail extends \PHPFUI\ORM\Record
 
 	/** @var array<string, array<mixed>> */
 	protected static array $fields = [
-		// MYSQL_TYPE, PHP_TYPE, LENGTH, KEY, ALLOWS_NULL, DEFAULT
-		'date_allocated' => ['datetime', 'string', 20, false, true, 'NULL', ],
-		'discount' => ['double', 'float', 0, false, false, 0, ],
-		'inventory_transaction_id' => ['integer', 'int', 0, false, true, null, ],
-		'order_detail_id' => ['integer', 'int', 0, true, false, ],
-		'order_detail_status_id' => ['integer', 'int', 0, false, true, null, ],
-		'order_id' => ['integer', 'int', 0, false, false, ],
-		'product_id' => ['integer', 'int', 0, false, true, null, ],
-		'purchase_order_id' => ['integer', 'int', 0, false, true, null, ],
-		'quantity' => ['decimal(18,4)', 'float', 18, false, false, 0, ],
-		'unit_price' => ['decimal(19,4)', 'float', 19, false, true, 0, ],
+		// MYSQL_TYPE, PHP_TYPE, LENGTH, ALLOWS_NULL, DEFAULT
+		'date_allocated' => ['datetime', 'string', 20, true, NULL, ],
+		'discount' => ['double', 'float', 0, false, 0, ],
+		'inventory_transaction_id' => ['integer', 'int', 0, true, NULL, ],
+		'order_detail_id' => ['integer', 'int', 0, false, ],
+		'order_detail_status_id' => ['integer', 'int', 0, true, NULL, ],
+		'order_id' => ['integer', 'int', 0, false, ],
+		'product_id' => ['integer', 'int', 0, true, NULL, ],
+		'purchase_order_id' => ['integer', 'int', 0, true, NULL, ],
+		'quantity' => ['decimal(18,4)', 'float', 18, false, 0.0000, ],
+		'unit_price' => ['decimal(19,4)', 'float', 19, true, 0.0000, ],
 	];
 
 	/** @var array<string> */
