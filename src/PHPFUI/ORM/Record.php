@@ -543,7 +543,7 @@ abstract class Record extends DataObject
 			if (isset(static::$fields[$field]))
 				{
 				$this->empty = false;
-				$this->current[$field] = $value;
+				$this->{$field} = $value;
 				}
 			}
 
