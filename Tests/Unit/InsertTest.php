@@ -12,7 +12,7 @@ class InsertTest extends \PHPUnit\Framework\TestCase
 		$timeStamp = \date('Y-m-d H:i:s');
 		$id = $test->insert();
 		$insertedTest = new \Tests\App\Record\DateRecord($id);
-		$this->assertNull($insertedTest->dateDefaultNull);
+		$this->assertNull($insertedTest->dateDefaultNull, 'dateDefaultNull is not null');
 		$this->assertEquals($date, $insertedTest->dateRequired);
 		$this->assertEquals('2000-01-02', $insertedTest->dateDefaultNullable);
 		$this->assertEquals('2000-01-02', $insertedTest->dateDefaultNotNull);
@@ -27,11 +27,12 @@ class InsertTest extends \PHPUnit\Framework\TestCase
 		$test = new \Tests\App\Record\DateRecord();
 		$id = $test->insert();
 		$this->assertNotEmpty(\PHPFUI\ORM::getLastError());
-		$this->assertEquals(0, $id);
+		$this->assertEquals(0, $id, '$id is not zero');
 		$insertedTest = new \Tests\App\Record\DateRecord($id);
-		$this->assertNull($insertedTest->dateDefaultNull);
-		$this->assertEquals('2000-01-02', $insertedTest->dateDefaultNullable);
-		$this->assertEquals('2000-01-02', $insertedTest->dateDefaultNotNull);
+		$this->assertNull($insertedTest->dateDefaultNull, 'dateDefaultNull is not after insert');
+		$this->assertEquals('2000-01-02', $insertedTest->dateDefaultNullable, 'dateDefaultNullable has bad default value');
+		$this->assertEquals('2000-01-02', $insertedTest->dateDefaultNotNull, 'dateDefaultNotNull has bad default value');
+
 		}
 
 	public function testMultipleInserts() : void

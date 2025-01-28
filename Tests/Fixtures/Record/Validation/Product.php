@@ -11,7 +11,6 @@ class Product extends \PHPFUI\ORM\Validator
 	public static array $validators = [
 		'category' => ['maxlength'],
 		'description' => ['maxlength'],
-		'discontinued' => ['required', 'integer'],
 		'list_price' => ['required', 'number'],
 		'minimum_reorder_quantity' => ['integer'],
 		'product_code' => ['maxlength', 'unique'],

@@ -8,7 +8,7 @@ abstract class Integer extends \PHPFUI\ORM\Record
 
 	public static array $fields = [
 		'integer' => ['sqltype', 'int', 19, false, '', false, ],
-		'not_integer' => ['!sqltype', 'int', 19, false, '', false, ],
+		'not_integer' => ['!sqltype', 'null', 19, false, '', false, ],
 	];
 
 	public static string $primaryKey = '';

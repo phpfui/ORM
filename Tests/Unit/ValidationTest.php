@@ -500,20 +500,31 @@ class ValidationTest extends \PHPUnit\Framework\TestCase
 
 		// empty test
 		$validator->validate();
-		$this->assertEmpty($validator->getErrors());
+		$this->assertEmpty($validator->getErrors(), 'Errors found on empty integer validate');
+
+		// float test
+		$crud->not_integer = 1.23;
+		$validator->validate();
+		$this->assertEmpty($validator->getErrors(), 'Errors found on float not_integer validate');
+
+		// int test
+		$crud->not_integer = 1;
+		$validator->validate();
+		$this->assertCount(1, $validator->getErrors(), 'Errors found on int in not_integer validate');
 
 		// valid tests
+		$crud->not_integer = 1.23;
 		$crud->integer = 0;
 		$validator->validate();
-		$this->assertEmpty($validator->getErrors());
+		$this->assertEmpty($validator->getErrors(), 'Errors found on zero integer validate');
 
 		$crud->integer = -1;
 		$validator->validate();
-		$this->assertEmpty($validator->getErrors());
+		$this->assertEmpty($validator->getErrors(), 'Errors found on negative integer validate');
 
 		$crud->integer = 1;
 		$validator->validate();
-		$this->assertEmpty($validator->getErrors());
+		$this->assertEmpty($validator->getErrors(), 'Errors found on positive integer validate');
 		}
 
 	public function testMaxlength() : void

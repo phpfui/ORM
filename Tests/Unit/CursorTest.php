@@ -37,4 +37,14 @@ class CursorTest extends \PHPUnit\Framework\TestCase
 			$this->assertEquals($index, $record['customer_id'], 'DataObjectCursor array access is not correct');
 			}
 		}
+
+	public function testCursorOnEnum() : void
+		{
+		$table = new \Tests\Fixtures\Table\Product();
+
+		foreach ($table->getRecordCursor() as $key => $record)
+			{
+			$this->assertTrue($record->discontinued instanceof \Tests\Fixtures\Enum\ProductStatus, 'discontinued (type ' . get_debug_type($record->discontinued) . ') is not a ProductStatus enum');
+			}
+		}
 	}
