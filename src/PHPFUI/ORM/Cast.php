@@ -21,9 +21,15 @@ class Cast extends \PHPFUI\ORM\VirtualField
 		{
 		$class = \array_shift($parameters);
 
-		if (! ($value instanceof $class))
+		if ($value === null)
 			{
-			throw new \PHPFUI\ORM\Exception(__METHOD__ . ': Error - ' . \get_debug_type($value) . ' is not an instance of ' . $class);
+			$this->currentRecord[$this->fieldName] = null;
+
+			return;
+			}
+		else if (! ($value instanceof $class))
+			{
+			$value = new $class($value);
 			}
 
 		$this->currentRecord[$this->fieldName] = "{$value}";
