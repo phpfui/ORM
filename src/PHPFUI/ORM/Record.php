@@ -441,7 +441,15 @@ abstract class Record extends DataObject
 				}
 			else if (\array_key_exists($field, $this->current))
 				{
-				switch ($row[1])
+				// don't touch nulls if allowed by the field or the primary key
+				if ($this->current[$field] === null)
+					{
+					if ($row[self::ALLOWS_NULL_INDEX] || in_array($field, static::$primaryKeys))
+						{
+						continue;
+						}
+					}
+				switch ($row[self::PHP_TYPE_INDEX])
 					{
 					case 'int':
 						$this->current[$field] = (int)$this->current[$field];
@@ -485,17 +493,7 @@ abstract class Record extends DataObject
 	 */
 	public function reload() : bool
 		{
-		$keys = [];
-
-		foreach (static::$primaryKeys as $key)
-			{
-			if (\array_key_exists($key, $this->current))
-				{
-				$keys[$key] = $this->current[$key];
-				}
-			}
-
-		return $this->read($keys);
+		return $this->read($this->getPrimaryKeyValues());
 		}
 
 	/**
