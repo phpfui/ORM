@@ -11,7 +11,7 @@ class Enum extends \PHPFUI\ORM\VirtualField
 		{
 		$enum = $parameters[0];
 
-		return $enum::from($value);
+		return $enum::from($value ?? 0);
 		}
 
 	/**
