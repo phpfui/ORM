@@ -9,6 +9,16 @@ abstract class VirtualField
 		}
 
 	/**
+	 * Override to do a custom conversion from a base PHP type (string, int, float, bool, ect)
+	 *
+	 * @param array<mixed> $parameters optional
+	 */
+	public function fromPHPValue(mixed $value, array $parameters) : mixed
+		{
+		return $value;
+		}
+
+	/**
 	 * @param array<mixed> $parameters optional
 	 */
 	public function getValue(array $parameters) : mixed
