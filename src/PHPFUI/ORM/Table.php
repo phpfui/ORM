@@ -782,7 +782,13 @@ abstract class Table implements \Countable
 		$tableName = $this->getTableName();
 		$sql = "insert {$ignore} into `{$tableName}` (";
 
-		$fields = \array_keys($this->getFields());
+		// remove primary keys
+		$fieldDefinitions = $this->getFields();
+		foreach ($this->getPrimaryKeys() as $key)
+			{
+			unset($fieldDefinitions[$key]);
+			}
+		$fields = \array_keys($fieldDefinitions);
 		$comma = '';
 
 		foreach ($fields as $fieldName)
