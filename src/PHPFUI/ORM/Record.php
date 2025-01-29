@@ -421,41 +421,47 @@ abstract class Record extends DataObject
 		$this->empty = false;
 		$this->loaded = true;
 
+		$this->correctTypes();
+
+		return true;
+		}
+
+	protected function correctTypes() : static
+		{
 		// cast to correct values as ints, floats, etc are read in from PDO as strings
 		foreach (static::$fields as $field => $row)
 			{
-			if (null !== $this->current[$field])
+			$relationship = static::$virtualFields[$field] ?? false;
+
+			if (\is_array($relationship))
+				{
+				$relationshipClass = \array_shift($relationship);
+				$relationshipObject = new $relationshipClass($this, $field);
+				$relationshipObject->setValue($relationshipObject->fromPHPValue($this->current[$field], $relationship), $relationship);
+				}
+			else if (\array_key_exists($field, $this->current))
 				{
 				switch ($row[1])
 					{
 					case 'int':
-						if (\array_key_exists($field, $this->current))
-							{
-							$this->current[$field] = (int)$this->current[$field];
-							}
+						$this->current[$field] = (int)$this->current[$field];
 
 						break;
 
 					case 'float':
-						if (\array_key_exists($field, $this->current))
-							{
-							$this->current[$field] = (float)$this->current[$field];
-							}
+						$this->current[$field] = (float)$this->current[$field];
 
 						break;
 
 					case 'bool':
-						if (\array_key_exists($field, $this->current))
-							{
-							$this->current[$field] = (bool)$this->current[$field];
-							}
+						$this->current[$field] = (bool)$this->current[$field];
 
 						break;
 					}
 				}
 			}
 
-		return true;
+		return $this;
 		}
 
  /**
@@ -524,6 +530,8 @@ abstract class Record extends DataObject
 			$this->current[$field] = $description[self::DEFAULT_INDEX] ?? null;
 			}
 
+		$this->correctTypes();
+
 		return $this;
 		}
 
@@ -543,9 +551,11 @@ abstract class Record extends DataObject
 			if (isset(static::$fields[$field]))
 				{
 				$this->empty = false;
-				$this->{$field} = $value;
+				$this->current[$field] = $value;
 				}
 			}
+
+		$this->correctTypes();
 
 		return $this;
 		}
