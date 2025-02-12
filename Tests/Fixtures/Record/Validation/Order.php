@@ -29,5 +29,5 @@ class Order extends \PHPFUI\ORM\Validator
 		'shipping_fee' => ['number'],
 		'tax_rate' => ['number'],
 		'taxes' => ['number'],
-		];
+	];
 	}

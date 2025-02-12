@@ -160,8 +160,7 @@ abstract class Validator
 
 	protected string $currentField = '';
 
-	/** @var array<int, array<mixed>> */
-	protected array $currentFieldDefinitions = [];
+	protected \PHPFUI\ORM\FieldDefinition $currentFieldDefinitions;
 
 	protected bool $currentNot = false;
 
@@ -170,7 +169,7 @@ abstract class Validator
 
 	protected bool $currentRequired = false;
 
-	/** @var array<string, array<mixed>> */
+	/** @var array<string, \PHPFUI\ORM\FieldDefinition> */
 	protected array $fieldDefinitions = [];
 
 	/** @var array<string, array<string>> */
@@ -247,11 +246,10 @@ abstract class Validator
 	 * Gets the errors for a value with the record definition and associated validators
 	 *
 	 * @param array<string> $validators
-	 * @param array<int, array<string>> $fieldDefinitions
 	 *
 	 * @return array<string> of errors of translated text
 	 */
-	private function getFieldErrors(mixed $value, array $validators, array $fieldDefinitions) : array
+	private function getFieldErrors(mixed $value, array $validators, \PHPFUI\ORM\FieldDefinition $fieldDefinitions) : array
 		{
 		$errors = [];
 
@@ -601,9 +599,8 @@ abstract class Validator
 
 	private function validate_maxlength(mixed $value) : string
 		{
-		$length = $this->currentParameters[0] ?? $this->currentFieldDefinitions[\PHPFUI\ORM\Record::LENGTH_INDEX];
+		$length = $this->currentParameters[0] ?? $this->currentFieldDefinitions->length;
 
-		// @phpstan-ignore-next-line
 		return $this->testIt(\strlen((string)$value) <= $length, 'maxlength', ['value' => $value, 'length' => $length]);
 		}
 
@@ -619,9 +616,8 @@ abstract class Validator
 
 	private function validate_minlength(mixed $value) : string
 		{
-		$length = $this->currentParameters[0] ?? $this->currentFieldDefinitions[\PHPFUI\ORM\Record::LENGTH_INDEX];
+		$length = $this->currentParameters[0] ?? $this->currentFieldDefinitions->length;
 
-		// @phpstan-ignore-next-line
 		return $this->testIt(\strlen((string)$value) >= $length, 'minlength', ['value' => $value, 'length' => $length]);
 		}
 
@@ -800,11 +796,9 @@ abstract class Validator
 	/**
 	 * Validate one rule.
 	 *
-	 * @param array<int, array<mixed>> $fieldDefinitions
-	 *
 	 * @return array<string> of errors of translated text
 	 */
-	private function validateRule(string $validator, mixed $value, array $fieldDefinitions) : array
+	private function validateRule(string $validator, mixed $value, \PHPFUI\ORM\FieldDefinition $fieldDefinitions) : array
 		{
 		$this->currentFieldDefinitions = $fieldDefinitions;
 		$this->currentNot = false;

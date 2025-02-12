@@ -44,7 +44,7 @@ class CursorTest extends \PHPUnit\Framework\TestCase
 
 		foreach ($table->getRecordCursor() as $key => $record)
 			{
-			$this->assertTrue($record->discontinued instanceof \Tests\Fixtures\Enum\ProductStatus, 'discontinued (type ' . get_debug_type($record->discontinued) . ') is not a ProductStatus enum');
+			$this->assertTrue($record->discontinued instanceof \Tests\Fixtures\Enum\ProductStatus, 'discontinued (type ' . \get_debug_type($record->discontinued) . ') is not a ProductStatus enum');
 			}
 		}
 	}

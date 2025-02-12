@@ -11,7 +11,7 @@ abstract class Base
 		return $lhs->name <=> $rhs->name;
 		}
 
-	abstract protected function getLine(\PHPFUI\ORM\Schema\Field $field) : string;
+	abstract protected function getFieldDefinition(\PHPFUI\ORM\Schema\Field $field) : string;
 
 	/**
 	 * @return array<string, string>

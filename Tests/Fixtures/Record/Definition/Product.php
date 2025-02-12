@@ -23,26 +23,35 @@ abstract class Product extends \PHPFUI\ORM\Record
 	{
 	protected static bool $autoIncrement = true;
 
-	/** @var array<string, array<mixed>> */
-	protected static array $fields = [
-		// MYSQL_TYPE, PHP_TYPE, LENGTH, ALLOWS_NULL, DEFAULT
-		'attachments' => ['longblob', 'string', 0, true, NULL, ],
-		'category' => ['varchar(50)', 'string', 50, true, NULL, ],
-		'description' => ['longtext', 'string', 4294967295, true, NULL, ],
-		'discontinued' => ['integer', 'int', 0, false, 0, ],
-		'list_price' => ['decimal(19,4)', 'float', 19, false, 0.0000, ],
-		'minimum_reorder_quantity' => ['integer', 'int', 0, true, NULL, ],
-		'product_code' => ['varchar(25)', 'string', 25, true, NULL, ],
-		'product_id' => ['integer', 'int', 0, false, ],
-		'product_name' => ['varchar(50)', 'string', 50, true, NULL, ],
-		'quantity_per_unit' => ['varchar(50)', 'string', 50, true, NULL, ],
-		'reorder_level' => ['integer', 'int', 0, true, NULL, ],
-		'standard_cost' => ['decimal(19,4)', 'float', 19, true, 0.0000, ],
-		'target_level' => ['integer', 'int', 0, true, NULL, ],
-	];
+	/** @var array<string, \PHPFUI\ORM\FieldDefinition> */
+	protected static array $fields = [];
 
 	/** @var array<string> */
 	protected static array $primaryKeys = ['product_id', ];
 
 	protected static string $table = 'product';
+
+	public function initFieldDefinitions() : static
+		{
+		if (! \count(static::$fields))
+			{
+			static::$fields = [
+				'attachments' => new \PHPFUI\ORM\FieldDefinition('longblob', 'string', 0, true, null, ),
+				'category' => new \PHPFUI\ORM\FieldDefinition('varchar(50)', 'string', 50, true, null, ),
+				'description' => new \PHPFUI\ORM\FieldDefinition('longtext', 'string', 4294967295, true, null, ),
+				'discontinued' => new \PHPFUI\ORM\FieldDefinition('integer', 'int', 0, false, 0, ),
+				'list_price' => new \PHPFUI\ORM\FieldDefinition('decimal(19,4)', 'float', 19, false, 0.0000, ),
+				'minimum_reorder_quantity' => new \PHPFUI\ORM\FieldDefinition('integer', 'int', 0, true, null, ),
+				'product_code' => new \PHPFUI\ORM\FieldDefinition('varchar(25)', 'string', 25, true, null, ),
+				'product_id' => new \PHPFUI\ORM\FieldDefinition('integer', 'int', 0, false, ),
+				'product_name' => new \PHPFUI\ORM\FieldDefinition('varchar(50)', 'string', 50, true, null, ),
+				'quantity_per_unit' => new \PHPFUI\ORM\FieldDefinition('varchar(50)', 'string', 50, true, null, ),
+				'reorder_level' => new \PHPFUI\ORM\FieldDefinition('integer', 'int', 0, true, null, ),
+				'standard_cost' => new \PHPFUI\ORM\FieldDefinition('decimal(19,4)', 'float', 19, true, 0.0000, ),
+				'target_level' => new \PHPFUI\ORM\FieldDefinition('integer', 'int', 0, true, null, ),
+			];
+			}
+
+		return $this;
+		}
 	}

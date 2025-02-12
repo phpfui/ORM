@@ -25,23 +25,32 @@ abstract class OrderDetail extends \PHPFUI\ORM\Record
 	{
 	protected static bool $autoIncrement = true;
 
-	/** @var array<string, array<mixed>> */
-	protected static array $fields = [
-		// MYSQL_TYPE, PHP_TYPE, LENGTH, ALLOWS_NULL, DEFAULT
-		'date_allocated' => ['datetime', 'string', 20, true, NULL, ],
-		'discount' => ['double', 'float', 0, false, 0, ],
-		'inventory_transaction_id' => ['integer', 'int', 0, true, NULL, ],
-		'order_detail_id' => ['integer', 'int', 0, false, ],
-		'order_detail_status_id' => ['integer', 'int', 0, true, NULL, ],
-		'order_id' => ['integer', 'int', 0, false, ],
-		'product_id' => ['integer', 'int', 0, true, NULL, ],
-		'purchase_order_id' => ['integer', 'int', 0, true, NULL, ],
-		'quantity' => ['decimal(18,4)', 'float', 18, false, 0.0000, ],
-		'unit_price' => ['decimal(19,4)', 'float', 19, true, 0.0000, ],
-	];
+	/** @var array<string, \PHPFUI\ORM\FieldDefinition> */
+	protected static array $fields = [];
 
 	/** @var array<string> */
 	protected static array $primaryKeys = ['order_detail_id', ];
 
 	protected static string $table = 'order_detail';
+
+	public function initFieldDefinitions() : static
+		{
+		if (! \count(static::$fields))
+			{
+			static::$fields = [
+				'date_allocated' => new \PHPFUI\ORM\FieldDefinition('datetime', 'string', 20, true, null, ),
+				'discount' => new \PHPFUI\ORM\FieldDefinition('double', 'float', 0, false, 0, ),
+				'inventory_transaction_id' => new \PHPFUI\ORM\FieldDefinition('integer', 'int', 0, true, null, ),
+				'order_detail_id' => new \PHPFUI\ORM\FieldDefinition('integer', 'int', 0, false, ),
+				'order_detail_status_id' => new \PHPFUI\ORM\FieldDefinition('integer', 'int', 0, true, null, ),
+				'order_id' => new \PHPFUI\ORM\FieldDefinition('integer', 'int', 0, false, ),
+				'product_id' => new \PHPFUI\ORM\FieldDefinition('integer', 'int', 0, true, null, ),
+				'purchase_order_id' => new \PHPFUI\ORM\FieldDefinition('integer', 'int', 0, true, null, ),
+				'quantity' => new \PHPFUI\ORM\FieldDefinition('decimal(18,4)', 'float', 18, false, 0.0000, ),
+				'unit_price' => new \PHPFUI\ORM\FieldDefinition('decimal(19,4)', 'float', 19, true, 0.0000, ),
+			];
+			}
+
+		return $this;
+		}
 	}

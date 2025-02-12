@@ -41,7 +41,7 @@ PHP;
 
 		foreach ($fields as $field)
 			{
-			$line = $this->getLine($field);
+			$line = $this->getFieldDefinition($field);
 
 			if ($line)
 				{
@@ -70,7 +70,7 @@ PHP;
 		return true;
 		}
 
-	protected function getLine(\PHPFUI\ORM\Schema\Field $field) : string
+	protected function getFieldDefinition(\PHPFUI\ORM\Schema\Field $field) : string
 		{
 		$type = $field->type;
 		$length = $this->getTypeLength($type);

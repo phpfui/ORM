@@ -29,15 +29,24 @@ abstract class ~~CLASS~~ extends \PHPFUI\ORM\Record
 	{
 	protected static bool $autoIncrement = ~~AUTO_INCREMENT~~;
 
-	/** @var array<string, array<mixed>> */
-	protected static array $fields = [
-		// MYSQL_TYPE, PHP_TYPE, LENGTH, ALLOWS_NULL, DEFAULT
-~~FIELD_ARRAY~~	];
+	/** @var array<string, \PHPFUI\ORM\FieldDefinition> */
+	protected static array $fields = [];
 
 	/** @var array<string> */
 	protected static array $primaryKeys = ~~PRIMARY_KEY~~;
 
 	protected static string $table = '~~TABLE_NAME~~';
+
+	public function initFieldDefinitions() : static
+		{
+		if (! count(static::$fields))
+			{
+			static::$fields = [
+~~FIELD_ARRAY~~		];
+			}
+
+		return $this;
+		}
 	}
 
 PHP;
@@ -72,12 +81,29 @@ PHP;
 
 		foreach ($fields as $field)
 			{
-			$fieldArray .= "\t\t" . $this->getLine($field) . "\n";
+			$fieldArray .= $this->getFieldDefinition($field) . "\n";
 
 			if ($field->autoIncrement)
 				{
 				$autoIncrement = 'true';
 				}
+			}
+
+		// need to make Definition file first if not there
+		// Always make definition file
+		$basePath = \PHPFUI\ORM::getRecordNamespacePath() . '/Definition';
+
+		if (! \is_dir($basePath))
+			{
+			\mkdir($basePath, 0777, true);
+			}
+		$ucTable = \PHPFUI\ORM::getBaseClassName($table);
+		$definitionFileName = $basePath . '/' . $ucTable . '.php';
+
+		if (! \file_exists($definitionFileName))
+			{
+			$replaceVars = [$ucTable, $table, '', $fieldArray, '[]', $autoIncrement, \PHPFUI\ORM::$recordNamespace, \PHPFUI\ORM::$tableNamespace, ];
+			\file_put_contents($definitionFileName, \str_replace($sourceVars, $replaceVars, $classDefinition));
 			}
 
 		$fieldComments = '';
@@ -93,7 +119,6 @@ PHP;
 				}
 			}
 
-		$ucTable = \PHPFUI\ORM::getBaseClassName($table);
 		$keys = '[';
 
 		foreach ($this->getPrimaryKeys($table) as $key)
@@ -103,14 +128,7 @@ PHP;
 		$keys .= ']';
 		$replaceVars = [$ucTable, $table, $fieldComments, $fieldArray, $keys, $autoIncrement, \PHPFUI\ORM::$recordNamespace, \PHPFUI\ORM::$tableNamespace, ];
 
-		// Always make definition file
-		$basePath = \PHPFUI\ORM::getRecordNamespacePath() . '/Definition';
-
-		if (! \is_dir($basePath))
-			{
-			\mkdir($basePath, 0777, true);
-			}
-		\file_put_contents($basePath . '/' . $ucTable . '.php', \str_replace($sourceVars, $replaceVars, $classDefinition));
+		\file_put_contents($definitionFileName, \str_replace($sourceVars, $replaceVars, $classDefinition));
 
 		// Only make model file if no model
 		$modelPath = \PHPFUI\ORM::getRecordNamespacePath() . '/' . $ucTable . '.php';
@@ -137,9 +155,9 @@ PHP;
 		return true;
 		}
 
-	protected function getLine(\PHPFUI\ORM\Schema\Field $field) : string
+	protected function getFieldDefinition(\PHPFUI\ORM\Schema\Field $field) : string
 		{
-		$retVal = $this->quote($field->name) . ' => [';
+		$retVal = "\t\t\t" . $this->quote($field->name) . ' => new \PHPFUI\ORM\FieldDefinition(';
 		$retVal .= $this->quoteLine(\str_replace("'", '"', $field->type));
 		$type = $field->type;
 		$length = $this->getTypeLength($type);
@@ -161,9 +179,9 @@ PHP;
 			case 'bool':
 			case 'datetime':
 			case 'string':
-				if ('NULL' === $field->defaultValue || 'CURRENT_TIMESTAMP' == $field->defaultValue || 'CURRENT_DATE' == $field->defaultValue)
+				if ('NULL' === $field->defaultValue)
 					{
-					$defaultValue = 'NULL';
+					$defaultValue = 'null';
 					}
 				elseif (\str_contains($field->defaultValue ?? '', "'") || \str_contains($field->defaultValue ?? '', '"'))
 					{
@@ -192,7 +210,7 @@ PHP;
 			{
 			$retVal .= $this->line($defaultValue);
 			}
-		$retVal .= '],';
+		$retVal .= '),';
 
 		return $retVal;
 		}

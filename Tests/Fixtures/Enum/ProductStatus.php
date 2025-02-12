@@ -10,4 +10,3 @@ enum ProductStatus : int
 	case BACKORDERED = 1;
 	case DISCONTINUED = 2;
 	}
-

@@ -6,13 +6,23 @@ abstract class Maxlength extends \PHPFUI\ORM\Record
 {
 	public static bool $autoIncrement = false;
 
-	public static array $fields = [
-		'maxlength' => ['sqltype', 'string', 19, false, '', false, ],
-		'not_maxlength' => ['!sqltype', 'string', 19, false, '', false, ],
-		'length' => ['sqltype', 'string', 19, false, '', false, ],
-	];
+	public static array $fields = [];
 
 	public static string $primaryKey = '';
 
 	public static string $table = '';
+
+	public function initFieldDefinitions() : static
+		{
+		if (! \count(static::$fields))
+			{
+			static::$fields = [
+				'maxlength' => new \PHPFUI\ORM\FieldDefinition('sqltype', 'string', 19, false, '', false, ),
+				'not_maxlength' => new \PHPFUI\ORM\FieldDefinition('!sqltype', 'string', 19, false, '', false, ),
+				'length' => new \PHPFUI\ORM\FieldDefinition('sqltype', 'string', 19, false, '', false, ),
+			];
+			}
+
+		return $this;
+		}
 }

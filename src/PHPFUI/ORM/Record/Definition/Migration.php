@@ -13,15 +13,24 @@ abstract class Migration extends \PHPFUI\ORM\Record
 	{
 	protected static bool $autoIncrement = false;
 
-	/** @var array<string, array<mixed>> */
-	protected static array $fields = [
-		// MYSQL_TYPE, PHP_TYPE, LENGTH, ALLOWS_NULL, DEFAULT
-		'migrationId' => ['int(11)', 'int', 11, false, null, ],
-		'ran' => ['timestamp', 'string', 20, false, null, ],
-	];
+	/** @var array<string, \PHPFUI\ORM\FieldDefinition> */
+	protected static array $fields = [];
 
 	/** @var array<string> */
 	protected static array $primaryKeys = ['migrationId', ];
 
 	protected static string $table = 'migration';
+
+	public function initFieldDefinitions() : static
+		{
+		if (! \count(static::$fields))
+			{
+			static::$fields = [
+				'migrationId' => new \PHPFUI\ORM\FieldDefinition('int(11)', 'int', 11, false, null, ),
+				'ran' => new \PHPFUI\ORM\FieldDefinition('timestamp', 'string', 20, false, null, ),
+			];
+			}
+
+		return $this;
+		}
 	}

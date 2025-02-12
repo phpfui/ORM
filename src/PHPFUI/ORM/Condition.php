@@ -136,7 +136,7 @@ class Condition implements \Countable, \Stringable
 		}
 
 	/**
-	 * @return string[]  of all the fields used by the condition
+	 * @return array<string> of all the fields used by the condition
 	 */
 	public function getFields() : array
 		{

@@ -35,33 +35,42 @@ abstract class Order extends \PHPFUI\ORM\Record
 	{
 	protected static bool $autoIncrement = true;
 
-	/** @var array<string, array<mixed>> */
-	protected static array $fields = [
-		// MYSQL_TYPE, PHP_TYPE, LENGTH, ALLOWS_NULL, DEFAULT
-		'customer_id' => ['integer', 'int', 0, true, NULL, ],
-		'employee_id' => ['integer', 'int', 0, true, NULL, ],
-		'notes' => ['longtext', 'string', 4294967295, true, NULL, ],
-		'order_date' => ['datetime', 'string', 20, false, NULL, ],
-		'order_id' => ['integer', 'int', 0, false, ],
-		'order_status_id' => ['integer', 'int', 0, true, 0, ],
-		'order_tax_status_id' => ['integer', 'int', 0, true, NULL, ],
-		'paid_date' => ['datetime', 'string', 20, true, NULL, ],
-		'payment_type' => ['varchar(50)', 'string', 50, true, NULL, ],
-		'ship_address' => ['longtext', 'string', 4294967295, true, NULL, ],
-		'ship_city' => ['varchar(50)', 'string', 50, true, NULL, ],
-		'ship_country_region' => ['varchar(50)', 'string', 50, true, NULL, ],
-		'ship_name' => ['varchar(50)', 'string', 50, true, NULL, ],
-		'ship_state_province' => ['varchar(50)', 'string', 50, true, NULL, ],
-		'ship_zip_postal_code' => ['varchar(50)', 'string', 50, true, NULL, ],
-		'shipped_date' => ['datetime', 'string', 20, true, NULL, ],
-		'shipper_id' => ['integer', 'int', 0, true, NULL, ],
-		'shipping_fee' => ['decimal(19,4)', 'float', 19, true, 0.0000, ],
-		'tax_rate' => ['double', 'float', 0, true, 0, ],
-		'taxes' => ['decimal(19,4)', 'float', 19, true, 0.0000, ],
-	];
+	/** @var array<string, \PHPFUI\ORM\FieldDefinition> */
+	protected static array $fields = [];
 
 	/** @var array<string> */
 	protected static array $primaryKeys = ['order_id', ];
 
 	protected static string $table = 'order';
+
+	public function initFieldDefinitions() : static
+		{
+		if (! \count(static::$fields))
+			{
+			static::$fields = [
+				'customer_id' => new \PHPFUI\ORM\FieldDefinition('integer', 'int', 0, true, null, ),
+				'employee_id' => new \PHPFUI\ORM\FieldDefinition('integer', 'int', 0, true, null, ),
+				'notes' => new \PHPFUI\ORM\FieldDefinition('longtext', 'string', 4294967295, true, null, ),
+				'order_date' => new \PHPFUI\ORM\FieldDefinition('datetime', 'string', 20, false, null, ),
+				'order_id' => new \PHPFUI\ORM\FieldDefinition('integer', 'int', 0, false, ),
+				'order_status_id' => new \PHPFUI\ORM\FieldDefinition('integer', 'int', 0, true, 0, ),
+				'order_tax_status_id' => new \PHPFUI\ORM\FieldDefinition('integer', 'int', 0, true, null, ),
+				'paid_date' => new \PHPFUI\ORM\FieldDefinition('datetime', 'string', 20, true, null, ),
+				'payment_type' => new \PHPFUI\ORM\FieldDefinition('varchar(50)', 'string', 50, true, null, ),
+				'ship_address' => new \PHPFUI\ORM\FieldDefinition('longtext', 'string', 4294967295, true, null, ),
+				'ship_city' => new \PHPFUI\ORM\FieldDefinition('varchar(50)', 'string', 50, true, null, ),
+				'ship_country_region' => new \PHPFUI\ORM\FieldDefinition('varchar(50)', 'string', 50, true, null, ),
+				'ship_name' => new \PHPFUI\ORM\FieldDefinition('varchar(50)', 'string', 50, true, null, ),
+				'ship_state_province' => new \PHPFUI\ORM\FieldDefinition('varchar(50)', 'string', 50, true, null, ),
+				'ship_zip_postal_code' => new \PHPFUI\ORM\FieldDefinition('varchar(50)', 'string', 50, true, null, ),
+				'shipped_date' => new \PHPFUI\ORM\FieldDefinition('datetime', 'string', 20, true, null, ),
+				'shipper_id' => new \PHPFUI\ORM\FieldDefinition('integer', 'int', 0, true, null, ),
+				'shipping_fee' => new \PHPFUI\ORM\FieldDefinition('decimal(19,4)', 'float', 19, true, 0.0000, ),
+				'tax_rate' => new \PHPFUI\ORM\FieldDefinition('double', 'float', 0, true, 0, ),
+				'taxes' => new \PHPFUI\ORM\FieldDefinition('decimal(19,4)', 'float', 19, true, 0.0000, ),
+			];
+			}
+
+		return $this;
+		}
 	}

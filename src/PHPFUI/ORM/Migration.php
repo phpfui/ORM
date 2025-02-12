@@ -7,16 +7,6 @@ abstract class Migration
 	/** @var string[] */
 	protected array $errors = [];
 
-	/** @var string[] */
-	protected array $myslqDefaults = [
-		'CURRENT_TIMESTAMP',
-		'CURRENT_DATE',
-		'true',
-		'false',
-		"b'0'",
-		"b'1'",
-	];
-
 	/** @var array<string, array<string>> */
 	private array $alters = [];
 

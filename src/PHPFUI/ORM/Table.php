@@ -78,7 +78,7 @@ abstract class Table implements \Countable
 				{
 				continue;
 				}
-			$type = $fields[$baseField][\PHPFUI\ORM\Record::PHP_TYPE_INDEX] ?? 'string';
+			$type = $fields[$baseField]->phpType ?? 'string';
 
 			if (\in_array($type, ['int', 'float', 'timestamp']))
 				{
@@ -432,7 +432,7 @@ abstract class Table implements \Countable
 		}
 
 	/**
-	 * @return array<string,array<mixed>>
+	 * @return array<string,\PHPFUI\ORM\FieldDefinition>
 	 */
 	public function getFields() : array
 		{

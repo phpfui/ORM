@@ -19,5 +19,5 @@ class OrderDetail extends \PHPFUI\ORM\Validator
 		'purchase_order_id' => ['integer'],
 		'quantity' => ['required', 'number'],
 		'unit_price' => ['number'],
-		];
+	];
 	}

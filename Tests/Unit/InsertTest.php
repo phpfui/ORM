@@ -12,12 +12,13 @@ class InsertTest extends \PHPUnit\Framework\TestCase
 		$timeStamp = \date('Y-m-d H:i:s');
 		$id = $test->insert();
 		$insertedTest = new \Tests\App\Record\DateRecord($id);
+
 		$this->assertNull($insertedTest->dateDefaultNull, 'dateDefaultNull is not null');
-		$this->assertEquals($date, $insertedTest->dateRequired);
+		$this->assertEquals($date, $insertedTest->dateRequired, 'dateRequired does not equal ' . $date);
 		$this->assertEquals('2000-01-02', $insertedTest->dateDefaultNullable);
 		$this->assertEquals('2000-01-02', $insertedTest->dateDefaultNotNull);
-		$this->assertGreaterThanOrEqual($timeStamp, $insertedTest->timestampDefaultCurrentNullable);
-		$this->assertGreaterThanOrEqual($timeStamp, $insertedTest->timestampDefaultCurrentNotNull);
+		$this->assertNull($insertedTest->timestampDefaultCurrentNullable, 'timestampDefaultCurrentNullable is not null');
+		$this->assertGreaterThanOrEqual($timeStamp, $insertedTest->timestampDefaultCurrentNotNull, 'timestampDefaultCurrentNotNull is wrong');
 
 		$this->assertTrue($transaction->rollBack());
 		}

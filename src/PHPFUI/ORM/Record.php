@@ -13,36 +13,36 @@ namespace PHPFUI\ORM;
  */
 abstract class Record extends DataObject
 	{
-	public const ALLOWS_NULL_INDEX = 3;
-
-	public const DEFAULT_INDEX = 4;
-
-	public const LENGTH_INDEX = 2;
-
-	public const MYSQL_TYPE_INDEX = 0;
-
-	public const PHP_TYPE_INDEX = 1;
-
-	protected static bool $autoIncrement = false;
+	protected static bool $autoIncrement;
 
 	protected static bool $deleteChildren = true;
 
 	protected bool $empty = true;
 
-	/** @var array<string,array<mixed>> */
-	protected static array $fields = [];
+	/** @var array <string,\PHPFUI\ORM\FieldDefinition> */
+	protected static array $fields;
 
 	protected bool $loaded = false;
 
 	/** @var array<string> */
-	protected static array $primaryKeys = [];
+	protected static array $primaryKeys;
 
-	protected static string $table = '';
+	protected static string $table;
 
 	protected string $validator = '';
 
 	/** @var array<string,array<string>> */
 	protected static array $virtualFields = [];
+
+	/** @var array<string> */
+	private static array $sqlDefaults = [
+		'CURRENT_TIMESTAMP',
+		'CURRENT_DATE',
+		'true',
+		'false',
+		"b'0'",
+		"b'1'",
+	];
 
 	/**
 	 * Construct a CRUD object
@@ -60,6 +60,7 @@ abstract class Record extends DataObject
 	 */
 	public function __construct(int|array|null|string|\PHPFUI\ORM\DataObject $parameter = null)
 		{
+		$this->initFieldDefinitions();
 		$this->setEmpty();
 		$type = $parameter instanceof \PHPFUI\ORM\DataObject ? \PHPFUI\ORM\DataObject::class : \get_debug_type($parameter);
 
@@ -80,7 +81,7 @@ abstract class Record extends DataObject
 
 			case 'int':
 
-				if (1 == \count(static::$primaryKeys) && 'int' == static::$fields[static::$primaryKeys[0]][self::PHP_TYPE_INDEX])
+				if (1 == \count(static::$primaryKeys) && 'int' == static::$fields[static::$primaryKeys[0]]->phpType)
 					{
 					$this->read($parameter);
 					}
@@ -183,12 +184,12 @@ abstract class Record extends DataObject
 			}
 
 		$this->validateFieldExists($field);
-		$expectedType = static::$fields[$field][self::PHP_TYPE_INDEX];
+		$expectedType = static::$fields[$field]->phpType;
 		$haveType = \get_debug_type($value);
 
 		if (null === $value)
 			{
-			if (! static::$fields[$field][self::ALLOWS_NULL_INDEX])
+			if (! static::$fields[$field]->nullable)
 				{
 				$message = static::class . "::{$field} does not allow nulls";
 				\PHPFUI\ORM::log(\Psr\Log\LogLevel::WARNING, $message);
@@ -307,7 +308,7 @@ abstract class Record extends DataObject
 		}
 
 	/**
-	 * @return array<string,array<mixed>> of fields properties indexed by field name
+	 * @return array<string,\PHPFUI\ORM\FieldDefinition> of FieldDefinition indexed by field name
 	 */
 	public static function getFields() : array
 		{
@@ -321,7 +322,7 @@ abstract class Record extends DataObject
 		{
 		$this->validateFieldExists($field);
 
-		return static::$fields[$field][self::LENGTH_INDEX];
+		return static::$fields[$field]->length;
 		}
 
 	/**
@@ -426,52 +427,6 @@ abstract class Record extends DataObject
 		return true;
 		}
 
-	protected function correctTypes() : static
-		{
-		// cast to correct values as ints, floats, etc are read in from PDO as strings
-		foreach (static::$fields as $field => $row)
-			{
-			$relationship = static::$virtualFields[$field] ?? false;
-
-			if (\is_array($relationship))
-				{
-				$relationshipClass = \array_shift($relationship);
-				$relationshipObject = new $relationshipClass($this, $field);
-				$relationshipObject->setValue($relationshipObject->fromPHPValue($this->current[$field], $relationship), $relationship);
-				}
-			else if (\array_key_exists($field, $this->current))
-				{
-				// don't touch nulls if allowed by the field or the primary key
-				if ($this->current[$field] === null)
-					{
-					if ($row[self::ALLOWS_NULL_INDEX] || in_array($field, static::$primaryKeys))
-						{
-						continue;
-						}
-					}
-				switch ($row[self::PHP_TYPE_INDEX])
-					{
-					case 'int':
-						$this->current[$field] = (int)$this->current[$field];
-
-						break;
-
-					case 'float':
-						$this->current[$field] = (float)$this->current[$field];
-
-						break;
-
-					case 'bool':
-						$this->current[$field] = (bool)$this->current[$field];
-
-						break;
-					}
-				}
-			}
-
-		return $this;
-		}
-
  /**
   * Read a record from the db. If more than one match, only the first is loaded.
   *
@@ -525,7 +480,7 @@ abstract class Record extends DataObject
 
 		foreach (static::$fields as $field => $description)
 			{
-			$this->current[$field] = $description[self::DEFAULT_INDEX] ?? null;
+			$this->current[$field] = \in_array($description->defaultValue, self::$sqlDefaults) ? null : $description->defaultValue;
 			}
 
 		$this->correctTypes();
@@ -578,7 +533,7 @@ abstract class Record extends DataObject
 				{
 				if (! \in_array($field, static::$primaryKeys))
 					{
-					if (empty($value) && \in_array(static::$fields[$field][self::MYSQL_TYPE_INDEX], $dateTimes))
+					if (empty($value) && \in_array(static::$fields[$field]->sqlType, $dateTimes))
 						{
 						$value = null;
 						}
@@ -728,6 +683,53 @@ abstract class Record extends DataObject
 		return $this;
 		}
 
+	protected function correctTypes() : static
+		{
+		// cast to correct values as ints, floats, etc are read in from PDO as strings
+		foreach (static::$fields as $field => $row)
+			{
+			$relationship = static::$virtualFields[$field] ?? false;
+
+			if (\is_array($relationship))
+				{
+				$relationshipClass = \array_shift($relationship);
+				$relationshipObject = new $relationshipClass($this, $field);
+				$relationshipObject->setValue($relationshipObject->fromPHPValue($this->current[$field], $relationship), $relationship);
+				}
+			elseif (\array_key_exists($field, $this->current))
+				{
+				// don't touch nulls if allowed by the field or the primary key
+				if (null === $this->current[$field])
+					{
+					if ($row->nullable || \in_array($field, static::$primaryKeys))
+						{
+						continue;
+						}
+					}
+
+				switch ($row->phpType)
+					{
+					case 'int':
+						$this->current[$field] = (int)$this->current[$field];
+
+						break;
+
+					case 'float':
+						$this->current[$field] = (float)$this->current[$field];
+
+						break;
+
+					case 'bool':
+						$this->current[$field] = (bool)$this->current[$field];
+
+						break;
+					}
+				}
+			}
+
+		return $this;
+		}
+
 	protected function timeStamp(?int $timeStamp) : string
 		{
 		if (empty($timeStamp))
@@ -824,7 +826,7 @@ abstract class Record extends DataObject
 				{
 				$definition = static::$fields[$key];
 
-				if (\array_key_exists(self::DEFAULT_INDEX, $definition) && $value === $definition[self::DEFAULT_INDEX])
+				if (! $definition->nullable && null === $value && \in_array($definition->defaultValue, self::$sqlDefaults))
 					{
 					continue;
 					}

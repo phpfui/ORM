@@ -7,6 +7,9 @@ Performance [comparison of PHPFUI\ORM to Eloquent](https://github.com/phpfui/php
 
 **PHPFUI\ORM** is not an attempt to write an abstraction around SQL as other ORMs do, rather it is a way to work with SQL that closely matches the semantics of SQL, with the power of PHP objects.  It allows PHP to manipulate SQL queries without having to write SQL in plain text. This is very useful for queries generated via user interfaces where the user is given a lot of flexability in how a query is defined.
 
+### Version 2.0 requires updated Definition classes
+You will need to run the \PHPFUI\ORM\Tool\Generate\CRUD class against your database. See scripts/generateCRUD.php for an example.
+
 ## Features
 - **Active Records** A fully type checked object interface and implement basic CRUD functionality.
 - **Active Tables** Full table operations (select, update, insert and delete) including support for where, having, limits, ordering, grouping, joins and unions.

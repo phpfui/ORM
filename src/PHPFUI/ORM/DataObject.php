@@ -56,6 +56,11 @@ class DataObject implements \ArrayAccess
 		return ! \count($this->current);
 		}
 
+	public function initFieldDefinitions() : static
+		{
+		return $this;
+		}
+
 	public function isset(string $field) : bool
 		{
 		return $this->__isset($field);

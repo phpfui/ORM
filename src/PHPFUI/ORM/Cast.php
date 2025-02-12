@@ -21,13 +21,14 @@ class Cast extends \PHPFUI\ORM\VirtualField
 		{
 		$class = \array_shift($parameters);
 
-		if ($value === null)
+		if (null === $value)
 			{
+			/** @phpstan-ignore-next-line */
 			$this->currentRecord[$this->fieldName] = null;
 
 			return;
 			}
-		else if (! ($value instanceof $class))
+		elseif (! ($value instanceof $class))
 			{
 			$value = new $class($value);
 			}
