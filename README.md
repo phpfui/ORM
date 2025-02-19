@@ -33,6 +33,8 @@ $pdo = new \PHPFUI\ORM\PDOInstance($yourConnectionString);
 \PHPFUI\ORM::addConnection($pdo);
 ```
 
+See some basic usage examples in [scripts/examples.php](<https://github.com/phpfui/ORM/blob/main/scripts/examples.php>)
+
 ### Active Record Example
 ```php
 $book = new \App\Record\Book();
