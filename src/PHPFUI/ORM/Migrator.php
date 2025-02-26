@@ -215,7 +215,7 @@ class Migrator implements \Countable
 			$currentMigrationId = $previous;
 			}
 
-		if ($currentMigrationId == $migrationId)
+		if ($currentMigrationId === $migrationId)
 			{
 			$this->status = "Migrated to {$migrationId} successfully";
 
@@ -237,8 +237,6 @@ class Migrator implements \Countable
 
 		if (! $migration)
 			{
-			$this->status = "No next migration ({$id})";
-
 			return 0;
 			}
 		$result = $this->runUp($migration);
@@ -270,7 +268,10 @@ class Migrator implements \Countable
 
 		$highest = $this->migrationTable->getHighest();
 
-		return (int)$highest->migrationId;
+		$id = (int)$highest->migrationId;
+		$this->status = "Migrated to {$id} successfully";
+
+		return $id;
 		}
 
 	/**
@@ -288,6 +289,9 @@ class Migrator implements \Countable
 		$migrationRecord->migrationId = $migration->id();
 		$migrationRecord->insert();
 
-		return $migration->id();
+		$id = $migrationRecord->migrationId;
+		$this->status = "Migrated to {$id} successfully";
+
+		return $id;
 		}
 	}
