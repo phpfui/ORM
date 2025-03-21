@@ -30,6 +30,6 @@ class RecordTest extends \PHPUnit\Framework\TestCase
 		$this->assertFalse(empty($order->employee_id));
 		$order->employee = new \Tests\Fixtures\Record\Employee();
 		$this->assertTrue(empty($order->employee));
-		$this->assertTrue(empty($order->employee_id));
+		$this->assertNull($order->employee_id);
 		}
 	}

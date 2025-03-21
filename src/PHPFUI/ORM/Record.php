@@ -157,7 +157,7 @@ abstract class Record extends DataObject
 				{
 				if ($value->empty())
 					{
-					$this->current[$id] = 0;
+					$this->current[$id] = static::$fields[$id]->nullable ? null : 0;
 
 					return;
 					}
