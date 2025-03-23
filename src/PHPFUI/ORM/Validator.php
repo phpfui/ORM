@@ -32,7 +32,7 @@ namespace PHPFUI\ORM;
  *
  * | Validator Name | Description | Parameters  |
  * | -------------- | ----------- | ----------- |
- * | alnum          | Numbers and characters only (ctype_alnum) | None |
+ * | alpha_numeric  | Numbers and characters only (ctype_alnum) | None |
  * | alpha          | Characters only (ctype_alpha) | None |
  * | bool           | Must be one or zero | None |
  * | card           | Credit card number (LUHN validation) | None |

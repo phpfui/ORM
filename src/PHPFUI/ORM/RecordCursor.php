@@ -48,7 +48,7 @@ class RecordCursor extends \PHPFUI\ORM\DataObjectCursor
 			}
 		else
 			{
-			$this->current->setFrom($data, true);
+			$this->current->setFrom($data, loaded:true);
 			}
 		++$this->index;
 		}

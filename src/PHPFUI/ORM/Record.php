@@ -492,12 +492,17 @@ abstract class Record extends DataObject
 	 * Sets the object to values in the array.  Invalid array values are ignored.
 	 *
 	 * @param array<string,mixed> $values
-	 *
+	 * @param array<string> $allowedFields list of allowed field names, other fields names will be ignored. Empty array updates all valid fields.
 	 * @param bool $loaded set to true if you want to simulated being loaded from the db.
 	 */
-	public function setFrom(array $values, bool $loaded = false) : static
+	public function setFrom(array $values, array $allowedFields = [], bool $loaded = false) : static
 		{
 		$this->loaded = $loaded;
+
+		if (\count($allowedFields))
+			{
+			$values = \array_intersect_key($values, \array_flip($allowedFields));
+			}
 
 		foreach ($values as $field => $value)
 			{
