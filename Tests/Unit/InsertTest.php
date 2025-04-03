@@ -17,7 +17,7 @@ class InsertTest extends \PHPUnit\Framework\TestCase
 		$this->assertEquals($date, $insertedTest->dateRequired, 'dateRequired does not equal ' . $date);
 		$this->assertEquals('2000-01-02', $insertedTest->dateDefaultNullable);
 		$this->assertEquals('2000-01-02', $insertedTest->dateDefaultNotNull);
-		$this->assertNull($insertedTest->timestampDefaultCurrentNullable, 'timestampDefaultCurrentNullable is not null');
+		$this->assertGreaterThanOrEqual($timeStamp, $insertedTest->timestampDefaultCurrentNullable, 'timestampDefaultCurrentNullable is greater than ' . $timeStamp);
 		$this->assertGreaterThanOrEqual($timeStamp, $insertedTest->timestampDefaultCurrentNotNull, 'timestampDefaultCurrentNotNull is wrong');
 
 		$this->assertTrue($transaction->rollBack());

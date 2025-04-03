@@ -123,6 +123,11 @@ abstract class Record extends DataObject
 			return $relationshipObject->getValue($relationship);
 			}
 
+		if (isset(static::$fields[$field]))
+			{
+			return $this->current[$field] ?? null;
+			}
+
 		return parent::__get($field);
 		}
 
@@ -480,7 +485,18 @@ abstract class Record extends DataObject
 
 		foreach (static::$fields as $field => $description)
 			{
-			$this->current[$field] = \in_array($description->defaultValue, self::$sqlDefaults) ? null : $description->defaultValue;
+			if (null === $description->defaultValue)	// no default value
+				{
+				if ($description->nullable)	// can be null, so don't set
+					{
+					continue;
+					}
+				$this->current[$field] = null; // can't be null, so we can set to null, user must set
+				}
+			else	// has default value, if SQL default, set to null, otherwise default value
+				{
+				$this->current[$field] = \in_array($description->defaultValue, self::$sqlDefaults) ? null : $description->defaultValue;
+				}
 			}
 
 		$this->correctTypes();
@@ -699,7 +715,7 @@ abstract class Record extends DataObject
 				{
 				$relationshipClass = \array_shift($relationship);
 				$relationshipObject = new $relationshipClass($this, $field);
-				$relationshipObject->setValue($relationshipObject->fromPHPValue($this->current[$field], $relationship), $relationship);
+				$relationshipObject->setValue($relationshipObject->fromPHPValue($this->current[$field] ?? null, $relationship), $relationship);
 				}
 			elseif (\array_key_exists($field, $this->current))
 				{
@@ -831,10 +847,11 @@ abstract class Record extends DataObject
 				{
 				$definition = static::$fields[$key];
 
-				if (! $definition->nullable && null === $value && \in_array($definition->defaultValue, self::$sqlDefaults))
+				if (null == $value && null != $definition->defaultValue)
 					{
 					continue;
 					}
+				// && \in_array($definition->defaultValue, self::$sqlDefaults))
 
 				if (! static::$autoIncrement || ! (\in_array($key, static::$primaryKeys) && empty($value)))
 					{
