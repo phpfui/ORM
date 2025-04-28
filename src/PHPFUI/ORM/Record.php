@@ -135,7 +135,7 @@ abstract class Record extends DataObject
 
 			if (\class_exists($type))
 				{
-				return new $type($this->current[$field . \PHPFUI\ORM::$idSuffix]);
+				return new $type($this->current[$field . \PHPFUI\ORM::$idSuffix] ?? null);
 				}
 			}
 
@@ -498,10 +498,6 @@ abstract class Record extends DataObject
 			{
 			if (null === $description->defaultValue)	// no default value
 				{
-				if ($description->nullable)	// can be null, so don't set
-					{
-					continue;
-					}
 				$this->current[$field] = null; // can't be null, so we can set to null, user must set
 				}
 			else	// has default value, if SQL default, set to null, otherwise default value
