@@ -128,6 +128,17 @@ abstract class Record extends DataObject
 			return $this->current[$field] ?? null;
 			}
 
+		// could be a related record, see if has a matching Id
+		if (\array_key_exists($field . \PHPFUI\ORM::$idSuffix, static::$fields))
+			{
+			$type = '\\' . \PHPFUI\ORM::$recordNamespace . '\\' . \PHPFUI\ORM::getBaseClassName($field);
+
+			if (\class_exists($type))
+				{
+				return new $type($this->current[$field . \PHPFUI\ORM::$idSuffix]);
+				}
+			}
+
 		return parent::__get($field);
 		}
 
