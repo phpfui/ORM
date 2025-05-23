@@ -854,7 +854,7 @@ abstract class Record extends DataObject
 				{
 				$definition = static::$fields[$key];
 
-				if (null == $value && null != $definition->defaultValue)
+				if (null === $value && null !== $definition->defaultValue)
 					{
 					continue;
 					}
