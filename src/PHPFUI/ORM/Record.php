@@ -257,7 +257,7 @@ abstract class Record extends DataObject
 		}
 
 	/**
-	 * clean is called before insert or update. Override to impliment cleaning on a specific record
+	 * clean is called before insert or update. Override to implement cleaning on a specific record
 	 */
 	public function clean() : static
 		{
