@@ -46,8 +46,8 @@ namespace PHPFUI\ORM;
  * | domain         | Valid domain | None |
  * | email          | Valid email | None |
  * | ends_with      | Field must end with (case sensitive) | comma separated list of strings |
- * | enum           | MySQL enum value, case insensitive | comma separated list of identifiers<br>**Example:** enum:Get,Post,Put,Delete |
- * | enum_exact     | MySQL enum value, case sensitive | comma separated list of identifiers<br>**Example:** enum:ssl,tls |
+ * | enum           | MySQL enum value, case insensitive | comma separated list of identifiers. **Example:** enum:Get,Post,Put,Delete |
+ * | enum_exact     | MySQL enum value, case sensitive | comma separated list of identifiers. **Example:** enum:ssl,tls |
  * | eq_field       | Equal to field | field, required |
  * | equal          | Value must be equal | value, required |
  * | gt_field       | Greater Than field | field, required |
@@ -106,7 +106,7 @@ namespace PHPFUI\ORM;
  *
  * If there are parameters, the first parameter must be a field of the current record. If this is the only parameter, or if the next parameter is also a field of the record, then the unique test is only done with the value of this field set to the current record's value.
  *
- * If the next parameter is not a field of the record, it is used as a value to match for the preceeding field for the unique test.
+ * If the next parameter is not a field of the record, it is used as a value to match for the preceding field for the unique test.
  *
  * The above repeats until all parameters are exhausted.
  *
@@ -127,7 +127,7 @@ namespace PHPFUI\ORM;
  * You can reverse any validator by preceding the validator with an ! (exclamation mark).
  *
  * **Example:**
- * !starts_with:/ will fail if the field starts with a /
+ * !starts_with:/ will fail if the field starts with a / character
  *
  * ## OR Operator
  * You can validate a field if any one of the validators passes.  Use the vertical bar (|) to separate validators. If one of the validators passes, then the the field is valid.
