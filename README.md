@@ -126,13 +126,13 @@ All of the above exceptions are programmer errors and strictly enforced. Empty q
 If you set a field to the wrong type, the library logs a warning then converts the type via the appropriate PHP cast.
 
 ## Multiple Database Support
-While this is primarily a single database ORM, you can switch databases at run time. Save the value from `$connectionId = \PHPFUI\ORM::addConnection($pdo);` and then call `\PHPFUI\ORM::useConnection($db);` to switch.  `\PHPFUI\ORM::addConnection` will set the current connection.
+While this is primarily a single database ORM, you can switch databases at run time. Save the value from `$connectionId = \PHPFUI\ORM::addConnection($pdo);` and then call `\PHPFUI\ORM::useConnection(connectionId);` to switch.  `\PHPFUI\ORM::addConnection` will set the current connection.
 
 The programmer must make sure the proper database is currently selected when database reads or writes happen and that any primary keys are correctly handled.
 
 ### Copy tables example:
 ```php
-// get the current connection just for fun
+// get the current connection to restore later
 $currentConnection = \PHPFUI\ORM::getConnection();
 
 $cursors = [];
@@ -141,7 +141,7 @@ $cursors[] = (new \App\Table\Author())->getRecordCursor();
 $cursors[] = (new \App\Table\Book())->getRecordCursor();
 
 // set up a new database connection
-$pdo = new \PDO($newConnectionString);
+$pdo = new \PHPFUI\ORM\PDOInstance($newConnectionString);
 $newConnectionId = \PHPFUI\ORM::addConnection($pdo);
 
 foreach ($cursors as $cursor)
