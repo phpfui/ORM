@@ -601,7 +601,7 @@ abstract class Validator
 		{
 		if ($this->currentFieldDefinitions->length <= 0)
 			{
-			return true;	// zero length fields can't have a max length test
+			return '';	// zero length fields can't have a max length test
 			}
 
 		$length = $this->currentParameters[0] ?? $this->currentFieldDefinitions->length;
