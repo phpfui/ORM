@@ -599,7 +599,12 @@ abstract class Validator
 
 	private function validate_maxlength(mixed $value) : string
 		{
-		$length = $this->currentParameters[0] ?? $this->currentFieldDefinitions->length;
+		if ($this->currentFieldDefinitions->length <= 0)
+			{
+			return true;	// zero length fields can't have a max length test
+			}
+
+		$length = $this->currentParameters[0] ? ? $this->currentFieldDefinitions->length;
 
 		return $this->testIt(\strlen((string)$value) <= $length, 'maxlength', ['value' => $value, 'length' => $length]);
 		}
