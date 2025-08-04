@@ -604,7 +604,7 @@ abstract class Validator
 			return true;	// zero length fields can't have a max length test
 			}
 
-		$length = $this->currentParameters[0] ? ? $this->currentFieldDefinitions->length;
+		$length = $this->currentParameters[0] ?? $this->currentFieldDefinitions->length;
 
 		return $this->testIt(\strlen((string)$value) <= $length, 'maxlength', ['value' => $value, 'length' => $length]);
 		}
