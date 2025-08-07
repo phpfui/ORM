@@ -37,34 +37,34 @@ foreach ($customerTable->getRecordCursor() as $customer)
 	echo "{$customer->first_name} {$customer->last_name}, {$customer->job_title}\n";
 	}
 
-$customerTable->addOrderBy('last_name');
+$customerTable->setOrderBy('last_name');
 echo "\n\nCustomers in last_name order:\n\n";
 foreach ($customerTable->getRecordCursor() as $customer)
 	{
 	echo "{$customer->first_name} {$customer->last_name}, {$customer->job_title}\n";
 	}
 
-$customerTable->addOrderBy('last_name', 'desc');
+$customerTable->setOrderBy('last_name', 'desc');
 $customerTable->setLimit(10);
 
-echo "\n\nLast 10 Customers in last_name order:\n\n";
+echo "\n\nLast 10 Customers in last_name order descending:\n\n";
 foreach ($customerTable->getRecordCursor() as $customer)
 	{
 	echo "{$customer->first_name} {$customer->last_name}, {$customer->job_title}\n";
 	}
 
-$customerTable->setLimit(0);
-$customerTable->addGroupBy('company');
-$customerTable->addSelect(new \PHPFUI\ORM\Literal('count(*)'), 'count');
-$customerTable->addSelect('company');
-$customerTable->setOrderBy('company');
-echo "\n\nCount of Customers by company:\n\n";
+$orderTable = new \Tests\App\Table\Order();
+$orderTable->addJoin('customer');
+$orderTable->addGroupBy('customer.customer_id');
+$orderTable->addSelect(new \PHPFUI\ORM\Literal('count("order_id")'), 'count');
+$orderTable->addSelect('company');
+$orderTable->setOrderBy('company');
+echo "\n\nCount of Orders by customer:\n\n";
 
-foreach ($customerTable->getDataObjectCursor() as $customer)
+foreach ($orderTable->getDataObjectCursor() as $customer)
 	{
 	echo "{$customer->company}: {$customer->count}\n";
 	}
-
 
 $orderTable = new \Tests\App\Table\Order();
 // addJoin defaults to using the primary key of the related table
