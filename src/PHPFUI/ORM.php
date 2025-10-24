@@ -273,9 +273,16 @@ class ORM
 	/**
 	 * @return string  primary key of the last record inserted
 	 */
-	public static function lastInsertId(string $name = '') : string
+	public static function lastInsertId(string $name = '', string $table = '') : string
 		{
-		return self::getInstance()->lastInsertId($name);
+		$pdo = self::getInstance();
+
+		if ($pdo->postGre && $table)
+			{
+			$name = $table . '_' . $name . '_seq';
+			}
+
+		return $pdo->lastInsertId($name);
 		}
 
 	/**

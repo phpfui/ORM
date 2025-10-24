@@ -4,6 +4,8 @@ namespace PHPFUI\ORM;
 
 class PDOInstance extends \PDO
 	{
+	public readonly bool $postGre;
+
 	/** @var array<string> */
 	private array $lastError = [];
 
@@ -22,6 +24,7 @@ class PDOInstance extends \PDO
 	 */
 	public function __construct(private string $dsn, ?string $username = null, ?string $password = null, ?array $options = null)
 		{
+		$this->postGre = \str_starts_with($dsn, 'pgsql');
 		parent::__construct($dsn, $username, $password, $options);
 		}
 
@@ -47,6 +50,11 @@ class PDOInstance extends \PDO
 			{
 			$rows = $this->getRows("describe `{$table}`;");
 			}
+		elseif ($this->postGre)
+			{
+			$sql = "SELECT column_name as name,data_type as type,character_maximum_length,is_nullable as notnull,column_default as dflt_value FROM information_schema.columns WHERE table_schema = 'public' AND table_name = ? ORDER BY ordinal_position;";
+			$rows = $this->getRows($sql, [$table]);
+			}
 		else
 			{
 			$autoIncrement = (bool)$this->getValue("SELECT count(*) FROM sqlite_master where tbl_name='{$table}' and sql like '%autoincrement%'");
@@ -70,9 +78,6 @@ class PDOInstance extends \PDO
 	 */
 	public function execute(string $sql, array $input = []) : bool
 		{
-		$this->lastParameters = $input;
-		$this->lastSql = $sql;
-
 		return null !== $this->run($sql, $input);
 		}
 
@@ -124,10 +129,7 @@ class PDOInstance extends \PDO
 	 */
 	public function getArrayCursor(string $sql = 'select 0 limit 0', array $input = []) : \PHPFUI\ORM\ArrayCursor
 		{
-		$this->lastParameters = $input;
-		$this->lastSql = $sql;
-
-		return new \PHPFUI\ORM\ArrayCursor($this->prepare($sql), $input);
+		return new \PHPFUI\ORM\ArrayCursor($this->getPreparedStatement($sql, $input), $input);
 		}
 
 	/**
@@ -137,10 +139,7 @@ class PDOInstance extends \PDO
 	 */
 	public function getDataObjectCursor(string $sql = 'select 0 limit 0', array $input = []) : \PHPFUI\ORM\DataObjectCursor
 		{
-		$this->lastParameters = $input;
-		$this->lastSql = $sql;
-
-		return new \PHPFUI\ORM\DataObjectCursor($this->prepare($sql), $input);
+		return new \PHPFUI\ORM\DataObjectCursor($this->getPreparedStatement($sql, $input), $input);
 		}
 
 	public function getDSN() : string
@@ -224,10 +223,7 @@ class PDOInstance extends \PDO
 	 */
 	public function getRecordCursor(\PHPFUI\ORM\Record $crud, string $sql = 'select 0 limit 0', array $input = []) : \PHPFUI\ORM\RecordCursor
 		{
-		$this->lastParameters = $input;
-		$this->lastSql = $sql;
-
-		return new \PHPFUI\ORM\RecordCursor($crud, $this->prepare($sql), $input);
+		return new \PHPFUI\ORM\RecordCursor($crud, $this->getPreparedStatement($sql, $input), $input);
 		}
 
 	/**
@@ -237,9 +233,6 @@ class PDOInstance extends \PDO
 	 */
 	public function getRow(string $sql, array $input = []) : array
 		{
-		$this->lastParameters = $input;
-		$this->lastSql = $sql;
-
 		$statement = $this->run($sql, $input);
 
 		if (null === $statement)
@@ -267,8 +260,6 @@ class PDOInstance extends \PDO
 	 */
 	public function getRows(string $sql, array $input = [], int $fetchType = \PDO::FETCH_ASSOC) : array
 		{
-		$this->lastParameters = $input;
-		$this->lastSql = $sql;
 		$statement = $this->run($sql, $input);
 
 		if (null === $statement)
@@ -287,6 +278,10 @@ class PDOInstance extends \PDO
 		if (\str_starts_with($this->dsn, 'mysql'))
 			{
 			$rows = $this->getRows('show tables');
+			}
+		elseif ($this->postGre)
+			{
+			$rows = $this->getRows("SELECT table_name as name FROM information_schema.tables WHERE table_schema = 'public' AND table_type = 'BASE TABLE';");
 			}
 		else
 			{
@@ -309,8 +304,6 @@ class PDOInstance extends \PDO
 	 */
 	public function getValue(string $sql, array $input = []) : string
 		{
-		$this->lastParameters = $input;
-		$this->lastSql = $sql;
 		$statement = $this->run($sql, $input);
 
 		if (null === $statement)
@@ -334,8 +327,6 @@ class PDOInstance extends \PDO
 	 */
 	public function getValueArray(string $sql, array $input = []) : array
 		{
-		$this->lastParameters = $input;
-		$this->lastSql = $sql;
 		$statement = $this->run($sql, $input);
 
 		if (null === $statement)
@@ -369,13 +360,26 @@ class PDOInstance extends \PDO
 			}
 		}
 
+	private function getPreparedStatement(string $sql, array $input) : ?\PDOStatement
+		{
+		$this->lastParameters = $input;
+
+		if ($this->postGre)
+			{
+			$sql = \str_replace('`', '"', $sql);
+			}
+		$this->lastSql = $sql;
+
+		return $this->prepare($sql);
+		}
+
 	/**
 	 * Runs the query and sets and records errors
 	 *
 	 * @param array<mixed> $input
 	 */
-	private function run(string $sql, array $input = []) : ?\PDOStatement
+	private function run(string $sql, array $input) : ?\PDOStatement
 		{
-		return $this->executeStatement($this->prepare($sql), $input);
+		return $this->executeStatement($this->getPreparedStatement($sql, $input), $input);
 		}
 	}
