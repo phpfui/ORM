@@ -4,9 +4,9 @@ namespace PHPFUI\ORM\Schema;
 
 class Field
 	{
-	public readonly bool $autoIncrement;
+	public bool $autoIncrement;
 
-	public readonly ?string $defaultValue;
+	public ?string $defaultValue;
 
 	public readonly string $extra;
 
@@ -14,7 +14,7 @@ class Field
 
 	public readonly bool $nullable;
 
-	public readonly bool $primaryKey;
+	public bool $primaryKey;
 
 	public readonly string $type;
 
@@ -23,7 +23,7 @@ class Field
 	 */
 	public function __construct(\PHPFUI\ORM\PDOInstance $pdo, array $fields, bool $autoIncrement)
 		{
-		if (\str_starts_with($pdo->getDSN(), 'mysql'))
+		if (\str_starts_with($pdo->getDSN(), 'mysql') || $pdo->postGre)
 			{
 			$this->name = $fields['Field'];
 			$this->type = \strtolower($fields['Type']);

@@ -105,14 +105,19 @@ abstract class Base
 			'tinyint' => 'int',
 			'mediumint' => 'int',
 			'bigint' => 'int',
+			'smallserial' => 'int',
+			'serial' => 'int',
+			'bigserial' => 'int',
 			'decimal' => 'float',
 			'numeric' => 'float',
 			'float' => 'float',
 			'double' => 'float',
+			'real' => 'float',
+			'double precision' => 'float',
+			'money' => 'float',
 			'bit' => 'bool',
+			'boolean' => 'bool',
 			'year' => 'int',
-			'timestamp' => 'string',
-			'datetime' => 'string',
 		];
 		$type = $types[$type] ?? 'string';
 

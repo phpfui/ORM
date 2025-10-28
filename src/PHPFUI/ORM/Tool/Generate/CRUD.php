@@ -39,10 +39,10 @@ abstract class ~~CLASS~~ extends \PHPFUI\ORM\Record
 
 	public function initFieldDefinitions() : static
 		{
-		if (! count(static::$fields))
+		if (! \count(static::$fields))
 			{
 			static::$fields = [
-~~FIELD_ARRAY~~		];
+~~FIELD_ARRAY~~			];
 			}
 
 		return $this;
@@ -157,7 +157,7 @@ PHP;
 
 	protected function getFieldDefinition(\PHPFUI\ORM\Schema\Field $field) : string
 		{
-		$retVal = "\t\t\t" . $this->quote($field->name) . ' => new \PHPFUI\ORM\FieldDefinition(';
+		$retVal = "\t\t\t\t" . $this->quote($field->name) . ' => new \PHPFUI\ORM\FieldDefinition(';
 		$retVal .= $this->quoteLine(\str_replace("'", '"', $field->type));
 		$type = $field->type;
 		$length = $this->getTypeLength($type);
@@ -165,6 +165,12 @@ PHP;
 		$retVal .= $this->line($length);
 		$allowNulls = $field->nullable;
 		$defaultValue = null;
+
+		$doubleColon = $field->defaultValue ? strpos($field->defaultValue, '::') : null;
+		if ($doubleColon)
+			{
+			$field->defaultValue = substr($field->defaultValue, 0, $doubleColon);
+			}
 
 		switch ($type)
 			{

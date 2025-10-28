@@ -52,8 +52,26 @@ class PDOInstance extends \PDO
 			}
 		elseif ($this->postGre)
 			{
-			$sql = "SELECT column_name as name,data_type as type,character_maximum_length,is_nullable as notnull,column_default as dflt_value FROM information_schema.columns WHERE table_schema = 'public' AND table_name = ? ORDER BY ordinal_position;";
+			$sql = 'SELECT column_name as "Field",data_type as "Type",character_maximum_length,is_nullable as "Null",column_default as "Default"
+				FROM information_schema.columns
+				WHERE table_schema = \'public\' AND table_name = ?
+				ORDER BY ordinal_position;';
+
 			$rows = $this->getRows($sql, [$table]);
+
+			foreach ($rows as $index => $row)
+				{
+				if ($row['Type'] == 'character varying' && $row['character_maximum_length'] != null)
+					{
+					$row['Type'] = 'varchar(' . $row['character_maximum_length'] . ')';
+					}
+				else if ($row['Type'] == 'text')
+					{
+					$row['Type'] = 'longtext';
+					}
+				$row['Extra'] = $row['Default'] ? \str_replace('nextval', 'auto_increment', $row['Default']) : '';
+				$rows[$index] = $row;
+				}
 			}
 		else
 			{
@@ -61,9 +79,30 @@ class PDOInstance extends \PDO
 			$rows = $this->getRows("pragma table_info('{$table}')");
 			}
 
+		$fields = [];
 		foreach ($rows as $row)
 			{
-			$fields[] = new \PHPFUI\ORM\Schema\Field($this, $row, $autoIncrement);
+			$field = new \PHPFUI\ORM\Schema\Field($this, $row, $autoIncrement);
+			$fields[$field->name] = $field;
+			}
+
+		if ($this->postGre)
+			{
+			// get non auto increment primary keys
+			$rows = $this->getRows("SELECT kcu.column_name as name, tc.constraint_type as sql FROM information_schema.table_constraints AS tc
+														 JOIN information_schema.key_column_usage AS kcu ON tc.constraint_name = kcu.constraint_name AND tc.table_schema = kcu.table_schema
+														 WHERE tc.constraint_type = 'PRIMARY KEY' AND tc.table_name = ?", [$table]);
+
+			foreach ($rows as $row)
+				{
+				$fields[$row['name']]->primaryKey = true;
+				}
+			$row = $this->getRow("SELECT column_name as name,column_default as sql FROM information_schema.columns WHERE table_name = ? AND column_default LIKE 'nextval(%'", [$table]);
+
+			if (\count($row))
+				{
+				$fields[$row['name']]->autoIncrement = true;
+				}
 			}
 
 		return $fields;
@@ -156,16 +195,80 @@ class PDOInstance extends \PDO
 
 		if (\str_starts_with($this->dsn, 'mysql'))
 			{
-			$rows = $this->getRows('SHOW INDEXES FROM ' . $table);
+			$rows = $this->getRows('SHOW INDEXES FROM ?', [$table]);
+			}
+		elseif ($this->postGre)
+			{
+			// get auto increment primary keys
+			$fields = $this->getRow("SELECT column_name as name,column_default as sql FROM information_schema.columns WHERE table_name = ? AND column_default LIKE 'nextval(%'", [$table]);
+
+			if (\count($fields))
+				{
+				$index = new \PHPFUI\ORM\Schema\Index();
+				$index->primaryKey = true;
+				$index->name = $fields['name'];
+				$index->extra = $fields['sql'];
+				$fields[$index->name] = $index;
+				}
+
+			// get non auto increment primary keys
+			$rows = $this->getRows("SELECT kcu.column_name as name, tc.constraint_type as sql FROM information_schema.table_constraints AS tc
+														 JOIN information_schema.key_column_usage AS kcu ON tc.constraint_name = kcu.constraint_name AND tc.table_schema = kcu.table_schema
+														 WHERE tc.constraint_type = 'PRIMARY KEY' AND tc.table_name = ?", [$table]);
+
+			foreach ($rows as $row)
+				{
+				$index = new \PHPFUI\ORM\Schema\Index();
+				$index->primaryKey = true;
+				$index->name = $fields['name'];
+				$index->extra = $fields['sql'];
+
+				if (! isset($fields[$index->name]))
+					{
+					$fields[$index->name] = $index;
+					}
+				}
+			// get the rest of the index fields
+			$rows = $this->getRows('SELECT * FROM pg_indexes WHERE tablename = ?', [$table]);
+
+			foreach ($rows as $row)
+				{
+				$name = \substr($row['indexname'], \strlen($table) + 1);
+
+				if (! isset($fields[$name]))
+					{
+					$index = new \PHPFUI\ORM\Schema\Index();
+					$index->primaryKey = false;
+					$index->name = $name;
+					$index->extra = $row['indexdef'];
+					$fields[$name] = $index;
+					}
+				}
+
+			return $fields;
 			}
 		else
 			{
-			$rows = $this->getRows("SELECT * FROM sqlite_master WHERE type = 'index' and tbl_name='{$table}'");
+			$rows = $this->getRows("SELECT * FROM sqlite_master WHERE type = 'index' and tbl_name=?", [$table]);
 			}
 
 		foreach ($rows as $row)
 			{
-			$fields[] = new \PHPFUI\ORM\Schema\Index($this, $row);
+			$index = new \PHPFUI\ORM\Schema\Index();
+
+			if (\str_starts_with($this->getDSN(), 'mysql'))
+				{
+				$index->primaryKey = 'PRIMARY' == $row['Key_name'];
+				$index->name = $row['Column_name'];
+				$index->extra = \implode(',', $row);
+				}
+			else
+				{
+				$index->name = $row['name'];
+				$index->extra = $row['sql'] ?? '';
+				$index->primaryKey = false;
+				}
+			$fields[$index->name] = $index;
 			}
 
 		return $fields;
@@ -360,7 +463,10 @@ class PDOInstance extends \PDO
 			}
 		}
 
-	private function getPreparedStatement(string $sql, array $input) : ?\PDOStatement
+	/**
+	 * @param array<mixed> $input
+	 */
+	private function getPreparedStatement(string $sql, array $input) : \PDOStatement
 		{
 		$this->lastParameters = $input;
 

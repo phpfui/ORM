@@ -31,7 +31,7 @@ class RelatedRecord extends \PHPFUI\ORM\VirtualField
 		$class = \array_shift($parameters);
 		$field = \array_shift($parameters);
 
-		if (! ($value instanceof $class))
+		if (\get_debug_type($value) != $class)
 			{
 			throw new \PHPFUI\ORM\Exception(__METHOD__ . ': Error - ' . \get_debug_type($value) . ' is not an instance of ' . $class);
 			}
