@@ -6,7 +6,6 @@ class MigrationTest extends \PHPUnit\Framework\TestCase
 	{
 	public function testMigrations() : void
 		{
-		$transaction = new \PHPFUI\ORM\Transaction();
 		$tables = \PHPFUI\ORM::getTables();
 		$this->assertContains('migration', $tables);
 		$migrator = new \PHPFUI\ORM\Migrator();

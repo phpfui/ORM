@@ -29,7 +29,7 @@ class Field
 			$this->type = \strtolower($fields['Type']);
 			$this->nullable = 'YES' == $fields['Null'];
 			$this->defaultValue = $fields['Default'];
-			$this->primaryKey = false;	// use indexes to find primary keys
+			$this->primaryKey = $fields['Key'] == 'PRI';
 			$this->autoIncrement = \str_contains($fields['Extra'], 'auto_increment');
 			$this->extra = \str_replace('auto_increment', '', $fields['Extra']);
 

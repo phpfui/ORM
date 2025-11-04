@@ -40,14 +40,14 @@ abstract class OrderDetail extends \PHPFUI\ORM\Record
 			static::$fields = [
 				'date_allocated' => new \PHPFUI\ORM\FieldDefinition('datetime', 'string', 20, true, null, ),
 				'discount' => new \PHPFUI\ORM\FieldDefinition('double', 'float', 0, false, 0, ),
-				'inventory_transaction_id' => new \PHPFUI\ORM\FieldDefinition('integer', 'int', 0, true, null, ),
+				'inventory_transaction_id' => new \PHPFUI\ORM\FieldDefinition('integer', 'int', 0, true, NULL, ),
 				'order_detail_id' => new \PHPFUI\ORM\FieldDefinition('integer', 'int', 0, false, ),
-				'order_detail_status_id' => new \PHPFUI\ORM\FieldDefinition('integer', 'int', 0, true, null, ),
+				'order_detail_status_id' => new \PHPFUI\ORM\FieldDefinition('integer', 'int', 0, true, NULL, ),
 				'order_id' => new \PHPFUI\ORM\FieldDefinition('integer', 'int', 0, false, ),
-				'product_id' => new \PHPFUI\ORM\FieldDefinition('integer', 'int', 0, true, null, ),
-				'purchase_order_id' => new \PHPFUI\ORM\FieldDefinition('integer', 'int', 0, true, null, ),
-				'quantity' => new \PHPFUI\ORM\FieldDefinition('decimal(18,4)', 'float', 18, false, 0.0000, ),
-				'unit_price' => new \PHPFUI\ORM\FieldDefinition('decimal(19,4)', 'float', 19, true, 0.0000, ),
+				'product_id' => new \PHPFUI\ORM\FieldDefinition('integer', 'int', 0, true, NULL, ),
+				'purchase_order_id' => new \PHPFUI\ORM\FieldDefinition('integer', 'int', 0, true, NULL, ),
+				'quantity' => new \PHPFUI\ORM\FieldDefinition('decimal(18,4)', 'float', 19, false, 0.0000, ),
+				'unit_price' => new \PHPFUI\ORM\FieldDefinition('decimal(19,4)', 'float', 20, true, 0.0000, ),
 			];
 			}
 

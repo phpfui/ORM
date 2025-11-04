@@ -2,10 +2,6 @@ SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL,ALLOW_INVALID_DATES';
 
-DROP SCHEMA IF EXISTS `northwind`;
-CREATE SCHEMA IF NOT EXISTS `northwind` DEFAULT CHARACTER SET utf8mb4;
-USE `northwind` ;
-
 -- -----------------------------------------------------
 -- Table `customer`
 -- -----------------------------------------------------
@@ -521,11 +517,11 @@ create table migration (migrationId int NOT NULL primary key, ran TIMESTAMP DEFA
 
 DROP TABLE IF EXISTS image;
 CREATE TABLE `image` (
-	`imageId` INTEGER NOT NULL AUTO_INCREMENT,
-	`imageableId` INTEGER,
+	`image_id` INTEGER NOT NULL AUTO_INCREMENT,
+	`imageable_id` INTEGER,
 	`imageable_type` VARCHAR(128),
 	`path` VARCHAR(128) NOT NULL,
-	PRIMARY KEY (imageId));
+	PRIMARY KEY (image_id));
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;

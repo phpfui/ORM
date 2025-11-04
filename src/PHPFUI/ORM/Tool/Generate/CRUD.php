@@ -166,10 +166,11 @@ PHP;
 		$allowNulls = $field->nullable;
 		$defaultValue = null;
 
-		$doubleColon = $field->defaultValue ? strpos($field->defaultValue, '::') : null;
+		$doubleColon = $field->defaultValue ? \strpos($field->defaultValue, '::') : null;
+
 		if ($doubleColon)
 			{
-			$field->defaultValue = substr($field->defaultValue, 0, $doubleColon);
+			$field->defaultValue = \substr($field->defaultValue, 0, $doubleColon);
 			}
 
 		switch ($type)

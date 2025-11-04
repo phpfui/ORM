@@ -15,7 +15,9 @@ class DeleteTest extends \PHPUnit\Framework\TestCase
 		$order->delete();
 		$this->assertCount(0, $orderDetailTable);
 		$this->assertTrue($transaction->rollBack());
-		$this->assertCount(3, $orderDetailTable);
+		$order = new \Tests\Fixtures\Record\Order(31);
+		$this->assertTrue($order->loaded(), 'Order 31 was not reloaded after rollback');
+		$this->assertCount(3, $order->orderDetailChildren);
 		}
 
 	public function testRecordDelete() : void

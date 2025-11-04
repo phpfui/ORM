@@ -1,9 +1,9 @@
 # PHPFUI\ORM [![Tests](https://github.com/phpfui/ORM/actions/workflows/tests.yml/badge.svg)](https://github.com/phpfui/ORM/actions?query=workflow%3Atests) [![Latest Packagist release](https://img.shields.io/packagist/v/phpfui/ORM.svg)](https://packagist.org/packages/phpfui/ORM) ![](https://img.shields.io/badge/PHPStan-level%206-brightgreen.svg?style=flat)
 
-### PHPFUI\ORM a minimal Object Relational Mapper (ORM) for MySQL, MariaDB and SQLite3
+### PHPFUI\ORM a minimal Object Relational Mapper (ORM) for MySQL, MariaDB, PostGre and SQLite3
 Why another PHP ORM? In writing minimal and fast websites, it was determined that existing PHP ORM solutions were overly complex. **PHPFUI\ORM** is a little more than 6.7K lines of code in 50 files.  It is designed to have a minimal memory footprint and excellent execution times for most database needs.
 
-Performance [comparison of PHPFUI\ORM to Eloquent](https://github.com/phpfui/php-orm-sql-benchmarks) for different SQL implementations.
+**PHPFUI\ORM** demonstrates superior performance for both speed and memory usage verses other ORMs. This is proven by a [comparison of PHPFUI\ORM to Other ORMs](https://github.com/phpfui/php-orm-sql-benchmarks) for different SQL implementations.
 
 **PHPFUI\ORM** is not an attempt to write an abstraction around SQL as other ORMs do, rather it is a way to work with SQL that closely matches the semantics of SQL, with the power of PHP objects.  It allows PHP to manipulate SQL queries without having to write SQL in plain text. This is very useful for queries generated via user interfaces where the user is given a lot of flexability in how a query is defined.
 
@@ -23,7 +23,7 @@ You will need to run the \PHPFUI\ORM\Tool\Generate\CRUD class against your datab
 - **Injection Safe** Uses PDO placeholders and field sanitation to prevent injection attacks.
 - **Raw SQL Query Support** Execute any valid SQL command.
 - **Multiple Database Support** Work with multiple databases simultaneously.
-- **Multi-Vendor Support** Built on PDO with support for MySQL, MariaDB and SQLite.
+- **Multi-Vendor Support** Built on PDO with support for MySQL, MariaDB, PostGre and SQLite.
 
 ## Usage
 ### Setup
