@@ -10,22 +10,22 @@ class Index
 
 	public bool $primaryKey;
 
-//	/**
-//	 * @param array<string,mixed> $fields
-//	 */
-//	public function __construct(\PHPFUI\ORM\PDOInstance $pdo, array $fields, bool $primaryKey = false)
-//		{
-//		if (\str_starts_with($pdo->getDSN(), 'mysql'))
-//			{
-//			$this->primaryKey = 'PRIMARY' == $fields['Key_name'];
-//			$this->name = $fields['Column_name'];
-//			$this->extra = \implode(',', $fields);
-//			}
-//		else
-//			{
-//			$this->name = $fields['name'];
-//			$this->extra = $fields['sql'] ?? '';
-//			$this->primaryKey = $primaryKey;
-//			}
-//		}
+	/**
+	 * @param array<string,mixed> $fields
+	 */
+	public function __construct(\PHPFUI\ORM\PDOInstance $pdo, array $fields)
+		{
+		if (\str_starts_with($pdo->getDSN(), 'mysql'))
+			{
+			$this->primaryKey = 'PRIMARY' == $fields['Key_name'];
+			$this->name = $fields['Column_name'];
+			$this->extra = \implode(',', $fields);
+			}
+		else
+			{
+			$this->name = $fields['name'];
+			$this->extra = $fields['sql'] ?? '';
+			$this->primaryKey = false;
+			}
+		}
 	}

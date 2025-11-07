@@ -196,7 +196,7 @@ class PDOInstance extends \PDO
 
 		if (\str_starts_with($this->dsn, 'mysql'))
 			{
-			$rows = $this->getRows('SHOW INDEXES FROM ?', [$table]);
+			$rows = $this->getRows('SHOW INDEXES FROM ' . $table);
 			}
 		elseif ($this->postGre)
 			{
@@ -250,26 +250,12 @@ class PDOInstance extends \PDO
 			}
 		else
 			{
-			$rows = $this->getRows("SELECT * FROM sqlite_master WHERE type = 'index' and tbl_name=?", [$table]);
+			$rows = $this->getRows("SELECT * FROM sqlite_master WHERE type = 'index' and tbl_name='{$table}'");
 			}
 
 		foreach ($rows as $row)
 			{
-			$index = new \PHPFUI\ORM\Schema\Index();
-
-			if (\str_starts_with($this->getDSN(), 'mysql'))
-				{
-				$index->primaryKey = 'PRIMARY' == $row['Key_name'];
-				$index->name = $row['Column_name'];
-				$index->extra = \implode(',', $row);
-				}
-			else
-				{
-				$index->name = $row['name'];
-				$index->extra = $row['sql'] ?? '';
-				$index->primaryKey = false;
-				}
-			$fields[$index->name] = $index;
+			$fields[] = new \PHPFUI\ORM\Schema\Index($this, $row);
 			}
 
 		return $fields;
