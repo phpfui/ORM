@@ -61,11 +61,11 @@ class PDOInstance extends \PDO
 
 			foreach ($rows as $index => $row)
 				{
-				if ($row['Type'] == 'character varying' && $row['character_maximum_length'] != null)
+				if ('character varying' == $row['Type'] && null != $row['character_maximum_length'])
 					{
 					$row['Type'] = 'varchar(' . $row['character_maximum_length'] . ')';
 					}
-				else if ($row['Type'] == 'text')
+				elseif ('text' == $row['Type'])
 					{
 					$row['Type'] = 'longtext';
 					}
@@ -80,6 +80,7 @@ class PDOInstance extends \PDO
 			}
 
 		$fields = [];
+
 		foreach ($rows as $row)
 			{
 			$field = new \PHPFUI\ORM\Schema\Field($this, $row, $autoIncrement);

@@ -82,12 +82,16 @@ if ('sqlite' == $driver && ! \str_contains($dsn, ':memory:'))
 	}
 
 $pdo = new \PHPFUI\ORM\PDOInstance($dsn, $config['name'], $config['key']);
+
 if ('mysql' == $driver)
 	{
 	$pdo->execute('set autocommit=0');
 	}
 
 \PHPFUI\ORM::addConnection($pdo);
+
+$transaction = new \PHPFUI\ORM\Transaction();
+
 \PHPFUI\ORM::$namespaceRoot = __DIR__ . '/..';
 \PHPFUI\ORM::$recordNamespace = 'Tests\\App\\Record';
 \PHPFUI\ORM::$tableNamespace = 'Tests\\App\\Table';
@@ -120,3 +124,5 @@ foreach ($tables as $table)
 	$modelGenerator->generate($table);
 	$validatorGenerator->generate($table);
 	}
+
+$transaction->commit();
