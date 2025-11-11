@@ -6,44 +6,60 @@ class DeleteTest extends \PHPUnit\Framework\TestCase
 	{
 	public function testDeleteChildren() : void
 		{
-		$order = new \Tests\Fixtures\Record\Order(31);
-		$this->assertCount(3, $order->orderDetailChildren);
 		$transaction = new \PHPFUI\ORM\Transaction();
-		$orderDetailTable = new \Tests\Fixtures\Table\OrderDetail();
-		$orderDetailTable->setWhere(new \PHPFUI\ORM\Condition('order_id', 31));
-		$this->assertCount(3, $orderDetailTable);
-		$order->delete();
-		$this->assertCount(0, $orderDetailTable);
+		$purchaseOrder = new \Tests\Fixtures\Record\PurchaseOrder(93);
+		$this->assertCount(3, $purchaseOrder->purchaseOrderDetailChildren);
+		$this->assertEquals('', \PHPFUI\ORM::getLastError());
+		$purchaseOrderDetailTable = new \Tests\Fixtures\Table\PurchaseOrderDetail();
+		$purchaseOrderDetailTable->setWhere(new \PHPFUI\ORM\Condition('purchase_order_id', 93));
+		$this->assertCount(3, $purchaseOrderDetailTable);
+		$this->assertEquals('', \PHPFUI\ORM::getLastError());
+		$purchaseOrder->delete();
+		$this->assertEquals('', \PHPFUI\ORM::getLastError());
+		$this->assertCount(0, $purchaseOrderDetailTable);
+		$this->assertEquals('', \PHPFUI\ORM::getLastError());
 		$this->assertTrue($transaction->rollBack());
-		$order = new \Tests\Fixtures\Record\Order(31);
-		$this->assertTrue($order->loaded(), 'Order 31 was not reloaded after rollback');
-		$this->assertCount(3, $order->orderDetailChildren);
+		$purchaseOrder = new \Tests\Fixtures\Record\PurchaseOrder(93);
+		$this->assertEquals('', \PHPFUI\ORM::getLastError());
+		$this->assertTrue($purchaseOrder->loaded());
+		$this->assertCount(3, $purchaseOrder->purchaseOrderDetailChildren);
+		$this->assertEquals('', \PHPFUI\ORM::getLastError());
 		}
 
 	public function testRecordDelete() : void
 		{
-		$table = new \Tests\App\Table\Customer();
-		$this->assertEquals(29, $table->count());
 		$transaction = new \PHPFUI\ORM\Transaction();
-		$customer = new \Tests\App\Record\Customer(9);
-		$this->assertEquals('Company I', $customer->company);
-		$customer->delete();
-		$this->assertEquals(28, $table->count());
-		$this->assertTrue($transaction->rollBack());
-		$this->assertEquals(29, $table->count());
+		$table = new \Tests\App\Table\PurchaseOrderDetail();
+		$this->assertEquals(55, $table->count());
+		$this->assertEquals('', \PHPFUI\ORM::getLastError());
+		$purchaseorderdetail = new \Tests\App\Record\PurchaseOrderDetail(245);
+		$this->assertEquals('2006-01-22 00:00:00', $purchaseorderdetail->date_received);
+		$purchaseorderdetail->delete();
+		$this->assertEquals('', \PHPFUI\ORM::getLastError());
+		$this->assertEquals(54, $table->count());
+		$this->assertEquals('', \PHPFUI\ORM::getLastError());
+		$this->assertTrue($transaction->rollback());
+		$this->assertEquals('', \PHPFUI\ORM::getLastError());
+		$this->assertEquals(55, $table->count());
+		$this->assertEquals('', \PHPFUI\ORM::getLastError());
 		}
 
 	public function testTableDelete() : void
 		{
-		$table = new \Tests\App\Table\Customer();
-		$this->assertEquals(29, $table->count());
 		$transaction = new \PHPFUI\ORM\Transaction();
-		$table->setWhere(new \PHPFUI\ORM\Condition('customer_id', 9));
+		$table = new \Tests\App\Table\PurchaseOrderDetail();
+		$this->assertEquals(55, $table->count());
+		$this->assertEquals('', \PHPFUI\ORM::getLastError());
+		$table->setWhere(new \PHPFUI\ORM\Condition('purchase_order_detail_id', 9));
 		$table->delete();
+		$this->assertEquals('', \PHPFUI\ORM::getLastError());
 		$this->assertEquals(0, $table->count());
-		$table = new \Tests\App\Table\Customer();
-		$this->assertEquals(28, $table->count());
+		$this->assertEquals('', \PHPFUI\ORM::getLastError());
+		$table = new \Tests\App\Table\PurchaseOrderDetail();
+		$this->assertEquals(55, $table->count());
+		$this->assertEquals('', \PHPFUI\ORM::getLastError());
 		$this->assertTrue($transaction->rollBack());
-		$this->assertEquals(29, $table->count());
+		$this->assertEquals(55, $table->count());
+		$this->assertEquals('', \PHPFUI\ORM::getLastError());
 		}
 	}

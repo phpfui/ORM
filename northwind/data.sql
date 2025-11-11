@@ -1,5 +1,5 @@
--- SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
--- SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 
 # insert all the tables with no related data dependancies first
 
@@ -693,6 +693,6 @@ INSERT INTO `invoice` (`invoice_id`, `order_id`, `invoice_date`, `due_date`, `ta
 INSERT INTO `invoice` (`invoice_id`, `order_id`, `invoice_date`, `due_date`, `tax`, `shipping`, `amount_due`) VALUES (39, 58, '2006-04-04 11:43:08', NULL, 0, 0, 0);
 # 35 records
 
---SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
---SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 

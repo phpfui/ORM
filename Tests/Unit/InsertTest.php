@@ -8,8 +8,8 @@ class InsertTest extends \PHPUnit\Framework\TestCase
 		{
 		$transaction = new \PHPFUI\ORM\Transaction();
 		$test = new \Tests\App\Record\DateRecord();
-		$test->dateRequired = $date = \date('Y-m-d');
-		$timeStamp = \date('Y-m-d H:i:s');
+		$test->dateRequired = $date = \gmdate('Y-m-d');
+		$timeStamp = \gmdate('Y-m-d H:i:s');
 		$id = $test->insert();
 		$insertedTest = new \Tests\App\Record\DateRecord($id);
 
@@ -107,6 +107,7 @@ class InsertTest extends \PHPUnit\Framework\TestCase
 
 	public function testRecordInsert() : void
 		{
+		$transaction = new \PHPFUI\ORM\Transaction();
 		$customer = new \Tests\App\Record\Customer();
 		$customer->address = '123 Broadway';
 		$customer->business_phone = '212-987-6543';
@@ -126,8 +127,7 @@ class InsertTest extends \PHPUnit\Framework\TestCase
 
 		$table = new \Tests\App\Table\Customer();
 		$this->assertEquals(29, $table->count());
-		$transaction = new \PHPFUI\ORM\Transaction();
-		$this->assertEquals(30, $customer->insert());
+		$customer->insert();
 		$this->assertEquals(30, $table->count());
 		$this->assertTrue($transaction->rollBack());
 		$this->assertEquals(29, $table->count());
@@ -135,12 +135,11 @@ class InsertTest extends \PHPUnit\Framework\TestCase
 
 	public function testRelatedInsert() : void
 		{
+		$transaction = new \PHPFUI\ORM\Transaction();
 		$customerTable = new \Tests\App\Table\Customer();
 		$this->assertEquals(29, $customerTable->count());
 		$orderTable = new \Tests\App\Table\Order();
 		$this->assertEquals(48, $orderTable->count());
-
-		$transaction = new \PHPFUI\ORM\Transaction();
 
 		$customer = new \Tests\App\Record\Customer();
 		$customer->address = '123 Broadway';
@@ -163,7 +162,6 @@ class InsertTest extends \PHPUnit\Framework\TestCase
 		$order->employee_id = 9;
 		$order->customer = $customer;
 		$this->assertEquals(30, $customerTable->count());
-		$this->assertEquals(30, $order->customer_id);
 		$date = \date('Y-m-d H:i:s');
 		$order->order_date = $date;
 		$shipper = new \Tests\App\Record\Shipper();

@@ -21,6 +21,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
 		{
 		$order = new \Tests\Fixtures\Record\Order(30);
 		$this->assertTrue($order->loaded());
+		$this->assertEquals('', \PHPFUI\ORM::getLastError());
 		$this->assertFalse(empty($order->employee));
 		$order->employee_id = 0;
 		$this->assertTrue(empty($order->employee));

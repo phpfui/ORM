@@ -30,7 +30,7 @@ function getSqlFile(string $baseName, string $driver) : string
 	return $schema;
 	}
 
-function loadFile(string $file) : void
+function loadFile(string $file, string $driver) : void
 	{
 	$sql = '';
 
@@ -46,7 +46,16 @@ function loadFile(string $file) : void
 
 		if (\str_ends_with(\trim((string)$line), ';'))
 			{
-			\PHPFUI\ORM::execute($sql);
+			$sql = trim($sql);
+			if (! (str_starts_with($sql, 'SET ') && 'sqlite' == $driver))
+				{
+				\PHPFUI\ORM::execute($sql);
+				$error = \PHPFUI\ORM::getLastError();
+				if ($error)
+					{
+					echo "\nError from {$sql}:\n{$error}\n";
+					}
+				}
 			$sql = '';
 			}
 		} // end foreach
@@ -83,14 +92,7 @@ if ('sqlite' == $driver && ! \str_contains($dsn, ':memory:'))
 
 $pdo = new \PHPFUI\ORM\PDOInstance($dsn, $config['name'], $config['key']);
 
-if ('mysql' == $driver)
-	{
-	$pdo->execute('set autocommit=0');
-	}
-
 \PHPFUI\ORM::addConnection($pdo);
-
-$transaction = new \PHPFUI\ORM\Transaction();
 
 \PHPFUI\ORM::$namespaceRoot = __DIR__ . '/..';
 \PHPFUI\ORM::$recordNamespace = 'Tests\\App\\Record';
@@ -103,9 +105,11 @@ $transaction = new \PHPFUI\ORM\Transaction();
 \PHPFUI\Translation\Translator::setLocale('en_US');
 
 // load schema
-\loadFile($schemaFile);
+\loadFile($schemaFile, $driver);
 // load data
-\loadFile($dataFile);
+$transaction = new \PHPFUI\ORM\Transaction();
+\loadFile($dataFile, $driver);
+$transaction->commit();
 
 $tables = \PHPFUI\ORM::getTables();
 
@@ -125,4 +129,3 @@ foreach ($tables as $table)
 	$validatorGenerator->generate($table);
 	}
 
-$transaction->commit();

@@ -41,8 +41,10 @@ class MiscellaneousTest extends \PHPUnit\Framework\TestCase
 		$orderDetailTable->setWhere(new \PHPFUI\ORM\Condition('product_id', $productTable, new \PHPFUI\ORM\Operator\In()));
 
 		$this->assertCount(8, $orderDetailTable);
+		$this->assertEquals('', \PHPFUI\ORM::getLastError());
 		$orderDetailTable->setWhere(new \PHPFUI\ORM\Condition('product_id', $productTable, new \PHPFUI\ORM\Operator\NotIn()));
 		$this->assertCount(50, $orderDetailTable);
+		$this->assertEquals('', \PHPFUI\ORM::getLastError());
 		}
 
 	public function testLiteralCondition() : void
@@ -76,6 +78,7 @@ class MiscellaneousTest extends \PHPUnit\Framework\TestCase
 		$this->assertCount(18, $row);
 		$this->assertArrayHasKey('company', $row);
 		$this->assertEquals('Company A', $row['company']);
+		$this->assertEquals('', \PHPFUI\ORM::getLastError());
 		}
 
 	public function testRows() : void
@@ -84,6 +87,7 @@ class MiscellaneousTest extends \PHPUnit\Framework\TestCase
 		$this->assertIsArray($rows);
 		$this->assertCount(29, $rows);
 		$this->assertEquals('Company A', $rows[0]['company']);
+		$this->assertEquals('', \PHPFUI\ORM::getLastError());
 		}
 
 	public function testValue() : void
@@ -91,6 +95,7 @@ class MiscellaneousTest extends \PHPUnit\Framework\TestCase
 		$row = \PHPFUI\ORM::getValue('select * from customer');
 		$this->assertIsNotArray($row);
 		$this->assertEquals(1, $row);
+		$this->assertEquals('', \PHPFUI\ORM::getLastError());
 		}
 
 	public function testValueArray() : void
@@ -99,5 +104,6 @@ class MiscellaneousTest extends \PHPUnit\Framework\TestCase
 		$this->assertIsArray($rows);
 		$this->assertCount(29, $rows);
 		$this->assertEquals(1, $rows[0]);
+		$this->assertEquals('', \PHPFUI\ORM::getLastError());
 		}
 	}

@@ -6,6 +6,7 @@ class UpdateTest extends \PHPUnit\Framework\TestCase
 	{
 	public function testRecordUpdate() : void
 		{
+		$transaction = new \PHPFUI\ORM\Transaction();
 		$customerTable = new \Tests\App\Table\Customer();
 		$this->assertEquals(29, $customerTable->count());
 		$condition = new \PHPFUI\ORM\Condition('last_name', 'Wells');
@@ -19,7 +20,6 @@ class UpdateTest extends \PHPUnit\Framework\TestCase
 		$customerTable2->setWhere($condition2);
 		$this->assertEquals(1, $customerTable2->count());
 
-		$transaction = new \PHPFUI\ORM\Transaction();
 		$customer = new \Tests\App\Record\Customer(15);
 		$this->assertEquals('Helena', $customer->first_name);
 		$this->assertEquals('Kupkova', $customer->last_name);
@@ -38,6 +38,7 @@ class UpdateTest extends \PHPUnit\Framework\TestCase
 
 	public function testTableUpdate() : void
 		{
+		$transaction = new \PHPFUI\ORM\Transaction();
 		$customerTable = new \Tests\App\Table\Customer();
 		$this->assertEquals(29, $customerTable->count());
 		$condition = new \PHPFUI\ORM\Condition('last_name', 'Wells');
@@ -51,7 +52,6 @@ class UpdateTest extends \PHPUnit\Framework\TestCase
 		$customerTable2->setWhere($condition2);
 		$this->assertEquals(1, $customerTable2->count());
 
-		$transaction = new \PHPFUI\ORM\Transaction();
 		$customerTable2->update(['last_name' => 'Wells', 'first_name' => 'Bruce']);
 		$customer = new \Tests\App\Record\Customer(15);
 		$this->assertEquals('Bruce', $customer->first_name);

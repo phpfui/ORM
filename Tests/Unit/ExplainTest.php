@@ -13,6 +13,7 @@ class ExplainTest extends \PHPUnit\Framework\TestCase
 		$table->addGroupBy('category');
 		$table->addOrderBy('count', 'desc');
 		$this->assertGreaterThan(0, \count($table->getExplainRows()));
+		$this->assertEquals('', \PHPFUI\ORM::getLastError());
 		}
 
 	public function testExplainIn() : void
@@ -21,9 +22,11 @@ class ExplainTest extends \PHPUnit\Framework\TestCase
 		$orderDetailTable->setWhere(new \PHPFUI\ORM\Condition('quantity', 10));
 		$orderDetailTable->addSelect('order_id');
 		$this->assertGreaterThan(0, \count($orderDetailTable->getExplainRows()));
+		$this->assertEquals('', \PHPFUI\ORM::getLastError());
 		$orderTable = new \Tests\App\Table\Order();
 		$orderTable->setWhere(new \PHPFUI\ORM\Condition('order_id', $orderDetailTable, new \PHPFUI\ORM\Operator\In()));
 		$this->assertGreaterThan(0, \count($orderTable->getExplainRows()));
+		$this->assertEquals('', \PHPFUI\ORM::getLastError());
 		}
 
 	public function testExplainJoin() : void
@@ -36,6 +39,7 @@ class ExplainTest extends \PHPUnit\Framework\TestCase
 
 		$table->setLimit(10);
 		$this->assertGreaterThan(0, \count($table->getExplainRows()));
+		$this->assertEquals('', \PHPFUI\ORM::getLastError());
 		}
 
 	public function testExplainNotIn() : void
@@ -44,9 +48,11 @@ class ExplainTest extends \PHPUnit\Framework\TestCase
 		$orderDetailTable->setWhere(new \PHPFUI\ORM\Condition('quantity', 10));
 		$orderDetailTable->addSelect('order_id');
 		$this->assertGreaterThan(0, \count($orderDetailTable->getExplainRows()));
+		$this->assertEquals('', \PHPFUI\ORM::getLastError());
 		$orderTable = new \Tests\App\Table\Order();
 		$orderTable->setWhere(new \PHPFUI\ORM\Condition('order_id', $orderDetailTable, new \PHPFUI\ORM\Operator\NotIn()));
 		$this->assertGreaterThan(0, \count($orderTable->getExplainRows()));
+		$this->assertEquals('', \PHPFUI\ORM::getLastError());
 		}
 
 	public function testExplainUnion() : void
@@ -60,6 +66,7 @@ class ExplainTest extends \PHPUnit\Framework\TestCase
 		$table->addUnion(new \Tests\App\Table\PurchaseOrderStatus());
 		$table->addOrderBy('name');
 		$this->assertGreaterThan(0, \count($table->getExplainRows()));
+		$this->assertEquals('', \PHPFUI\ORM::getLastError());
 		}
 
 	public function testExplainWhere() : void
@@ -67,21 +74,26 @@ class ExplainTest extends \PHPUnit\Framework\TestCase
 		$table = new \Tests\App\Table\Customer();
 		$table->setWhere(new \PHPFUI\ORM\Condition('job_title', 'Purchasing Manager'));
 		$this->assertGreaterThan(0, \count($table->getExplainRows()));
+		$this->assertEquals('', \PHPFUI\ORM::getLastError());
 
 		$table->setWhere(new \PHPFUI\ORM\Condition('job_title', '%Purchasing%', new \PHPFUI\ORM\Operator\Like()));
 		$this->assertGreaterThan(0, \count($table->getExplainRows()));
+		$this->assertEquals('', \PHPFUI\ORM::getLastError());
 
 		$table->setWhere(new \PHPFUI\ORM\Condition('job_title', '%Purchasing%', new \PHPFUI\ORM\Operator\NotLike()));
 		$this->assertGreaterThan(0, \count($table->getExplainRows()));
+		$this->assertEquals('', \PHPFUI\ORM::getLastError());
 
 		$condition = new \PHPFUI\ORM\Condition('job_title', '%Purchasing%', new \PHPFUI\ORM\Operator\Like());
 		$condition->and(new \PHPFUI\ORM\Condition('state_province', 'NY'));
 		$table->setWhere($condition);
 		$this->assertGreaterThan(0, \count($table->getExplainRows()));
+		$this->assertEquals('', \PHPFUI\ORM::getLastError());
 
 		$condition = new \PHPFUI\ORM\Condition('job_title', '%Purchasing%', new \PHPFUI\ORM\Operator\NotLike());
 		$condition->or(new \PHPFUI\ORM\Condition('state_province', 'NY'));
 		$table->setWhere($condition);
 		$this->assertGreaterThan(0, \count($table->getExplainRows()));
+		$this->assertEquals('', \PHPFUI\ORM::getLastError());
 		}
 	}

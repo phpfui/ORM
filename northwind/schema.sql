@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS `customer` (
   `country_region` VARCHAR(50) NULL DEFAULT NULL,
   `web_page` LONGTEXT NULL DEFAULT NULL,
   `notes` LONGTEXT NULL DEFAULT NULL,
-  `attachments` LONGBLOB NULL DEFAULT NULL);
+  `attachments` LONGBLOB NULL DEFAULT NULL) ENGINE=InnoDB;
 CREATE INDEX `customer_city` ON `customer` (`city`);
 CREATE INDEX `customer_company` ON `customer` (`company`);
 CREATE INDEX `customer_first_name` ON `customer` (`first_name`);
@@ -55,7 +55,7 @@ CREATE TABLE IF NOT EXISTS `employee` (
   `country_region` VARCHAR(50) NULL DEFAULT NULL,
   `web_page` LONGTEXT NULL DEFAULT NULL,
   `notes` LONGTEXT NULL DEFAULT NULL,
-  `attachments` LONGBLOB NULL DEFAULT NULL);
+  `attachments` LONGBLOB NULL DEFAULT NULL) ENGINE=InnoDB;
 CREATE INDEX `employee_city` ON `employee` (`city`);
 CREATE INDEX `employee_company` ON `employee` (`company`);
 CREATE INDEX `employee_first_name` ON `employee` (`first_name`);
@@ -70,7 +70,7 @@ CREATE INDEX `employee_state_province` ON `employee` (`state_province`);
 DROP TABLE IF EXISTS `privilege`;
 CREATE TABLE IF NOT EXISTS `privilege` (
   `privilege_id` INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
-  `privilege` VARCHAR(50) NULL DEFAULT NULL);
+  `privilege` VARCHAR(50) NULL DEFAULT NULL) ENGINE=InnoDB;
 
 
 -- -----------------------------------------------------
@@ -89,7 +89,7 @@ CREATE TABLE IF NOT EXISTS `employee_privilege` (
     FOREIGN KEY (`privilege_id`)
     REFERENCES `privilege` (`privilege_id`)
     ON DELETE NO ACTION
-    ON UPDATE NO ACTION);
+    ON UPDATE NO ACTION) ENGINE=InnoDB;
 
 CREATE INDEX `employee_privilege_employee_id` ON `employee_privilege` (`employee_id`);
 CREATE INDEX `employee_privilege_privilege_id` ON `employee_privilege` (`privilege_id`);
@@ -100,7 +100,7 @@ CREATE INDEX `employee_privilege_privilege_id` ON `employee_privilege` (`privile
 DROP TABLE IF EXISTS `inventory_transaction_type`;
 CREATE TABLE IF NOT EXISTS `inventory_transaction_type` (
   `inventory_transaction_type_id` INTEGER NOT NULL PRIMARY KEY,
-  `inventory_transaction_type_name` VARCHAR(50) NOT NULL);
+  `inventory_transaction_type_name` VARCHAR(50) NOT NULL) ENGINE=InnoDB;
 
 
 -- -----------------------------------------------------
@@ -125,7 +125,7 @@ CREATE TABLE IF NOT EXISTS `shipper` (
   `country_region` VARCHAR(50) NULL DEFAULT NULL,
   `web_page` LONGTEXT NULL DEFAULT NULL,
   `notes` LONGTEXT NULL DEFAULT NULL,
-  `attachments` LONGBLOB NULL DEFAULT NULL);
+  `attachments` LONGBLOB NULL DEFAULT NULL) ENGINE=InnoDB;
 CREATE INDEX `shipper_city` ON `shipper` (`city`);
 CREATE INDEX `shipper_company` ON `shipper` (`company`);
 CREATE INDEX `shipper_first_name` ON `shipper` (`first_name`);
@@ -140,7 +140,7 @@ CREATE INDEX `shipper_state_province` ON `shipper` (`state_province`);
 DROP TABLE IF EXISTS `order_tax_status`;
 CREATE TABLE IF NOT EXISTS `order_tax_status` (
   `order_tax_status_id` INTEGER NOT NULL PRIMARY KEY,
-  `order_tax_status_name` VARCHAR(50) NOT NULL);
+  `order_tax_status_name` VARCHAR(50) NOT NULL) ENGINE=InnoDB;
 
 
 -- -----------------------------------------------------
@@ -149,7 +149,7 @@ CREATE TABLE IF NOT EXISTS `order_tax_status` (
 DROP TABLE IF EXISTS `order_status`;
 CREATE TABLE IF NOT EXISTS `order_status` (
   `order_status_id` INTEGER NOT NULL PRIMARY KEY,
-  `order_status_name` VARCHAR(50) NOT NULL);
+  `order_status_name` VARCHAR(50) NOT NULL) ENGINE=InnoDB;
 
 
 -- -----------------------------------------------------
@@ -201,7 +201,7 @@ CREATE TABLE IF NOT EXISTS `order` (
     FOREIGN KEY (`order_status_id`)
     REFERENCES `order_status` (`order_status_id`)
     ON DELETE NO ACTION
-    ON UPDATE NO ACTION);
+    ON UPDATE NO ACTION) ENGINE=InnoDB;
 
 CREATE INDEX `order_customer_id` ON `order` (`customer_id`);
 CREATE INDEX `order_employee_id` ON `order` (`employee_id`);
@@ -226,7 +226,7 @@ CREATE TABLE IF NOT EXISTS `product` (
   `discontinued` INTEGER NOT NULL DEFAULT '0',
   `minimum_reorder_quantity` INTEGER NULL DEFAULT NULL,
   `category` VARCHAR(50) NULL DEFAULT NULL,
-  `attachments` LONGBLOB NULL DEFAULT NULL);
+  `attachments` LONGBLOB NULL DEFAULT NULL) ENGINE=InnoDB;
 CREATE INDEX `product_product_code` ON `product` (`product_code`);
 
 
@@ -236,7 +236,7 @@ CREATE INDEX `product_product_code` ON `product` (`product_code`);
 DROP TABLE IF EXISTS `purchase_order_status`;
 CREATE TABLE IF NOT EXISTS `purchase_order_status` (
   `purchase_order_status_id` INTEGER NOT NULL PRIMARY KEY,
-  `purchase_order_status_name` VARCHAR(50) NULL DEFAULT NULL);
+  `purchase_order_status_name` VARCHAR(50) NULL DEFAULT NULL) ENGINE=InnoDB;
 
 
 -- -----------------------------------------------------
@@ -261,7 +261,7 @@ CREATE TABLE IF NOT EXISTS `supplier` (
   `country_region` VARCHAR(50) NULL DEFAULT NULL,
   `web_page` LONGTEXT NULL DEFAULT NULL,
   `notes` LONGTEXT NULL DEFAULT NULL,
-  `attachments` LONGBLOB NULL DEFAULT NULL);
+  `attachments` LONGBLOB NULL DEFAULT NULL) ENGINE=InnoDB;
 CREATE INDEX `supplier_city` ON `supplier` (`city`);
 CREATE INDEX `supplier_company` ON `supplier` (`company`);
 CREATE INDEX `supplier_first_name` ON `supplier` (`first_name`);
@@ -285,7 +285,7 @@ CREATE TABLE IF NOT EXISTS `product_supplier` (
     FOREIGN KEY (`supplier_id`)
     REFERENCES `supplier` (`supplier_id`)
     ON DELETE NO ACTION
-    ON UPDATE NO ACTION);
+    ON UPDATE NO ACTION) ENGINE=InnoDB;
 
 CREATE INDEX `product_supplier_product_id` ON `product_supplier` (`product_id`);
 CREATE INDEX `product_supplier_supplier_id` ON `product_supplier` (`supplier_id`);
@@ -326,7 +326,7 @@ CREATE TABLE IF NOT EXISTS `purchase_order` (
     FOREIGN KEY (`supplier_id`)
     REFERENCES `supplier` (`supplier_id`)
     ON DELETE NO ACTION
-    ON UPDATE NO ACTION);
+    ON UPDATE NO ACTION) ENGINE=InnoDB;
 
 CREATE INDEX `purchase_order_created_by` ON `purchase_order` (`created_by`);
 CREATE INDEX `purchase_order_status_id` ON `purchase_order` (`purchase_order_status_id`);
@@ -365,7 +365,7 @@ CREATE TABLE IF NOT EXISTS `inventory_transaction` (
     FOREIGN KEY (`inventory_transaction_type_id`)
     REFERENCES `inventory_transaction_type` (`inventory_transaction_type_id`)
     ON DELETE NO ACTION
-    ON UPDATE NO ACTION);
+    ON UPDATE NO ACTION) ENGINE=InnoDB;
 
 CREATE INDEX `inventory_transaction_order_id` ON `inventory_transaction` (`order_id`);
 CREATE INDEX `inventory_transaction_product_id` ON `inventory_transaction` (`product_id`);
@@ -388,7 +388,7 @@ CREATE TABLE IF NOT EXISTS `invoice` (
     FOREIGN KEY (`order_id`)
     REFERENCES `order` (`order_id`)
     ON DELETE NO ACTION
-    ON UPDATE NO ACTION);
+    ON UPDATE NO ACTION) ENGINE=InnoDB;
 
 CREATE INDEX `invoice_order_id` ON `invoice` (`order_id`);
 
@@ -398,7 +398,7 @@ CREATE INDEX `invoice_order_id` ON `invoice` (`order_id`);
 DROP TABLE IF EXISTS `order_detail_status`;
 CREATE TABLE IF NOT EXISTS `order_detail_status` (
   `order_detail_status_id` INTEGER NOT NULL PRIMARY KEY,
-  `order_detail_status_name` VARCHAR(50) NOT NULL);
+  `order_detail_status_name` VARCHAR(50) NOT NULL) ENGINE=InnoDB;
 
 
 -- -----------------------------------------------------
@@ -430,7 +430,7 @@ CREATE TABLE IF NOT EXISTS `order_detail` (
     FOREIGN KEY (`order_detail_status_id`)
     REFERENCES `order_detail_status` (`order_detail_status_id`)
     ON DELETE NO ACTION
-    ON UPDATE NO ACTION);
+    ON UPDATE NO ACTION) ENGINE=InnoDB;
 
 CREATE INDEX `order_detail_inventory_id` ON `order_detail` (`inventory_transaction_id`);
 CREATE INDEX `order_detail_product_id` ON `order_detail` (`product_id`);
@@ -466,11 +466,10 @@ CREATE TABLE IF NOT EXISTS `purchase_order_detail` (
     FOREIGN KEY (`purchase_order_id`)
     REFERENCES `purchase_order` (`purchase_order_id`)
     ON DELETE NO ACTION
-    ON UPDATE NO ACTION);
+    ON UPDATE NO ACTION) ENGINE=InnoDB;
 CREATE INDEX `purchase_order_detail_inventory_id` ON `purchase_order_detail` (`inventory_transaction_id`);
 CREATE INDEX `purchase_order_detail_purchase_order_id` ON `purchase_order_detail` (`purchase_order_id`);
 CREATE INDEX `purchase_order_detail_product_id` ON `purchase_order_detail` (`product_id`);
-
 
 -- -----------------------------------------------------
 -- Table `sales_report`
@@ -481,7 +480,7 @@ CREATE TABLE IF NOT EXISTS `sales_report` (
   `display` VARCHAR(50) NULL DEFAULT NULL,
   `title` VARCHAR(50) NULL DEFAULT NULL,
   `filter_row_source` LONGTEXT NULL DEFAULT NULL,
-  `default` INTEGER NOT NULL DEFAULT '0');
+  `default` INTEGER NOT NULL DEFAULT '0') ENGINE=InnoDB;
 
 
 -- -----------------------------------------------------
@@ -490,7 +489,7 @@ CREATE TABLE IF NOT EXISTS `sales_report` (
 DROP TABLE IF EXISTS `setting`;
 CREATE TABLE IF NOT EXISTS `setting` (
   `setting_id` INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
-  `setting_data` VARCHAR(255) NULL DEFAULT NULL);
+  `setting_data` VARCHAR(255) NULL DEFAULT NULL) ENGINE=InnoDB;
 
 drop table if exists stringRecord;
 CREATE TABLE stringRecord (
@@ -499,7 +498,7 @@ CREATE TABLE stringRecord (
   stringDefaultNull varchar(100) DEFAULT NULL,
   stringDefaultNullable varchar(100) default 'default',
   stringDefaultNotNull varchar(100) not null default 'default',
-  primary key(stringRecordId));
+  primary key(stringRecordId)) ENGINE=InnoDB;
 
 drop table if exists dateRecord;
 create table dateRecord (
@@ -510,10 +509,10 @@ create table dateRecord (
   dateDefaultNotNull date not null default '2000-01-02',
   timestampDefaultCurrentNullable timestamp DEFAULT CURRENT_TIMESTAMP,
   timestampDefaultCurrentNotNull timestamp not null default CURRENT_TIMESTAMP,
-  PRIMARY KEY (dateRecordId));
+  PRIMARY KEY (dateRecordId)) ENGINE=InnoDB;
 
 drop table if exists migration;
-create table migration (migrationId int NOT NULL primary key, ran TIMESTAMP DEFAULT CURRENT_TIMESTAMP);
+create table migration (migrationId int NOT NULL primary key, ran TIMESTAMP DEFAULT CURRENT_TIMESTAMP) ENGINE=InnoDB;
 
 DROP TABLE IF EXISTS image;
 CREATE TABLE `image` (
@@ -521,8 +520,9 @@ CREATE TABLE `image` (
 	`imageable_id` INTEGER,
 	`imageable_type` VARCHAR(128),
 	`path` VARCHAR(128) NOT NULL,
-	PRIMARY KEY (image_id));
+	PRIMARY KEY (image_id)) ENGINE=InnoDB;
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+SET time_zone = '+00:00';

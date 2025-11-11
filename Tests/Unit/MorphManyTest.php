@@ -6,7 +6,6 @@ class MorphManyTest extends \PHPUnit\Framework\TestCase
 	{
 	public function testMorphMany() : void
 		{
-		$transaction = new \PHPFUI\ORM\Transaction();
 		$product = new \Tests\Fixtures\Record\Product(43);
 		$this->assertTrue($product->loaded());
 		$image = new \Tests\App\Record\Image();
@@ -54,7 +53,5 @@ class MorphManyTest extends \PHPUnit\Framework\TestCase
 		$product->photos->current()->delete();
 		$employee->photos->current()->delete();
 		$this->assertCount(2, $imageTable);
-
-		$this->assertTrue($transaction->rollBack());
 		}
 	}

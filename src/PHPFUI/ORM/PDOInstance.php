@@ -196,7 +196,7 @@ class PDOInstance extends \PDO
 
 		if (\str_starts_with($this->dsn, 'mysql'))
 			{
-			$rows = $this->getRows('SHOW INDEXES FROM ' . $table);
+			$rows = $this->getRows("SHOW INDEXES FROM `{$table}`;");
 			}
 		elseif ($this->postGre)
 			{
@@ -205,7 +205,7 @@ class PDOInstance extends \PDO
 
 			if (\count($fields))
 				{
-				$index = new \PHPFUI\ORM\Schema\Index();
+				$index = new \PHPFUI\ORM\Schema\Index($this, []);
 				$index->primaryKey = true;
 				$index->name = $fields['name'];
 				$index->extra = $fields['sql'];
@@ -219,7 +219,7 @@ class PDOInstance extends \PDO
 
 			foreach ($rows as $row)
 				{
-				$index = new \PHPFUI\ORM\Schema\Index();
+				$index = new \PHPFUI\ORM\Schema\Index($this, []);
 				$index->primaryKey = true;
 				$index->name = $fields['name'];
 				$index->extra = $fields['sql'];
@@ -238,7 +238,7 @@ class PDOInstance extends \PDO
 
 				if (! isset($fields[$name]))
 					{
-					$index = new \PHPFUI\ORM\Schema\Index();
+					$index = new \PHPFUI\ORM\Schema\Index($this, []);
 					$index->primaryKey = false;
 					$index->name = $name;
 					$index->extra = $row['indexdef'];
