@@ -29,7 +29,11 @@ class Field
 			$this->type = \strtolower($fields['Type']);
 			$this->nullable = 'YES' == $fields['Null'];
 			$this->defaultValue = $fields['Default'];
-			$this->primaryKey = false;	// use indexes to find primary keys
+			if ('current_timestamp()' == $this->defaultValue)
+				{
+				$this->defaultValue = 'CURRENT_TIMESTAMP';
+				}
+			$this->primaryKey = false;  // use indexes to find primary keys
 			$this->autoIncrement = \str_contains($fields['Extra'], 'auto_increment');
 			$this->extra = \str_replace('auto_increment', '', $fields['Extra']);
 
