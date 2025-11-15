@@ -399,7 +399,19 @@ abstract class Record extends DataObject
 	 */
 	public function insertOrIgnore() : int | bool
 		{
-		return $this->privateInsert(false, 'ignore ');
+		$pdo = \PHPFUI\ORM::pdo();
+		if (! $pdo->sqlite)
+			{
+			return $this->privateInsert(false, 'ignore ');
+			}
+
+		$id = $this->privateInsert(false);
+		if (! $id)
+			{
+			\PHPFUI\ORM::getInstance()->clearErrors();
+			}
+
+		return $id;
 		}
 
 	/**
@@ -409,7 +421,26 @@ abstract class Record extends DataObject
 	 */
 	public function insertOrUpdate() : int | bool
 		{
-		return $this->privateInsert(true);
+		$pdo = \PHPFUI\ORM::pdo();
+		if (! $pdo->sqlite)
+			{
+			return $this->privateInsert(true);
+			}
+
+		$id = $this->privateInsert(false);
+		if ($id === false)
+			{
+			\PHPFUI\ORM::getInstance()->clearErrors();
+
+			$id = $this->update();
+			$keys = $this->getPrimaryKeyValues();
+			if (count($keys) == 1)
+				{
+				$id = array_shift($keys);
+				}
+			}
+
+		return $id;
 		}
 
 	/**
@@ -905,17 +936,20 @@ abstract class Record extends DataObject
 
 		$returnValue = \PHPFUI\ORM::execute($sql, $input);
 
-		if (static::$autoIncrement && $returnValue)
+		if ($returnValue)
 			{
-			$returnValue = (int)\PHPFUI\ORM::lastInsertId(static::$primaryKeys[0], $table);
-
-			if ($returnValue)
+			if (static::$autoIncrement)
 				{
-				$this->current[static::$primaryKeys[0]] = $returnValue;
-				}
-			}
+				$returnValue = (int)\PHPFUI\ORM::lastInsertId(static::$primaryKeys[0], $table);
 
-		$this->loaded = true;	// record is effectively read from the database now
+				if ($returnValue)
+					{
+					$this->current[static::$primaryKeys[0]] = $returnValue;
+					}
+				}
+
+			$this->loaded = true;	// record is effectively read from the database now
+			}
 
 		return $returnValue;
 		}

@@ -6,6 +6,8 @@ class PDOInstance extends \PDO
 	{
 	public readonly bool $postGre;
 
+	public readonly bool $sqlite;
+
 	/** @var array<string> */
 	private array $lastError = [];
 
@@ -25,6 +27,7 @@ class PDOInstance extends \PDO
 	public function __construct(private string $dsn, ?string $username = null, ?string $password = null, ?array $options = null)
 		{
 		$this->postGre = \str_starts_with($dsn, 'pgsql');
+		$this->sqlite = \str_starts_with($dsn, 'sqlite');
 		parent::__construct($dsn, $username, $password, $options);
 		}
 
@@ -36,6 +39,18 @@ class PDOInstance extends \PDO
 		$this->reportErrors();
 
 		return parent::beginTransaction();
+		}
+
+	/**
+	 * Clears an existing errors
+	 */
+	public function clearErrors() : void
+		{
+		$this->lastError = [];
+		$this->lastErrorCode = 0;
+		$this->lastErrors = [];
+		$this->lastParameters = [];
+		$this->lastSql = '';
 		}
 
 	/**

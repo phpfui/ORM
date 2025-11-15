@@ -216,4 +216,82 @@ class InsertTest extends \PHPUnit\Framework\TestCase
 		$this->assertEquals('default', $insertedTest->stringDefaultNotNull);
 		$this->assertTrue($transaction->rollBack());
 		}
+
+	public function testInsertOrUpdate() : void
+		{
+		$transaction = new \PHPFUI\ORM\Transaction();
+		$customerTable = new \Tests\App\Table\Customer();
+		$this->assertEquals(29, $customerTable->count());
+
+		$customer = new \Tests\App\Record\Customer();
+		$customer->address = '123 Broadway';
+		$customer->business_phone = '212-987-6543';
+		$customer->city = 'New York';
+		$customer->company = 'PHPFUI';
+		$customer->country_region = 'USA';
+		$customer->email_address = 'bruce@phpfui.com';
+		$customer->fax_number = '212-345-6789';
+		$customer->first_name = 'Bruce';
+		$customer->home_phone = '987-654-3210';
+		$customer->job_title = 'Head Honcho';
+		$customer->last_name = 'Wells';
+		$customer->mobile_phone = '123-456-7890';
+		$customer->state_province = 'NY';
+		$customer->web_page = 'http://www.phpfui.com';
+		$customer->zip_postal_code = '12345';
+		$id = $customer->insertOrUpdate();
+		$this->assertGreaterThan(0, $id);
+		$this->assertEquals(30, $customerTable->count());
+
+		$newCustomer = new \Tests\App\Record\Customer($id);
+		$this->assertEquals('12345', $newCustomer->zip_postal_code);
+		$newCustomer->zip_postal_code = '54321';
+		$result = $newCustomer->insertOrUpdate();
+		$this->assertGreaterThan(0, $result);
+		$this->assertEquals(30, $customerTable->count());
+
+		$updatedCustomer = new \Tests\App\Record\Customer($id);
+		$this->assertEquals('54321', $updatedCustomer->zip_postal_code);
+		$this->assertTrue($transaction->rollBack());
+		$this->assertEquals(29, $customerTable->count());
+		}
+
+	public function testInsertOrIgnore() : void
+		{
+		$transaction = new \PHPFUI\ORM\Transaction();
+		$customerTable = new \Tests\App\Table\Customer();
+		$this->assertEquals(29, $customerTable->count());
+
+		$customer = new \Tests\App\Record\Customer();
+		$customer->address = '123 Broadway';
+		$customer->business_phone = '212-987-6543';
+		$customer->city = 'New York';
+		$customer->company = 'PHPFUI';
+		$customer->country_region = 'USA';
+		$customer->email_address = 'bruce@phpfui.com';
+		$customer->fax_number = '212-345-6789';
+		$customer->first_name = 'Bruce';
+		$customer->home_phone = '987-654-3210';
+		$customer->job_title = 'Head Honcho';
+		$customer->last_name = 'Wells';
+		$customer->mobile_phone = '123-456-7890';
+		$customer->state_province = 'NY';
+		$customer->web_page = 'http://www.phpfui.com';
+		$customer->zip_postal_code = '12345';
+		$id = $customer->insertOrIgnore();
+		$this->assertGreaterThan(0, $id);
+		$this->assertEquals(30, $customerTable->count());
+
+		$newCustomer = new \Tests\App\Record\Customer($id);
+		$this->assertEquals('12345', $newCustomer->zip_postal_code);
+		$newCustomer->zip_postal_code = '54321';
+		$result = $newCustomer->insertOrIgnore();
+		$this->assertEquals(0, $result);
+		$this->assertEmpty(\PHPFUI\ORM::getLastError());
+
+		$updatedCustomer = new \Tests\App\Record\Customer($id);
+		$this->assertEquals('12345', $updatedCustomer->zip_postal_code);
+		$this->assertTrue($transaction->rollBack());
+		$this->assertEquals(29, $customerTable->count());
+		}
 	}
