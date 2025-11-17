@@ -29,11 +29,12 @@ class Field
 			$this->type = \strtolower($fields['Type']);
 			$this->nullable = 'YES' == $fields['Null'];
 			$this->defaultValue = $fields['Default'];
+
 			if ('current_timestamp()' == $this->defaultValue)
 				{
 				$this->defaultValue = 'CURRENT_TIMESTAMP';
 				}
-			$this->primaryKey = false;  // use indexes to find primary keys
+			$this->primaryKey = 'PRI' === $fields['Key'];  // use indexes to find primary keys
 			$this->autoIncrement = \str_contains($fields['Extra'], 'auto_increment');
 			$this->extra = \str_replace('auto_increment', '', $fields['Extra']);
 
@@ -43,7 +44,8 @@ class Field
 		$this->name = $fields['name'];
 		$this->type = \strtolower($fields['type']);
 		$this->nullable = ! (bool)$fields['notnull'];
-		$this->defaultValue = $fields['dflt_value'];
+		$this->defaultValue = 'NULL' === $fields['dflt_value'] ? null : $fields['dflt_value'];
+		$this->defaultValue = $this->defaultValue ? \trim($this->defaultValue, "'") : $this->defaultValue;
 		$this->primaryKey = (bool)$fields['pk'];
 		$this->autoIncrement = $autoIncrement && $this->primaryKey;
 		$this->extra = '';

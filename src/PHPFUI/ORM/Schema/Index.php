@@ -6,6 +6,8 @@ class Index
 	{
 	public string $extra;
 
+	public string $keyName;
+
 	public string $name;
 
 	public bool $primaryKey;
@@ -18,12 +20,13 @@ class Index
 		if (\str_starts_with($pdo->getDSN(), 'mysql'))
 			{
 			$this->primaryKey = 'PRIMARY' == $fields['Key_name'];
+			$this->keyName = $fields['Key_name'];
 			$this->name = $fields['Column_name'];
 			$this->extra = \implode(',', $fields);
 			}
 		else
 			{
-			$this->name = $fields['name'];
+			$this->name = $this->keyName = $fields['name'];
 			$this->extra = $fields['sql'] ?? '';
 			$this->primaryKey = false;
 			}

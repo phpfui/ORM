@@ -400,12 +400,14 @@ abstract class Record extends DataObject
 	public function insertOrIgnore() : int | bool
 		{
 		$pdo = \PHPFUI\ORM::pdo();
+
 		if (! $pdo->sqlite)
 			{
 			return $this->privateInsert(false, 'ignore ');
 			}
 
 		$id = $this->privateInsert(false);
+
 		if (! $id)
 			{
 			\PHPFUI\ORM::getInstance()->clearErrors();
@@ -422,21 +424,24 @@ abstract class Record extends DataObject
 	public function insertOrUpdate() : int | bool
 		{
 		$pdo = \PHPFUI\ORM::pdo();
+
 		if (! $pdo->sqlite)
 			{
 			return $this->privateInsert(true);
 			}
 
 		$id = $this->privateInsert(false);
-		if ($id === false)
+
+		if (false === $id)
 			{
 			\PHPFUI\ORM::getInstance()->clearErrors();
 
 			$id = $this->update();
 			$keys = $this->getPrimaryKeyValues();
-			if (count($keys) == 1)
+
+			if (1 == \count($keys))
 				{
-				$id = array_shift($keys);
+				$id = \array_shift($keys);
 				}
 			}
 

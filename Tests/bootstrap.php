@@ -46,11 +46,13 @@ function loadFile(string $file, string $driver) : void
 
 		if (\str_ends_with(\trim((string)$line), ';'))
 			{
-			$sql = trim($sql);
-			if (! (str_starts_with($sql, 'SET ') && 'sqlite' == $driver))
+			$sql = \trim($sql);
+
+			if (! (\str_starts_with($sql, 'SET ') && 'sqlite' == $driver))
 				{
 				\PHPFUI\ORM::execute($sql);
 				$error = \PHPFUI\ORM::getLastError();
+
 				if ($error)
 					{
 					echo "\nError from {$sql}:\n{$error}\n";

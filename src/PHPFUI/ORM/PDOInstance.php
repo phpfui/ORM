@@ -61,9 +61,10 @@ class PDOInstance extends \PDO
 		$fields = [];
 		$autoIncrement = false;
 
-		if (\str_starts_with($this->dsn, 'mysql'))
+		if ($this->sqlite)
 			{
-			$rows = $this->getRows("describe `{$table}`;");
+			$autoIncrement = (bool)$this->getValue("SELECT count(*) FROM sqlite_master where tbl_name='{$table}' and sql like '%autoincrement%'");
+			$rows = $this->getRows("pragma table_info('{$table}')");
 			}
 		elseif ($this->postGre)
 			{
@@ -90,8 +91,7 @@ class PDOInstance extends \PDO
 			}
 		else
 			{
-			$autoIncrement = (bool)$this->getValue("SELECT count(*) FROM sqlite_master where tbl_name='{$table}' and sql like '%autoincrement%'");
-			$rows = $this->getRows("pragma table_info('{$table}')");
+			$rows = $this->getRows("describe `{$table}`;");
 			}
 
 		$fields = [];
@@ -203,15 +203,49 @@ class PDOInstance extends \PDO
 		}
 
 	/**
+	 * @return array<\PHPFUI\ORM\Schema\ForeignKey>
+	 */
+	public function getForeignKeys(string $table) : array
+		{
+		$fields = [];
+		$rows = [];
+
+		if ($this->sqlite)
+			{
+			$rows = \PHPFUI\ORM::getRows("PRAGMA foreign_key_list('{$table}');");
+			}
+		else
+			{
+			$rows = $this->getRows("SELECT
+				CONSTRAINT_NAME,
+				DELETE_RULE as `on_delete`,
+				UPDATE_RULE as `on_update`,
+				UNIQUE_CONSTRAINT_NAME as 'to',
+				MATCH_OPTION as 'match',
+				REFERENCED_TABLE_NAME as `table`
+				FROM information_schema.referential_constraints WHERE `table_name` = ?", [$table]);
+			}
+
+		foreach ($rows as $row)
+			{
+			$row['TABLE_NAME'] = $table;
+			$index = new \PHPFUI\ORM\Schema\ForeignKey($this, $row);
+			$fields[$index->name] = $index;
+			}
+
+		return $fields;
+		}
+
+	/**
 	 * @return array<\PHPFUI\ORM\Schema\Index>
 	 */
 	public function getIndexes(string $table) : array
 		{
 		$fields = [];
 
-		if (\str_starts_with($this->dsn, 'mysql'))
+		if ($this->sqlite)
 			{
-			$rows = $this->getRows("SHOW INDEXES FROM `{$table}`;");
+			$rows = $this->getRows("SELECT * FROM sqlite_master WHERE type = 'index' and tbl_name='{$table}'");
 			}
 		elseif ($this->postGre)
 			{
@@ -265,12 +299,17 @@ class PDOInstance extends \PDO
 			}
 		else
 			{
-			$rows = $this->getRows("SELECT * FROM sqlite_master WHERE type = 'index' and tbl_name='{$table}'");
+			$rows = $this->getRows("SHOW INDEXES FROM `{$table}`;");
 			}
 
 		foreach ($rows as $row)
 			{
-			$fields[] = new \PHPFUI\ORM\Schema\Index($this, $row);
+			$index = new \PHPFUI\ORM\Schema\Index($this, $row);
+
+			if ('PRIMARY' !== $index->keyName)
+				{
+				$fields[$index->keyName] = $index;
+				}
 			}
 
 		return $fields;
@@ -380,9 +419,9 @@ class PDOInstance extends \PDO
 	 */
 	public function getTables() : array
 		{
-		if (\str_starts_with($this->dsn, 'mysql'))
+		if ($this->sqlite)
 			{
-			$rows = $this->getRows('show tables');
+			$rows = $this->getRows('SELECT name FROM sqlite_schema WHERE type="table" AND name NOT LIKE "sqlite_%"');
 			}
 		elseif ($this->postGre)
 			{
@@ -390,7 +429,7 @@ class PDOInstance extends \PDO
 			}
 		else
 			{
-			$rows = $this->getRows('SELECT name FROM sqlite_schema WHERE type="table" AND name NOT LIKE "sqlite_%"');
+			$rows = $this->getRows('show tables');
 			}
 		$tables = [];
 

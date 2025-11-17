@@ -136,6 +136,14 @@ class ORM
 		}
 
 	/**
+	 * @return array<\PHPFUI\ORM\Schema\ForeignKey>
+	 */
+	public static function getForeignKeys(string $table) : array
+		{
+		return self::getInstance()->getForeignKeys($table);
+		}
+
+	/**
 	 * @return array<\PHPFUI\ORM\Schema\Index>
 	 */
 	public static function getIndexes(string $table) : array
