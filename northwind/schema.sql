@@ -491,25 +491,25 @@ CREATE TABLE IF NOT EXISTS `setting` (
   `setting_id` INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
   `setting_data` VARCHAR(255) NULL DEFAULT NULL) ENGINE=InnoDB;
 
-drop table if exists stringRecord;
-CREATE TABLE stringRecord (
-  stringRecordId int NOT NULL AUTO_INCREMENT,
+drop table if exists string_record;
+CREATE TABLE string_record (
+  string_record_id int NOT NULL AUTO_INCREMENT,
   stringRequired varchar(100) not null,
   stringDefaultNull varchar(100) DEFAULT NULL,
   stringDefaultNullable varchar(100) default 'default',
   stringDefaultNotNull varchar(100) not null default 'default',
-  primary key(stringRecordId)) ENGINE=InnoDB;
+  primary key(string_record_id)) ENGINE=InnoDB;
 
-drop table if exists dateRecord;
-create table dateRecord (
-  dateRecordId int not null auto_increment,
+drop table if exists date_record;
+create table date_record (
+  date_record_id int not null auto_increment,
   dateRequired date not null,
   dateDefaultNull date DEFAULT NULL,
   dateDefaultNullable date default '2000-01-02',
   dateDefaultNotNull date not null default '2000-01-02',
   timestampDefaultCurrentNullable timestamp DEFAULT CURRENT_TIMESTAMP,
   timestampDefaultCurrentNotNull timestamp not null default CURRENT_TIMESTAMP,
-  PRIMARY KEY (dateRecordId)) ENGINE=InnoDB;
+  PRIMARY KEY (date_record_id)) ENGINE=InnoDB;
 
 drop table if exists migration;
 create table migration (migrationId int NOT NULL primary key, ran TIMESTAMP DEFAULT CURRENT_TIMESTAMP) ENGINE=InnoDB;

@@ -549,6 +549,11 @@ abstract class Table implements \Countable
 			}
 		$this->offset = $offset;
 
+		if (\PHPFUI\ORM::getInstance()->postGre)
+			{
+			return "\nLIMIT {$this->limit} OFFSET {$offset}";
+			}
+
 		return "\nLIMIT {$offset}, {$this->limit}";
 		}
 
@@ -782,11 +787,20 @@ abstract class Table implements \Countable
 		$tableName = $this->getTableName();
 		$sql = "insert {$ignore} into `{$tableName}` (";
 
-		$fields = \array_keys($this->getFields());
+		$fields = $this->getFields();
 		$comma = '';
 
-		foreach ($fields as $fieldName)
+		$primaryKeys = $this->getPrimaryKeys();
+		$primaryKey = '';
+
+		foreach ($fields as $fieldName => $definition)
 			{
+			if (\in_array($fieldName, $primaryKeys) && $this->instance->getAutoIncrement())
+				{
+				$primaryKey = $fieldName;
+
+				continue;
+				}
 			$sql .= "{$comma}`{$fieldName}`";
 			$comma = ",\n";
 			}
@@ -806,11 +820,14 @@ abstract class Table implements \Countable
 				throw new \PHPFUI\ORM\Exception(__METHOD__ . ": record should be of type {$myType} but is of type {$haveType}");
 				}
 
-			foreach ($fields as $fieldName)
+			foreach ($fields as $fieldName => $definition)
 				{
-				$sql .= $comma . '?';
-				$comma = ",\n";
-				$input[] = $record[$fieldName];
+				if ($fieldName !== $primaryKey)
+					{
+					$sql .= $comma . '?';
+					$comma = ",\n";
+					$input[] = $record[$fieldName];
+					}
 				}
 			$comma = '),(';
 			}
@@ -1027,7 +1044,7 @@ abstract class Table implements \Countable
 	 */
 	public function updateFromTable(array $request) : bool
 		{
-		$fields = $this->instance->getFields();
+		$fields = $this->getFields();
 
 		$primaryKeys = $this->getPrimaryKeys();
 
@@ -1071,7 +1088,7 @@ abstract class Table implements \Countable
 	 */
 	public function validateFromTable(array $request) : array
 		{
-		$fields = $this->instance->getFields();
+		$fields = $this->getFields();
 
 		$primaryKeys = $this->getPrimaryKeys();
 

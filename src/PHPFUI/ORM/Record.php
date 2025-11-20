@@ -401,7 +401,7 @@ abstract class Record extends DataObject
 		{
 		$pdo = \PHPFUI\ORM::pdo();
 
-		if (! $pdo->sqlite)
+		if (! $pdo->sqlite && ! $pdo->postGre)
 			{
 			return $this->privateInsert(false, 'ignore ');
 			}
@@ -532,7 +532,7 @@ abstract class Record extends DataObject
 
 		foreach (static::$fields as $field => $description)
 			{
-			if (null === $description->defaultValue)	// no default value
+			if (null === $description->defaultValue)  // no default value
 				{
 				$this->current[$field] = null; // can't be null, so we can set to null, user must set
 				}
@@ -883,6 +883,7 @@ abstract class Record extends DataObject
 		$values = [];
 		$whereInput = $input = [];
 		$comma = '';
+		$primaryKey = static::$primaryKeys[0] ?? '';
 
 		foreach ($this->current as $key => $value)
 			{
@@ -910,7 +911,14 @@ abstract class Record extends DataObject
 
 		if ($updateOnDuplicate)
 			{
-			$updateSql = ' on duplicate key update ';
+			if (\PHPFUI\ORM::pdo()->postGre)
+				{
+				$updateSql = " ON CONFLICT ({$primaryKey}) DO UPDATE SET ";
+				}
+			else
+				{
+				$updateSql = ' on duplicate key update ';
+				}
 			$comma = '';
 			$inputCount = \count($input);
 

@@ -273,22 +273,6 @@ abstract class Migration
 		}
 
 	/**
-	 * Rename a column incluing
-	 */
-	protected function renameColumn(string $table, string $field, string $newName) : bool
-		{
-		$fieldInfo = $this->getFieldInfo($table, $field);
-
-		if ($fieldInfo)
-			{
-			$sql = "RENAME COLUMN `{$field}` TO `{$newName}`";
-			$this->alters[$table][] = $sql;
-			}
-
-		return true;
-		}
-
-	/**
 	 * Duplicate rows with the same key values will be deleted
 	 *
 	 * @param array<string> $keys
@@ -493,6 +477,22 @@ abstract class Migration
 		$indexes = \PHPFUI\ORM::getIndexes($table);
 
 		return isset($indexes[$indexName]);
+		}
+
+	/**
+	 * Rename a column incluing
+	 */
+	protected function renameColumn(string $table, string $field, string $newName) : bool
+		{
+		$fieldInfo = $this->getFieldInfo($table, $field);
+
+		if ($fieldInfo)
+			{
+			$sql = "RENAME COLUMN `{$field}` TO `{$newName}`";
+			$this->alters[$table][] = $sql;
+			}
+
+		return true;
 		}
 
 	/**

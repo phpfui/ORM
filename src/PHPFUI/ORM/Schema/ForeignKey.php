@@ -23,21 +23,22 @@ class ForeignKey
 	/**
 	 * @param array<string> $row
 	 */
-	public function __construct(\PHPFUI\ORM\PDOInstance $pdo, array $row)
+	public function __construct(\PHPFUI\ORM\PDOInstance $pdo, array $row)	// @phpstan-ignore-line
 		{
 		if ('PRIMARY' === ($row['from'] ?? 'PRIMARY'))
 			{
 			$class = \PHPFUI\ORM::$recordNamespace . '\\' . \PHPFUI\ORM::getBaseClassName($row['TABLE_NAME']);
 			$row['from'] = $class::getPrimaryKeys()[0];
 			}
+
 		if ('PRIMARY' === ($row['to'] ?? 'PRIMARY'))
 			{
 			$class = \PHPFUI\ORM::$recordNamespace . '\\' . \PHPFUI\ORM::getBaseClassName($row['table']);
 			$row['to'] = $class::getPrimaryKeys()[0];
 			}
-		$this->deleteRule = $row['on_delete'];
-		$this->updateRule = $row['on_update'];
-		$this->match = $row['match'];
+		$this->deleteRule = $row['on_delete'] ?? '';
+		$this->updateRule = $row['on_update'] ?? '';
+		$this->match = $row['match'] ?? '';
 		$this->constraintTable = $row['TABLE_NAME'];
 		$this->constraintField = $row['from'];
 		$this->referencedTable = $row['table'];

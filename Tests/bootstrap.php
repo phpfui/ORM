@@ -48,7 +48,7 @@ function loadFile(string $file, string $driver) : void
 			{
 			$sql = \trim($sql);
 
-			if (! (\str_starts_with($sql, 'SET ') && 'sqlite' == $driver))
+			if (! (\str_starts_with($sql, 'SET ') && 'mysql' != $driver))
 				{
 				\PHPFUI\ORM::execute($sql);
 				$error = \PHPFUI\ORM::getLastError();
@@ -94,6 +94,11 @@ if ('sqlite' == $driver && ! \str_contains($dsn, ':memory:'))
 
 $pdo = new \PHPFUI\ORM\PDOInstance($dsn, $config['name'], $config['key']);
 
+if ($pdo->postGre)
+	{
+	$pdo->execute("SET TIME ZONE 'UTC';");
+	}
+
 \PHPFUI\ORM::addConnection($pdo);
 
 \PHPFUI\ORM::$namespaceRoot = __DIR__ . '/..';
@@ -127,7 +132,19 @@ $validatorGenerator = new \PHPFUI\ORM\Tool\Generate\Validator();
 
 foreach ($tables as $table)
 	{
+	if ($pdo->postGre)
+		{
+		$tableName = '"' . $table . '"';
+		$id = '"' . $table . '_id"';
+		\PHPFUI\ORM::execute("SELECT setval('{$table}_{$table}_id_seq', (SELECT MAX({$id}) FROM {$tableName}));");
+		}
+
 	$modelGenerator->generate($table);
 	$validatorGenerator->generate($table);
 	}
+$pdo->clearErrors();
 
+//$rows = \PHPFUI\ORM::getRows("SELECT COUNT(*) from (SELECT * FROM `order_detail` GROUP BY `order_detail_id` HAVING (quantity * unit_price) >= 1000.0) countalias");
+//print_r($rows);
+//print_r("\n");
+//print_r(\PHPFUI\ORM::getLastSQL());

@@ -36,7 +36,7 @@ class MiscellaneousTest extends \PHPUnit\Framework\TestCase
 		{
 		$productTable = new \Tests\Fixtures\Table\Product();
 		$productTable->addSelect('product_id');
-		$productTable->setWhere(new \PHPFUI\ORM\Condition('product_name', '%dried%', new \PHPFUI\ORM\Operator\Like()));
+		$productTable->setWhere(new \PHPFUI\ORM\Condition('product_name', '%Dried%', new \PHPFUI\ORM\Operator\Like()));
 		$orderDetailTable = new \Tests\Fixtures\Table\OrderDetail();
 		$orderDetailTable->setWhere(new \PHPFUI\ORM\Condition('product_id', $productTable, new \PHPFUI\ORM\Operator\In()));
 

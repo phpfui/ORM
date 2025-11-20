@@ -28,13 +28,25 @@ class Field
 			$this->name = $fields['Field'];
 			$this->type = \strtolower($fields['Type']);
 			$this->nullable = 'YES' == $fields['Null'];
-			$this->defaultValue = $fields['Default'];
+			$defaultValue = $fields['Default'];
+			$doubleColon = $defaultValue ? \strpos($defaultValue, '::') : null;
+
+			if ($doubleColon)
+				{
+				$defaultValue = \trim(\substr($defaultValue, 0, $doubleColon), "'");
+				}
+
+			if ('NULL' == $defaultValue)
+				{
+				$defaultValue = null;
+				}
+			$this->defaultValue = $defaultValue;
 
 			if ('current_timestamp()' == $this->defaultValue)
 				{
 				$this->defaultValue = 'CURRENT_TIMESTAMP';
 				}
-			$this->primaryKey = 'PRI' === $fields['Key'];  // use indexes to find primary keys
+			$this->primaryKey = 'PRI' === ($fields['Key'] ?? '');  // use indexes to find primary keys
 			$this->autoIncrement = \str_contains($fields['Extra'], 'auto_increment');
 			$this->extra = \str_replace('auto_increment', '', $fields['Extra']);
 

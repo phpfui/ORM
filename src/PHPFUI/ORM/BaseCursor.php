@@ -102,7 +102,7 @@ abstract class BaseCursor implements \Countable, \Iterator	// @phpstan-ignore-li
 	 */
 	public function setCountSQL(string $limitedSql) : static
 		{
-		$this->countStatement = \PHPFUI\ORM::pdo()->prepare($limitedSql);
+		$this->countStatement = \PHPFUI\ORM::pdo()->getPreparedStatement($limitedSql);
 
 		return $this;
 		}
@@ -119,7 +119,7 @@ abstract class BaseCursor implements \Countable, \Iterator	// @phpstan-ignore-li
 	 */
 	public function setTotalCountSQL(string $totalSql) : static
 		{
-		$this->totalStatement = \PHPFUI\ORM::pdo()->prepare($totalSql);
+		$this->totalStatement = \PHPFUI\ORM::pdo()->getPreparedStatement($totalSql);
 
 		return $this;
 		}

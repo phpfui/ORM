@@ -17,6 +17,11 @@ class Index
 	 */
 	public function __construct(\PHPFUI\ORM\PDOInstance $pdo, array $fields)
 		{
+		if (empty($fields))
+			{
+			return;
+			}
+
 		if (\str_starts_with($pdo->getDSN(), 'mysql'))
 			{
 			$this->primaryKey = 'PRIMARY' == $fields['Key_name'];

@@ -36,9 +36,9 @@ class Migrator implements \Countable
 			{
 			$highest = $this->migrationTable->getHighest();
 
-			return (int)$highest->migrationId;
+			return $highest->migrationId;
 			}
-		catch (\Throwable)
+		catch (\Throwable $e)
 			{
 			}
 

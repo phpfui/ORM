@@ -118,6 +118,7 @@ class PDOInstance extends \PDO
 			if (\count($row))
 				{
 				$fields[$row['name']]->autoIncrement = true;
+				$fields[$row['name']]->defaultValue = null;
 				}
 			}
 
@@ -213,6 +214,27 @@ class PDOInstance extends \PDO
 		if ($this->sqlite)
 			{
 			$rows = \PHPFUI\ORM::getRows("PRAGMA foreign_key_list('{$table}');");
+			}
+		elseif ($this->postGre)
+			{
+			$rows = \PHPFUI\ORM::getRows('SELECT
+						tc.constraint_name as CONSTRAINT_NAME,
+						tc.table_name AS "TABLE_NAME",
+						kcu.column_name AS "from",
+						ccu.table_name AS "table",
+						ccu.column_name AS "to"
+				FROM
+						information_schema.table_constraints AS tc
+				JOIN
+						information_schema.key_column_usage AS kcu
+						ON tc.constraint_name = kcu.constraint_name
+						AND tc.table_schema = kcu.table_schema
+				JOIN
+						information_schema.constraint_column_usage AS ccu
+						ON ccu.constraint_name = tc.constraint_name
+						AND ccu.table_schema = tc.table_schema
+				WHERE
+						tc.table_name = ?;', [$table]);
 			}
 		else
 			{
@@ -362,6 +384,22 @@ class PDOInstance extends \PDO
 
 	/**
 	 * @param array<mixed> $input
+	 */
+	public function getPreparedStatement(string $sql, array $input = []) : \PDOStatement
+		{
+		$this->lastParameters = $input;
+
+		if ($this->postGre)
+			{
+			$sql = \str_replace('`', '"', $sql);
+			}
+		$this->lastSql = $sql;
+
+		return $this->prepare($sql);
+		}
+
+	/**
+	 * @param array<mixed> $input
 	 *
 	 * @return \PHPFUI\ORM\RecordCursor tracking the sql and input passed
 	 */
@@ -390,7 +428,7 @@ class PDOInstance extends \PDO
 			$returnValue = [];
 			}
 
-		return $returnValue;
+		return \PHPFUI\ORM::expandResources($returnValue);
 		}
 
 	/**
@@ -502,22 +540,6 @@ class PDOInstance extends \PDO
 			$this->log(\Psr\Log\LogLevel::ERROR, 'Current Errors', $this->lastErrors);
 			$this->lastErrors = [];
 			}
-		}
-
-	/**
-	 * @param array<mixed> $input
-	 */
-	private function getPreparedStatement(string $sql, array $input) : \PDOStatement
-		{
-		$this->lastParameters = $input;
-
-		if ($this->postGre)
-			{
-			$sql = \str_replace('`', '"', $sql);
-			}
-		$this->lastSql = $sql;
-
-		return $this->prepare($sql);
 		}
 
 	/**

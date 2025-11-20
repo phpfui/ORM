@@ -8,10 +8,9 @@ class Migration extends \PHPFUI\ORM\Table
 
 	public function getHighest() : \PHPFUI\ORM\Record\Migration
 		{
-		$sql = 'select * from migration order by migrationId desc limit 1';
+		$sql = 'select count(*) from migration';
 
-		$record = new \PHPFUI\ORM\Record\Migration();
-		$record->loadFromSQL($sql);
+		$record = new \PHPFUI\ORM\Record\Migration(\PHPFUI\ORM::getValue($sql));
 
 		return $record;
 		}

@@ -43,11 +43,6 @@ class MigrationWrapper extends \PHPFUI\ORM\Migration
 		return $this->alterColumn($table, $field, $parameters);
 		}
 
-	public function renameColumnTest(string $table, string $field, string $newName) : bool
-		{
-		return $this->renameColumn($table, $field, $newName);
-		}
-
 	/**
 	 * @param array<string> $keys
 	 */
@@ -108,6 +103,11 @@ class MigrationWrapper extends \PHPFUI\ORM\Migration
 	public function indexExistsTest(string $table, string $indexName) : bool
 		{
 		return $this->indexExists($table, $indexName);
+		}
+
+	public function renameColumnTest(string $table, string $field, string $newName) : bool
+		{
+		return $this->renameColumn($table, $field, $newName);
 		}
 
 	public function renameTableTest(string $oldName, string $newName) : bool

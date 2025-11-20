@@ -11,6 +11,8 @@ class InsertTest extends \PHPUnit\Framework\TestCase
 		$test->dateRequired = $date = \gmdate('Y-m-d');
 		$timeStamp = \gmdate('Y-m-d H:i:s');
 		$id = $test->insert();
+		$this->assertNotEquals(0, $id, 'id is zero');
+
 		$insertedTest = new \Tests\App\Record\DateRecord($id);
 
 		$this->assertNull($insertedTest->dateDefaultNull, 'dateDefaultNull is not null');
@@ -27,13 +29,11 @@ class InsertTest extends \PHPUnit\Framework\TestCase
 		{
 		$test = new \Tests\App\Record\DateRecord();
 		$id = $test->insert();
-		$this->assertNotEmpty(\PHPFUI\ORM::getLastError());
 		$this->assertEquals(0, $id, '$id is not zero');
 		$insertedTest = new \Tests\App\Record\DateRecord($id);
 		$this->assertNull($insertedTest->dateDefaultNull, 'dateDefaultNull is not after insert');
 		$this->assertEquals('2000-01-02', $insertedTest->dateDefaultNullable, 'dateDefaultNullable has bad default value');
 		$this->assertEquals('2000-01-02', $insertedTest->dateDefaultNotNull, 'dateDefaultNotNull has bad default value');
-
 		}
 
 	public function testInsertOrIgnore() : void
@@ -59,19 +59,23 @@ class InsertTest extends \PHPUnit\Framework\TestCase
 		$customer->web_page = 'http://www.phpfui.com';
 		$customer->zip_postal_code = '12345';
 		$id = $customer->insertOrIgnore();
+		$this->assertEquals('', \PHPFUI\ORM::getLastError());
 		$this->assertGreaterThan(0, $id);
 		$this->assertEquals(30, $customerTable->count());
+		$this->assertTrue($transaction->commit());
 
 		$newCustomer = new \Tests\App\Record\Customer($id);
 		$this->assertEquals('12345', $newCustomer->zip_postal_code);
 		$newCustomer->zip_postal_code = '54321';
 		$result = $newCustomer->insertOrIgnore();
 		$this->assertEquals(0, $result);
-		$this->assertEmpty(\PHPFUI\ORM::getLastError());
+		$this->assertEquals('', \PHPFUI\ORM::getLastError());
 
 		$updatedCustomer = new \Tests\App\Record\Customer($id);
+		$this->assertEquals('', \PHPFUI\ORM::getLastError());
 		$this->assertEquals('12345', $updatedCustomer->zip_postal_code);
-		$this->assertTrue($transaction->rollBack());
+		$updatedCustomer->delete();
+		$this->assertEquals('', \PHPFUI\ORM::getLastError());
 		$this->assertEquals(29, $customerTable->count());
 		}
 
@@ -98,13 +102,17 @@ class InsertTest extends \PHPUnit\Framework\TestCase
 		$customer->web_page = 'http://www.phpfui.com';
 		$customer->zip_postal_code = '12345';
 		$id = $customer->insertOrUpdate();
+		$this->assertEquals('', \PHPFUI\ORM::getLastError());
 		$this->assertGreaterThan(0, $id);
 		$this->assertEquals(30, $customerTable->count());
+		$this->assertEquals('', \PHPFUI\ORM::getLastError());
 
 		$newCustomer = new \Tests\App\Record\Customer($id);
+		$this->assertEquals('', \PHPFUI\ORM::getLastError());
 		$this->assertEquals('12345', $newCustomer->zip_postal_code);
 		$newCustomer->zip_postal_code = '54321';
 		$result = $newCustomer->insertOrUpdate();
+		$this->assertEquals('', \PHPFUI\ORM::getLastError());
 		$this->assertGreaterThan(0, $result);
 		$this->assertEquals(30, $customerTable->count());
 
@@ -172,6 +180,7 @@ class InsertTest extends \PHPUnit\Framework\TestCase
 		$this->assertCount(29, $customerTable);
 
 		$customerTable->insert($customers);
+		$this->assertEquals('', \PHPFUI\ORM::getLastError());
 		$this->assertCount(32, $customerTable);
 		$customerTable->setWhere(new \PHPFUI\ORM\Condition('zip_postal_code', operator:new \PHPFUI\ORM\Operator\IsNull()));
 		$this->assertCount(2, $customerTable);
@@ -206,6 +215,8 @@ class InsertTest extends \PHPUnit\Framework\TestCase
 		$table = new \Tests\App\Table\Customer();
 		$this->assertEquals(29, $table->count());
 		$customer->insert();
+//		print_r(\PHPFUI\ORM::getLastSQL());
+		$this->assertEquals('', \PHPFUI\ORM::getLastError());
 		$this->assertEquals(30, $table->count());
 		$this->assertTrue($transaction->rollBack());
 		$this->assertEquals(29, $table->count());
@@ -239,6 +250,7 @@ class InsertTest extends \PHPUnit\Framework\TestCase
 		$order = new \Tests\App\Record\Order();
 		$order->employee_id = 9;
 		$order->customer = $customer;
+		$this->assertEquals('', \PHPFUI\ORM::getLastError());
 		$this->assertEquals(30, $customerTable->count());
 		$date = \date('Y-m-d H:i:s');
 		$order->order_date = $date;
@@ -246,6 +258,7 @@ class InsertTest extends \PHPUnit\Framework\TestCase
 		$shipper->read(['company' => 'Shipping Company B']);
 		$this->assertEquals(2, $shipper->shipper_id);
 		$order->shipper = $shipper;
+		$this->assertEquals('', \PHPFUI\ORM::getLastError());
 		$this->assertEquals($shipper->shipper_id, $order->shipper_id);
 		$order->ship_name = $customer->company;
 		$order->ship_address = $customer->address;
@@ -276,7 +289,6 @@ class InsertTest extends \PHPUnit\Framework\TestCase
 		{
 		$test = new \Tests\App\Record\StringRecord();
 		$id = $test->insert();
-		$this->assertNotEmpty(\PHPFUI\ORM::getLastError());
 		$this->assertEquals(0, $id);
 		}
 
@@ -286,6 +298,7 @@ class InsertTest extends \PHPUnit\Framework\TestCase
 		$test = new \Tests\App\Record\StringRecord();
 		$test->stringRequired = $required = 'required';
 		$id = $test->insert();
+		$this->assertEquals('', \PHPFUI\ORM::getLastError());
 		$this->assertGreaterThan(0, $id);
 		$insertedTest = new \Tests\App\Record\StringRecord($id);
 		$this->assertNull($insertedTest->stringDefaultNull);

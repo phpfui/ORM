@@ -511,25 +511,23 @@ CREATE TABLE IF NOT EXISTS "setting" (
   "setting_id" SERIAL NOT NULL PRIMARY KEY,
   "setting_data" VARCHAR(255) NULL DEFAULT NULL);
 
-drop table if exists stringRecord;
-CREATE TABLE stringRecord (
-  "stringRecordId" SERIAL NOT NULL,
+drop table if exists string_record;
+CREATE TABLE string_record (
+  "string_record_id" SERIAL NOT NULL PRIMARY KEY,
   "stringRequired" varchar(100) not null,
   "stringDefaultNull" varchar(100) DEFAULT NULL,
   "stringDefaultNullable" varchar(100) default 'default',
-  "stringDefaultNotNull" varchar(100) not null default 'default',
-  primary key(stringRecordId));
+  "stringDefaultNotNull" varchar(100) not null default 'default');
 
-drop table if exists dateRecord;
-create table dateRecord (
-  "dateRecordId" SERIAL not null,
+drop table if exists date_record;
+create table date_record (
+  "date_record_id" SERIAL not NULL PRIMARY KEY,
   "dateRequired" date not null,
   "dateDefaultNull" date DEFAULT NULL,
   "dateDefaultNullable" date default '2000-01-02',
   "dateDefaultNotNull" date not null default '2000-01-02',
   "timestampDefaultCurrentNullable" timestamp DEFAULT CURRENT_TIMESTAMP,
-  "timestampDefaultCurrentNotNull" timestamp not null default CURRENT_TIMESTAMP,
-  PRIMARY KEY (dateRecordId));
+  "timestampDefaultCurrentNotNull" timestamp not null default CURRENT_TIMESTAMP);
 
 drop table if exists migration;
 create table migration ("migrationId" int NOT NULL primary key, ran TIMESTAMP DEFAULT CURRENT_TIMESTAMP);

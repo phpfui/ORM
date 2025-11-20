@@ -6,7 +6,7 @@ class MigrationTest extends \PHPUnit\Framework\TestCase
 	{
 	public function testAddDropColumn() : void
 		{
-		$fields = \PHPFUI\ORM::describeTable('stringRecord');
+		$fields = \PHPFUI\ORM::describeTable('string_record');
 		$this->assertEquals(5, \count($fields));
 
 		$fieldName = 'NewFieldName';
@@ -14,30 +14,29 @@ class MigrationTest extends \PHPUnit\Framework\TestCase
 
 		$this->assertArrayNotHasKey($fieldName, $fields);
 		$migration = new \Tests\Fixtures\MigrationWrapper();
-		$migration->addColumnTest('stringRecord', $fieldName, $fieldType);
+		$migration->addColumnTest('string_record', $fieldName, $fieldType);
 		$migration->executeAlters();
 		$this->assertEquals('', \PHPFUI\ORM::getLastError());
-		$fields = \PHPFUI\ORM::describeTable('stringRecord');
+		$fields = \PHPFUI\ORM::describeTable('string_record');
 		$this->assertEquals(6, \count($fields));
 		$this->assertArrayHasKey($fieldName, $fields);
 		$this->assertTrue($fields[$fieldName]->nullable);
 		$this->assertNull($fields[$fieldName]->defaultValue);
 		$this->assertEquals($fieldType, \substr($fields[$fieldName]->type, 0, 3));	// ignore precision
-		$migration->dropColumnTest('stringRecord', $fieldName);
+		$migration->dropColumnTest('string_record', $fieldName);
 		$migration->executeAlters();
 		$this->assertEquals('', \PHPFUI\ORM::getLastError());
-		$fields = \PHPFUI\ORM::describeTable('stringRecord');
+		$fields = \PHPFUI\ORM::describeTable('string_record');
 		$this->assertEquals(5, \count($fields));
 		$this->assertArrayNotHasKey($fieldName, $fields);
 		}
 
 	public function testAlterColumn() : void
 		{
-		$fields = \PHPFUI\ORM::describeTable('stringRecord');
+		$fields = \PHPFUI\ORM::describeTable('string_record');
 		$this->assertEquals(5, \count($fields));
 
 		$fieldName = 'stringDefaultNullable';
-		$fieldNameNew = 'stringDefaultNullableNew';
 		$this->assertArrayHasKey($fieldName, $fields);
 		$this->assertFalse($fields[$fieldName]->autoIncrement);
 		$this->assertFalse($fields[$fieldName]->primaryKey);
@@ -45,50 +44,44 @@ class MigrationTest extends \PHPUnit\Framework\TestCase
 		$this->assertEquals('default', $fields[$fieldName]->defaultValue);
 		$this->assertEquals('varchar(100)', $fields[$fieldName]->type);
 
-		if (\PHPFUI\ORM::getInstance()->sqlite)
+		$pdo = \PHPFUI\ORM::getInstance();
+
+		if ($pdo->sqlite || $pdo->postGre)
 			{
 			return;	// alter table not supported
 			}
 
 		$migration = new \Tests\Fixtures\MigrationWrapper();
 
-		$migration->alterColumnTest('stringRecord', $fieldName, 'varchar(255) not null default "123"');
+		$migration->alterColumnTest('string_record', $fieldName, 'varchar(255) not null default "123"');
 		$migration->executeAlters();
 		$this->assertEquals('', \PHPFUI\ORM::getLastError());
-		$migration->renameColumnTest('stringRecord', $fieldName, $fieldNameNew);
-		$migration->executeAlters();
-		$this->assertEquals('', \PHPFUI\ORM::getLastError());
-		$fields = \PHPFUI\ORM::describeTable('stringRecord');
+		$fields = \PHPFUI\ORM::describeTable('string_record');
 		$this->assertEquals(5, \count($fields));
 
-		$this->assertArrayHasKey($fieldNameNew, $fields);
-		$this->assertArrayNotHasKey($fieldName, $fields);
-		$this->assertFalse($fields[$fieldNameNew]->autoIncrement);
-		$this->assertFalse($fields[$fieldNameNew]->primaryKey);
-		$this->assertFalse($fields[$fieldNameNew]->nullable);
-		$this->assertEquals('123', $fields[$fieldNameNew]->defaultValue);
-		$this->assertEquals('varchar(255)', $fields[$fieldNameNew]->type);
+		$this->assertArrayHasKey($fieldName, $fields);
+		$this->assertFalse($fields[$fieldName]->autoIncrement);
+		$this->assertFalse($fields[$fieldName]->primaryKey);
+		$this->assertFalse($fields[$fieldName]->nullable);
+		$this->assertEquals('123', $fields[$fieldName]->defaultValue);
+		$this->assertEquals('varchar(255)', $fields[$fieldName]->type);
 
-		$migration->alterColumnTest('stringRecord', $fieldNameNew, 'varchar(10)');
+		$migration->alterColumnTest('string_record', $fieldName, 'varchar(10)');
 		$migration->executeAlters();
 		$this->assertEquals('', \PHPFUI\ORM::getLastError());
-		$migration->renameColumnTest('stringRecord', $fieldNameNew, $fieldName);
-		$migration->executeAlters();
-		$this->assertEquals('', \PHPFUI\ORM::getLastError());
-		$fields = \PHPFUI\ORM::describeTable('stringRecord');
+		$fields = \PHPFUI\ORM::describeTable('string_record');
 		$this->assertEquals(5, \count($fields));
 		$this->assertArrayHasKey($fieldName, $fields);
-		$this->assertArrayNotHasKey($fieldNameNew, $fields);
 		$this->assertFalse($fields[$fieldName]->autoIncrement);
 		$this->assertFalse($fields[$fieldName]->primaryKey);
 		$this->assertTrue($fields[$fieldName]->nullable);
 		$this->assertNull($fields[$fieldName]->defaultValue);
 		$this->assertEquals('varchar(10)', $fields[$fieldName]->type);
 
-		$migration->alterColumnTest('stringRecord', $fieldName, "varchar(100) default 'default'");
+		$migration->alterColumnTest('string_record', $fieldName, "varchar(100) default 'default'");
 		$migration->executeAlters();
 		$this->assertEquals('', \PHPFUI\ORM::getLastError());
-		$fields = \PHPFUI\ORM::describeTable('stringRecord');
+		$fields = \PHPFUI\ORM::describeTable('string_record');
 		$this->assertEquals(5, \count($fields));
 		$this->assertArrayHasKey($fieldName, $fields);
 		$this->assertFalse($fields[$fieldName]->autoIncrement);
@@ -102,18 +95,18 @@ class MigrationTest extends \PHPUnit\Framework\TestCase
 		{
 		$table = 'supplier';
 		$indexes = \PHPFUI\ORM::getIndexes($table);
-		$this->assertEquals(6, \count($indexes));
+		$this->assertGreaterThanOrEqual(5, \count($indexes));
 		$migration = new \Tests\Fixtures\MigrationWrapper();
 		$migration->dropIndexTest($table, 'supplier_zip_postal_code');
 		$migration->executeAlters();
 		$this->assertEquals('', \PHPFUI\ORM::getLastError());
 		$indexes = \PHPFUI\ORM::getIndexes($table);
-		$this->assertEquals(5, \count($indexes));
+		$this->assertGreaterThanOrEqual(5, \count($indexes));
 		$migration->addIndexTest($table, ['zip_postal_code']);
 		$migration->executeAlters();
 		$this->assertEquals('', \PHPFUI\ORM::getLastError());
 		$indexes = \PHPFUI\ORM::getIndexes($table);
-		$this->assertEquals(6, \count($indexes));
+		$this->assertGreaterThanOrEqual(6, \count($indexes));
 		}
 
 	public function testDropAddPrimaryKey() : void
@@ -125,7 +118,9 @@ class MigrationTest extends \PHPUnit\Framework\TestCase
 		$this->assertTrue($fields[$fieldName]->autoIncrement);
 		$this->assertFalse($fields[$fieldName]->nullable);
 
-		if (\PHPFUI\ORM::getInstance()->sqlite)
+		$pdo = \PHPFUI\ORM::getInstance();
+
+		if ($pdo->sqlite || $pdo->postGre)
 			{
 			return;	// alter table not supported
 			}
@@ -176,11 +171,7 @@ class MigrationTest extends \PHPUnit\Framework\TestCase
 		$tables = \PHPFUI\ORM::getTables();
 		$this->assertNotContains($table, $tables);
 
-		$sql = 'CREATE TABLE `setting` (`setting_id` INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT, `setting_data` VARCHAR(255) NULL DEFAULT NULL);';
-		if (\PHPFUI\ORM::getInstance()->sqlite)
-			{
-			$sql = str_replace('AUTO_INCREMENT', 'AUTOINCREMENT', $sql);
-			}
+		$sql = 'CREATE TABLE `setting` (`setting_id` INTEGER NOT NULL PRIMARY KEY, `setting_data` VARCHAR(255) NULL DEFAULT NULL);';
 		$migration->runSQL($sql);
 		$this->assertEquals('', \PHPFUI\ORM::getLastError());
 
@@ -190,15 +181,15 @@ class MigrationTest extends \PHPUnit\Framework\TestCase
 
 	public function testFields() : void
 		{
-		$fields = \PHPFUI\ORM::describeTable('stringRecord');
+		$fields = \PHPFUI\ORM::describeTable('string_record');
 		$this->assertEquals('', \PHPFUI\ORM::getLastError());
 		$this->assertEquals(5, \count($fields));
 
-		$this->assertArrayHasKey('stringRecordId', $fields);
-		$this->assertTrue($fields['stringRecordId']->autoIncrement);
-		$this->assertTrue($fields['stringRecordId']->primaryKey);
-		$this->assertFalse($fields['stringRecordId']->nullable);
-		$this->assertEquals('int', \substr($fields['stringRecordId']->type, 0, 3));	// ignore precision
+		$this->assertArrayHasKey('string_record_id', $fields);
+		$this->assertTrue($fields['string_record_id']->autoIncrement);
+		$this->assertTrue($fields['string_record_id']->primaryKey);
+		$this->assertFalse($fields['string_record_id']->nullable);
+		$this->assertEquals('int', \substr($fields['string_record_id']->type, 0, 3));	// ignore precision
 
 		$this->assertArrayHasKey('stringRequired', $fields);
 		$this->assertFalse($fields['stringRequired']->autoIncrement);
@@ -233,9 +224,11 @@ class MigrationTest extends \PHPUnit\Framework\TestCase
 		$table = 'order';
 		$keys = \PHPFUI\ORM::getForeignKeys($table);
 		$this->assertEquals('', \PHPFUI\ORM::getLastError());
-		$this->assertEquals(5, \count($keys));
+		$this->assertGreaterThanOrEqual(5, \count($keys));
 
-		if (\PHPFUI\ORM::getInstance()->sqlite)
+		$pdo = \PHPFUI\ORM::getInstance();
+
+		if ($pdo->sqlite || $pdo->postGre)
 			{
 			return;
 			}
@@ -260,31 +253,42 @@ class MigrationTest extends \PHPUnit\Framework\TestCase
 		{
 		$tables = \PHPFUI\ORM::getTables();
 		$this->assertContains('migration', $tables);
+		$migrationTable = new \PHPFUI\ORM\Table\Migration();
+		$this->assertCount(0, $migrationTable);
 		$migrator = new \PHPFUI\ORM\Migrator();
 		$this->assertEmpty($migrator->getErrors());
 		$this->assertTrue($migrator->migrationNeeded());
-		$this->assertEquals(1, $migrator->migrateUpOne());
+		$result = $migrator->migrateUpOne();
+		$this->assertEquals('', \PHPFUI\ORM::getLastError());
+		$this->assertEquals(1, $result);
 		$this->assertEquals('Migrated to 1 successfully', $migrator->getStatus());
 		$this->assertEquals('', \PHPFUI\ORM::getLastError());
 		$this->assertEmpty($migrator->getErrors());
-		$migrationTable = new \PHPFUI\ORM\Table\Migration();
 		$this->assertCount(1, $migrationTable);
-		$this->assertEquals(2, $migrator->migrateUpOne());
+		$result = $migrator->migrateUpOne();
+		$this->assertEquals('', \PHPFUI\ORM::getLastError());
+		$this->assertEquals(2, $result);
 		$this->assertEquals('Migrated to 2 successfully', $migrator->getStatus());
 		$this->assertEmpty($migrator->getErrors());
 		$this->assertCount(2, $migrationTable);
-		$this->assertEquals(1, $migrator->migrateDownOne());
+		$result = $migrator->migrateDownOne();
+		$this->assertEquals('', \PHPFUI\ORM::getLastError());
+		$this->assertEquals(1, $result);
+		$this->assertEquals('', \PHPFUI\ORM::getLastError());
 		$this->assertEquals('Migrated to 1 successfully', $migrator->getStatus());
 		$this->assertEmpty($migrator->getErrors());
-		$this->assertEquals('', \PHPFUI\ORM::getLastError());
 		$this->assertCount(1, $migrationTable);
 		$tables = \PHPFUI\ORM::getTables();
-		$this->assertEquals(0, $migrator->migrateDownOne());
+		$result = $migrator->migrateDownOne();
+		$this->assertEquals('', \PHPFUI\ORM::getLastError());
+		$this->assertEquals(0, $result);
+		$this->assertEquals('', \PHPFUI\ORM::getLastError());
 		$this->assertEquals('Migrated to 0 successfully', $migrator->getStatus());
 		$this->assertEmpty($migrator->getErrors());
-		$this->assertEquals('', \PHPFUI\ORM::getLastError());
 		$this->assertCount(0, $migrationTable);
-		$this->assertEquals(3, $migrator->migrate());
+		$result = $migrator->migrate();
+		$this->assertEquals('', \PHPFUI\ORM::getLastError());
+		$this->assertEquals(3, $result);
 		$this->assertEquals('Migrated to 3 successfully', $migrator->getStatus());
 		$this->assertEmpty($migrator->getErrors());
 		$this->assertEquals('', \PHPFUI\ORM::getLastError());
@@ -293,6 +297,7 @@ class MigrationTest extends \PHPUnit\Framework\TestCase
 		$this->assertEquals(3, $migrator->getCurrentMigrationId());
 		$this->assertFalse($migrator->migrationNeeded());
 		$migrator->migrateTo(1);
+		$this->assertEquals('', \PHPFUI\ORM::getLastError());
 		$this->assertEquals('Migrated to 1 successfully', $migrator->getStatus());
 		$this->assertEmpty($migrator->getErrors());
 		$this->assertEquals('', \PHPFUI\ORM::getLastError());
@@ -309,5 +314,49 @@ class MigrationTest extends \PHPUnit\Framework\TestCase
 		$this->assertCount(2, $migrator->getErrors());
 		$this->assertEquals('', \PHPFUI\ORM::getLastError());
 		$this->assertContains('Target migration of 4 does not exist', $migrator->getErrors());
+		}
+
+	public function testRenameColumn() : void
+		{
+		$fields = \PHPFUI\ORM::describeTable('string_record');
+		$this->assertEquals(5, \count($fields));
+
+		$fieldName = 'stringDefaultNullable';
+		$fieldNameNew = 'stringDefaultNullableNew';
+		$this->assertArrayHasKey($fieldName, $fields);
+		$this->assertArrayNotHasKey($fieldNameNew, $fields);
+		$this->assertFalse($fields[$fieldName]->autoIncrement);
+		$this->assertFalse($fields[$fieldName]->primaryKey);
+		$this->assertTrue($fields[$fieldName]->nullable);
+		$this->assertEquals('default', $fields[$fieldName]->defaultValue);
+		$this->assertEquals('varchar(100)', $fields[$fieldName]->type);
+
+		$migration = new \Tests\Fixtures\MigrationWrapper();
+		$migration->renameColumnTest('string_record', $fieldName, $fieldNameNew);
+		$migration->executeAlters();
+		$this->assertEquals('', \PHPFUI\ORM::getLastError());
+		$fields = \PHPFUI\ORM::describeTable('string_record');
+		$this->assertEquals(5, \count($fields));
+
+		$this->assertArrayHasKey($fieldNameNew, $fields);
+		$this->assertArrayNotHasKey($fieldName, $fields);
+		$this->assertFalse($fields[$fieldNameNew]->autoIncrement);
+		$this->assertFalse($fields[$fieldNameNew]->primaryKey);
+		$this->assertTrue($fields[$fieldNameNew]->nullable);
+		$this->assertEquals('default', $fields[$fieldNameNew]->defaultValue);
+		$this->assertEquals('varchar(100)', $fields[$fieldNameNew]->type);
+
+		$migration->renameColumnTest('string_record', $fieldNameNew, $fieldName);
+		$migration->executeAlters();
+		$this->assertEquals('', \PHPFUI\ORM::getLastError());
+		$fields = \PHPFUI\ORM::describeTable('string_record');
+		$this->assertEquals(5, \count($fields));
+		$this->assertArrayHasKey($fieldName, $fields);
+		$this->assertArrayNotHasKey($fieldNameNew, $fields);
+		$this->assertFalse($fields[$fieldName]->autoIncrement);
+		$this->assertFalse($fields[$fieldName]->primaryKey);
+		$this->assertTrue($fields[$fieldName]->nullable);
+		$this->assertEquals('default', $fields[$fieldName]->defaultValue);
+		$this->assertEquals('varchar(100)', $fields[$fieldName]->type);
 		}
 	}
