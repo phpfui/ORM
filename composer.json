@@ -1,8 +1,8 @@
 {
     "name": "phpfui/orm",
-    "description": "Minimal ORM for MySQL, SQLite and MariaDB",
+    "description": "A Fast, Lightweight and Minimal ORM for MySQL, SQLite, MariaDB and PostGre",
     "minimum-stability": "stable",
-    "keywords": ["ORM", "object", "relational", "model", "mapping", "mapper", "MySQL", "MariaDB", "SQLite", "SQL"],
+    "keywords": ["ORM", "object", "relational", "model", "mapping", "mapper", "ActiveRecord", "lightweight", "MySQL", "PostGre", "fast", "MariaDB", "SQLite", "SQL"],
     "homepage": "http://www.phpfui.com/?n=PHPFUI%5CORM",
     "license": "MIT",
     "authors": [
