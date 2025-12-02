@@ -405,12 +405,15 @@ abstract class Migration
 	protected function dropPrimaryKey(string $table) : bool
 		{
 		$fields = \PHPFUI\ORM::describeTable($table);
+		$indexes = \PHPFUI\ORM::getIndexes($table);
 
-		foreach ($fields as $field)
+		foreach ($indexes as $index)
 			{
-			if ($field->primaryKey)
+			if ($index->primaryKey)
 				{
 				$sql = 'alter table ' . $table;
+
+				$field = $fields[$index->name];
 
 				if ($field->autoIncrement)
 					{

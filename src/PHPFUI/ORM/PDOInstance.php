@@ -54,7 +54,7 @@ class PDOInstance extends \PDO
 		}
 
 	/**
-	 * @return array<\PHPFUI\ORM\Schema\Field>
+	 * @return array<string, \PHPFUI\ORM\Schema\Field>
 	 */
 	public function describeTable(string $table) : array
 		{
@@ -204,7 +204,7 @@ class PDOInstance extends \PDO
 		}
 
 	/**
-	 * @return array<\PHPFUI\ORM\Schema\ForeignKey>
+	 * @return array<string, \PHPFUI\ORM\Schema\ForeignKey>
 	 */
 	public function getForeignKeys(string $table) : array
 		{
@@ -327,11 +327,7 @@ class PDOInstance extends \PDO
 		foreach ($rows as $row)
 			{
 			$index = new \PHPFUI\ORM\Schema\Index($this, $row);
-
-			if ('PRIMARY' !== $index->keyName)
-				{
-				$fields[$index->keyName] = $index;
-				}
+			$fields[] = $index;
 			}
 
 		return $fields;

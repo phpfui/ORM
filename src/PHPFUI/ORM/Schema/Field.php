@@ -46,7 +46,7 @@ class Field
 				{
 				$this->defaultValue = 'CURRENT_TIMESTAMP';
 				}
-			$this->primaryKey = 'PRI' === ($fields['Key'] ?? '');  // use indexes to find primary keys
+			$this->primaryKey = false;
 			$this->autoIncrement = \str_contains($fields['Extra'], 'auto_increment');
 			$this->extra = \str_replace('auto_increment', '', $fields['Extra']);
 

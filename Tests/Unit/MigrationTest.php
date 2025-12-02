@@ -114,7 +114,6 @@ class MigrationTest extends \PHPUnit\Framework\TestCase
 		$table = 'invoice';
 		$fields = \PHPFUI\ORM::describeTable($table);
 		$fieldName = $table . '_id';
-		$this->assertTrue($fields[$fieldName]->primaryKey);
 		$this->assertTrue($fields[$fieldName]->autoIncrement);
 		$this->assertFalse($fields[$fieldName]->nullable);
 
@@ -126,34 +125,31 @@ class MigrationTest extends \PHPUnit\Framework\TestCase
 			}
 
 		$migration = new \Tests\Fixtures\MigrationWrapper();
-		$migration->dropPrimaryKeyTest($table);
+		$this->assertTrue($migration->dropPrimaryKeyTest($table));
 		$migration->executeAlters();
 		$this->assertEquals('', \PHPFUI\ORM::getLastError());
 
 		$fields = \PHPFUI\ORM::describeTable($table);
-		$this->assertFalse($fields[$fieldName]->primaryKey);
 		$this->assertFalse($fields[$fieldName]->autoIncrement);
 		$this->assertFalse($fields[$fieldName]->nullable);
 
-		$migration->addPrimaryKeyTest($table, [$fieldName]);
+		$this->assertTrue($migration->addPrimaryKeyTest($table, [$fieldName]));
 		$migration->executeAlters();
 		$this->assertEquals('', \PHPFUI\ORM::getLastError());
 
 		$fields = \PHPFUI\ORM::describeTable($table);
-		$this->assertTrue($fields[$fieldName]->primaryKey);
 		$this->assertFalse($fields[$fieldName]->autoIncrement);
 		$this->assertFalse($fields[$fieldName]->nullable);
 
-		$migration->dropPrimaryKeyTest($table);
+		$this->assertTrue($migration->dropPrimaryKeyTest($table));
 		$migration->executeAlters();
 		$this->assertEquals('', \PHPFUI\ORM::getLastError());
 
-		$migration->addPrimaryKeyAutoIncrementTest($table);
+		$this->assertTrue($migration->addPrimaryKeyAutoIncrementTest($table));
 		$migration->executeAlters();
 		$this->assertEquals('', \PHPFUI\ORM::getLastError());
 
 		$fields = \PHPFUI\ORM::describeTable($table);
-		$this->assertTrue($fields[$fieldName]->primaryKey);
 		$this->assertTrue($fields[$fieldName]->autoIncrement);
 		$this->assertFalse($fields[$fieldName]->nullable);
 		}
@@ -187,7 +183,6 @@ class MigrationTest extends \PHPUnit\Framework\TestCase
 
 		$this->assertArrayHasKey('string_record_id', $fields);
 		$this->assertTrue($fields['string_record_id']->autoIncrement);
-		$this->assertTrue($fields['string_record_id']->primaryKey);
 		$this->assertFalse($fields['string_record_id']->nullable);
 		$this->assertEquals('int', \substr($fields['string_record_id']->type, 0, 3));	// ignore precision
 

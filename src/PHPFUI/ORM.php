@@ -63,7 +63,7 @@ class ORM
 		}
 
 	/**
-	 * @return array<\PHPFUI\ORM\Schema\Field>
+	 * @return array<string, \PHPFUI\ORM\Schema\Field>
 	 */
 	public static function describeTable(string $table) : array
 		{
@@ -159,7 +159,7 @@ class ORM
 		}
 
 	/**
-	 * @return array<\PHPFUI\ORM\Schema\ForeignKey>
+	 * @return array<string, \PHPFUI\ORM\Schema\ForeignKey>
 	 */
 	public static function getForeignKeys(string $table) : array
 		{

@@ -10,6 +10,17 @@ enum TestEnum : int
 
 class MiscellaneousTest extends \PHPUnit\Framework\TestCase
 	{
+	public function testCompositePrimaryKey() : void
+		{
+		$keys = \Tests\App\Record\EmployeePrivilege::getPrimaryKeys();
+
+		$this->assertEquals(['employee_id', 'privilege_id', ], $keys);
+
+		$keys = \Tests\App\Record\Order::getPrimaryKeys();
+
+		$this->assertEquals(['order_id', ], $keys);
+		}
+
 	public function testEnumCondition() : void
 		{
 		$condition = new \PHPFUI\ORM\Condition('field', TestEnum::YES);

@@ -85,7 +85,8 @@ CREATE TABLE IF NOT EXISTS `employee_privilege` (
     FOREIGN KEY (`privilege_id`)
     REFERENCES `privilege` (`privilege_id`)
     ON DELETE NO ACTION
-    ON UPDATE NO ACTION);
+    ON UPDATE NO ACTION,
+  PRIMARY KEY (`employee_id`,`privilege_id`));
 
 CREATE INDEX `employee_privilege_employee_id` ON `employee_privilege` (`employee_id`);
 CREATE INDEX `employee_privilege_privilege_id` ON `employee_privilege` (`privilege_id`);
