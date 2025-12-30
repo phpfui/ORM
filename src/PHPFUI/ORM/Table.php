@@ -432,7 +432,7 @@ abstract class Table implements \Countable
 		}
 
 	/**
-	 * @return array<string,\PHPFUI\ORM\FieldDefinition>
+	 * @return array<string,\PHPFUI\ORM\FieldDefinition> of FieldDefinition indexed by field name
 	 */
 	public function getFields() : array
 		{
