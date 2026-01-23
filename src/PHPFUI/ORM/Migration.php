@@ -479,7 +479,15 @@ abstract class Migration
 		{
 		$indexes = \PHPFUI\ORM::getIndexes($table);
 
-		return isset($indexes[$indexName]);
+		foreach ($indexes as $index)
+			{
+			if ($index->keyName === $indexName)
+				{
+				return true;
+				}
+			}
+
+		return false;
 		}
 
 	/**
