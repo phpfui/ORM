@@ -607,15 +607,17 @@ abstract class Table implements \Countable
 	/**
 	 * Return a Record collection matching the requested parameters
 	 *
+	 * @param ?\PHPFUI\ORM\Record $instance record type to use for
+	 *  			the cursor if it is not the table's type
 	 */
-	public function getRecordCursor() : \PHPFUI\ORM\RecordCursor
+	public function getRecordCursor(?\PHPFUI\ORM\Record $instance = null) : \PHPFUI\ORM\RecordCursor
 		{
 		$this->lastInput = [];
 		$this->lastSql = $this->getSelectSQL($this->lastInput);
 
 		$totalInput = [];
 
-		return \PHPFUI\ORM::getRecordCursor($this->instance, $this->lastSql, $this->lastInput)->setCountSQL($this->getCountSQL($totalInput))->setTotalCountSQL($this->getTotalSQL($totalInput));
+		return \PHPFUI\ORM::getRecordCursor($instance ?? $this->instance, $this->lastSql, $this->lastInput)->setCountSQL($this->getCountSQL($totalInput))->setTotalCountSQL($this->getTotalSQL($totalInput));
 		}
 
 	/**
