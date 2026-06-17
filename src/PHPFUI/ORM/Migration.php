@@ -516,6 +516,15 @@ abstract class Migration
 		return $this->runSQL("rename table `{$oldName}` to `{$newName}`");
 		}
 
+	private function addAlter(string $table, string $sql) : void
+		{
+		if (! isset($this->alters[$table]))
+			{
+			$this->alters[$table] = [];
+			}
+		$this->alters[$table][] = $sql;
+		}
+
 	private function alter(string $type, string $table, string $field, string $extra = '') : void
 		{
 		$sql = $type . " COLUMN `{$field}`";
@@ -531,15 +540,6 @@ abstract class Migration
 			}
 
 		$this->addAlter($table, $sql);
-		}
-
-	private function addAlter(string $table, $sql) : void
-		{
-		if (! isset($this->alters[$table]))
-			{
-			$this->alters[$table] = [];
-			}
-		$this->alters[$table][] = $sql;
 		}
 
 	private function getFieldInfo(string $table, string $fieldName) : ?\PHPFUI\ORM\Schema\Field
