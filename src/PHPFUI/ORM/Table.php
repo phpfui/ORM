@@ -78,7 +78,7 @@ abstract class Table implements \Countable
 				{
 				continue;
 				}
-			$type = $fields[$baseField]->phpType ?? 'string';
+			$type = $fields[$baseField]->phpType ?: 'string';
 
 			if (\in_array($type, ['int', 'float', 'timestamp']))
 				{
@@ -218,7 +218,7 @@ abstract class Table implements \Countable
 		}
 
 	/**
-	 * Add a field the the select, must be a valid field
+	 * Add a field for the select, must be a valid field
 	 */
 	public function addSelect(string | object $field, string $as = '') : static
 		{
@@ -236,6 +236,56 @@ abstract class Table implements \Countable
 				}
 			$field = \implode('`.`', $parts);
 			$this->selects['`' . $field . '`'] = $as;
+			}
+
+		return $this;
+		}
+
+	/**
+	 * Set user defined select fields.
+	 */
+	public function addSelectFields(string $clause) : static
+		{
+		$fields = \explode(',', $clause);
+
+		// reconcatinate any fields with functions in them
+		$finalFields = [];
+		$finalField = '';
+		$openParenCount = 0;
+
+		foreach ($fields as $field)
+			{
+			if ($openParenCount)
+				{
+				$finalField .= ',' . $field;
+				}
+			else
+				{
+				$finalField = $field;
+				}
+			$openParenCount += \substr_count($field, '(');
+			$openParenCount -= \substr_count($field, ')');
+
+			if (! $openParenCount)
+				{
+				$finalFields[] = $finalField;
+				}
+			}
+
+		foreach ($finalFields as $field)
+			{
+			$field = \trim($field);
+
+			if (\stripos($field, ' as '))
+				{
+				$field = \str_ireplace(' as ', ' as ', $field);
+				$parts = \explode(' as ', $field);
+				$this->addSelect($parts[0], $parts[1]);
+				}
+			else
+				{
+				$this->addSelect($field);
+				}
 			}
 
 		return $this;
@@ -886,6 +936,26 @@ abstract class Table implements \Countable
 		}
 
 	/**
+	 * Add a join with another table as the first join, use addJoin
+	 * to add multiple joins
+	 *
+	 * @param string $table name of the table to join, case sensitive
+	 * @param string | \PHPFUI\ORM\Condition $on condition.
+	 *  - If $on is empty, then the following defaults are tried:
+	 *  	* Join on the primary key of the join table if it exists on both tables
+	 *  	* If field does not exist on both tables, then use the primary key of the main table
+	 *  - If $on is a non-empty string, use as the join field
+	 *  - Use \PHPFUI\ORM\Condition for complex joins
+	 * @param string $type of join (LEFT, INNER, OUTER, RIGHT, FULL, CROSS)
+	 */
+	public function setJoin(string $table, string | \PHPFUI\ORM\Condition $on = '', string $type = 'LEFT', string $as = '') : static
+		{
+		$this->joins = [];
+
+		return $this->addJoin($table, $on, $type, $as);
+		}
+
+	/**
 	 * @param int $page is zero based, so 0 is the first page, 1 is the second page
 	 */
 	public function setLimit(int $limit = 20, ?int $page = null) : static
@@ -911,58 +981,30 @@ abstract class Table implements \Countable
 		}
 
 	/**
-	 * Set user defined select fields.
+	 * Set the field for the select, must be a valid field
 	 */
-	public function setSelectFields(string $clause) : static
+	public function setSelect(string | object $field, string $as = '') : static
 		{
-		$fields = \explode(',', $clause);
+		$this->selects = [];
 
-		// reconcatinate any fields with functions in them
-		$finalFields = [];
-		$finalField = '';
-		$openParenCount = 0;
-
-		foreach ($fields as $field)
-			{
-			if ($openParenCount)
-				{
-				$finalField .= ',' . $field;
-				}
-			else
-				{
-				$finalField = $field;
-				}
-			$openParenCount += \substr_count($field, '(');
-			$openParenCount -= \substr_count($field, ')');
-
-			if (! $openParenCount)
-				{
-				$finalFields[] = $finalField;
-				}
-			}
-
-		foreach ($finalFields as $field)
-			{
-			$field = \trim($field);
-
-			if (\stripos($field, ' as '))
-				{
-				$field = \str_ireplace(' as ', ' as ', $field);
-				$parts = \explode(' as ', $field);
-				$this->addSelect($parts[0], $parts[1]);
-				}
-			else
-				{
-				$this->addSelect($field);
-				}
-			}
-
-		return $this;
+		return $this->addSelect($field, $as);
 		}
 
 	public static function setTranslationCallback(callable $callback) : void
 		{
 		self::$translationCallback = $callback;
+		}
+
+	/**
+	 * Set table for union. Use addUnion for additional unions
+	 *
+	 * @param bool $any if true, adds all records from query, defaults to distinct records only
+	 */
+	public function setUnion(\PHPFUI\ORM\Table $table, bool $any = false) : static
+		{
+		$this->unions = [];
+
+		return $this->addUnion($table, $any);
 		}
 
 	public function setWhere(?\PHPFUI\ORM\Condition $condition = null) : static
