@@ -457,6 +457,14 @@ abstract class Table implements \Countable
 		}
 
 	/**
+	 * @param array<mixed> &$input
+	 */
+	public function getCountSQL(array &$input, string $alias = 'countAlias') : string
+		{
+		return 'SELECT COUNT(*) from (' . $this->getSelectSQL($input) . ') ' . $alias;
+		}
+
+	/**
 	 * Return a object collection matching the requested parameters
 	 */
 	public function getDataObjectCursor() : \PHPFUI\ORM\DataObjectCursor
@@ -1187,14 +1195,6 @@ abstract class Table implements \Countable
 			}
 
 		return self::capitalSplit(\implode('', $parts));
-		}
-
-	/**
-	 * @param array<mixed> &$input
-	 */
-	private function getCountSQL(array &$input) : string
-		{
-		return 'SELECT COUNT(*) from (' . $this->getSelectSQL($input) . ') countAlias';
 		}
 
 	/**
