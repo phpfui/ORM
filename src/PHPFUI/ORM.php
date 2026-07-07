@@ -7,6 +7,8 @@ namespace PHPFUI;
  */
 class ORM
 	{
+	public static bool $extendedFields = true;
+
 	public static string $idSuffix = 'Id';
 
 	public static string $migrationNamespace = 'App\\Migration';
