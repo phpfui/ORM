@@ -654,7 +654,7 @@ abstract class Record extends DataObject
 		{
 		if (isset($this->current[$field]))
 			{
-			$this->current[$field] = \preg_replace('/[^a-z0-9\._\-@!#\$%&\'\*\+=\?\^`\{\|\}~]/', '', \strtolower($this->current[$field]));
+			$this->current[$field] = \preg_replace('/[^a-z0-9\._\-@!#\$%&\'\*\+=\?\^`\{\|\}~]/', '', \strtolower(\trim($this->current[$field])));
 			}
 
 		return $this;
@@ -680,7 +680,7 @@ abstract class Record extends DataObject
 		{
 		if (isset($this->current[$field]))
 			{
-			$this->current[$field] = \strtolower($this->current[$field]);
+			$this->current[$field] = \strtolower(\trim($this->current[$field]));
 			}
 
 		return $this;
@@ -707,7 +707,7 @@ abstract class Record extends DataObject
 		{
 		if (isset($this->current[$field]))
 			{
-			$this->current[$field] = \preg_replace("/[^0-9{$regExSeparators}]/", '', \strtolower($this->current[$field]));
+			$this->current[$field] = \preg_replace("/[^0-9{$regExSeparators}]/", '', \strtolower(\trim($this->current[$field])));
 			}
 
 		return $this;
@@ -720,7 +720,7 @@ abstract class Record extends DataObject
 		{
 		if (isset($this->current[$field]))
 			{
-			$text = $this->current[$field];
+			$text = $this->current[$field] = \trim($this->current[$field]);
 			$lower = \strtolower($text);
 			$upper = \strtoupper($text);
 
@@ -735,13 +735,26 @@ abstract class Record extends DataObject
 		}
 
 	/**
+	 * Trims leading and trailing whitespace
+	 */
+	protected function cleanString(string $field) : static
+		{
+		if (isset($this->current[$field]))
+			{
+			$this->current[$field] = \trim($this->current[$field]);
+			}
+
+		return $this;
+		}
+
+	/**
 	 * Converts the field to all upper case
 	 */
 	protected function cleanUpperCase(string $field) : static
 		{
 		if (isset($this->current[$field]))
 			{
-			$this->current[$field] = \strtoupper($this->current[$field]);
+			$this->current[$field] = \strtoupper(\trim($this->current[$field]));
 			}
 
 		return $this;
