@@ -272,14 +272,14 @@ class PDOInstance extends \PDO
 		elseif ($this->postGre)
 			{
 			// get auto increment primary keys
-			$fields = $this->getRow("SELECT column_name as name,column_default as sql FROM information_schema.columns WHERE table_name = ? AND column_default LIKE 'nextval(%'", [$table]);
+			$rows = $this->getRow("SELECT column_name as name,column_default as sql FROM information_schema.columns WHERE table_name = ? AND column_default LIKE 'nextval(%'", [$table]);
 
-			if (\count($fields))
+			if (\count($rows))
 				{
 				$index = new \PHPFUI\ORM\Schema\Index($this, []);
 				$index->primaryKey = true;
-				$index->name = $fields['name'];
-				$index->extra = $fields['sql'];
+				$index->name = $index->keyName = $rows['name'];
+				$index->extra = $rows['sql'];
 				$fields[$index->name] = $index;
 				}
 
@@ -292,8 +292,8 @@ class PDOInstance extends \PDO
 				{
 				$index = new \PHPFUI\ORM\Schema\Index($this, []);
 				$index->primaryKey = true;
-				$index->name = $fields['name'];
-				$index->extra = $fields['sql'];
+				$index->name = $index->keyName = $row['name'];
+				$index->extra = $row['sql'];
 
 				if (! isset($fields[$index->name]))
 					{
@@ -311,7 +311,7 @@ class PDOInstance extends \PDO
 					{
 					$index = new \PHPFUI\ORM\Schema\Index($this, []);
 					$index->primaryKey = false;
-					$index->name = $name;
+					$index->name = $index->keyName = $name;
 					$index->extra = $row['indexdef'];
 					$fields[$name] = $index;
 					}
