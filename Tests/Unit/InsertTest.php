@@ -215,7 +215,6 @@ class InsertTest extends \PHPUnit\Framework\TestCase
 		$table = new \Tests\App\Table\Customer();
 		$this->assertEquals(29, $table->count());
 		$customer->insert();
-//		print_r(\PHPFUI\ORM::getLastSQL());
 		$this->assertEquals('', \PHPFUI\ORM::getLastError());
 		$this->assertEquals(30, $table->count());
 		$this->assertTrue($transaction->rollBack());

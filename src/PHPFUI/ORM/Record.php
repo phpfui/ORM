@@ -389,7 +389,7 @@ abstract class Record extends DataObject
 	 */
 	public function insert() : int | bool
 		{
-		return $this->privateInsert(false);
+		return $this->privateInsert();
 		}
 
 	/**
@@ -399,21 +399,7 @@ abstract class Record extends DataObject
 	 */
 	public function insertOrIgnore() : int | bool
 		{
-		$pdo = \PHPFUI\ORM::pdo();
-
-		if (! $pdo->sqlite && ! $pdo->postGre)
-			{
-			return $this->privateInsert(false, 'ignore ');
-			}
-
-		$id = $this->privateInsert(false);
-
-		if (! $id)
-			{
-			\PHPFUI\ORM::getInstance()->clearErrors();
-			}
-
-		return $id;
+		return $this->privateInsert(ignore:true);
 		}
 
 	/**
@@ -423,29 +409,7 @@ abstract class Record extends DataObject
 	 */
 	public function insertOrUpdate() : int | bool
 		{
-		$pdo = \PHPFUI\ORM::pdo();
-
-		if (! $pdo->sqlite)
-			{
-			return $this->privateInsert(true);
-			}
-
-		$id = $this->privateInsert(false);
-
-		if (false === $id)
-			{
-			\PHPFUI\ORM::getInstance()->clearErrors();
-
-			$id = $this->update();
-			$keys = $this->getPrimaryKeyValues();
-
-			if (1 == \count($keys))
-				{
-				$id = \array_shift($keys);
-				}
-			}
-
-		return $id;
+		return $this->privateInsert(update:true);
 		}
 
 	/**
@@ -887,12 +851,12 @@ abstract class Record extends DataObject
 	 *
 	 * @return int | bool inserted id if auto increment, true on insertion if not auto increment or false on error
 	 */
-	private function privateInsert(bool $updateOnDuplicate, string $ignore = '') : int | bool
+	private function privateInsert(bool $update = false, bool $ignore = false) : int | bool
 		{
 		$this->clean();
 		$table = static::$table;
 
-		$sql = "insert {$ignore}into `{$table}` (";
+		$sql = "~INSERT~ into `{$table}` (";
 		$values = [];
 		$whereInput = $input = [];
 		$comma = '';
@@ -908,7 +872,6 @@ abstract class Record extends DataObject
 					{
 					continue;
 					}
-				// && \in_array($definition->defaultValue, self::$sqlDefaults))
 
 				if (! static::$autoIncrement || ! (\in_array($key, static::$primaryKeys) && empty($value)))
 					{
@@ -922,7 +885,17 @@ abstract class Record extends DataObject
 
 		$sql .= ') values (' . \implode(',', $values) . ')';
 
-		if ($updateOnDuplicate)
+		$updateSql = '';
+		$command = 'insert';
+
+		if (\PHPFUI\ORM::pdo()->sqlite)
+			{
+			if ($update)
+				{
+				$command = 'insert or replace';
+				}
+			}
+		elseif ($update)
 			{
 			if (\PHPFUI\ORM::pdo()->postGre)
 				{
@@ -952,15 +925,15 @@ abstract class Record extends DataObject
 
 			if (\count($input) == $inputCount) // nothing to update but primary keys, ignore input
 				{
-				$sql = \str_replace('insert into', 'insert ignore into', $sql);
-				}
-			else
-				{
-				$sql .= $updateSql;
+				$command = 'insert ignore';
 				}
 			}
 
+		$sql = \str_replace('~INSERT~', $command, $sql) . $updateSql;
+
 		$returnValue = \PHPFUI\ORM::execute($sql, $input);
+//		echo "returnValue " . (int)$returnValue . " from $sql\n\n";
+//		print_r($input);
 
 		if ($returnValue)
 			{
@@ -975,6 +948,11 @@ abstract class Record extends DataObject
 				}
 
 			$this->loaded = true;	// record is effectively read from the database now
+			}
+		elseif ($ignore)	// command failed, if ignore, then no error
+			{
+			\PHPFUI\ORM::getInstance()->clearErrors();
+			$returnValue = false;
 			}
 
 		return $returnValue;
