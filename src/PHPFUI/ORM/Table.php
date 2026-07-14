@@ -931,6 +931,8 @@ abstract class Table implements \Countable
 	public function setExtendedFields(bool $extended = true) : static
 		{
 		$this->extendedFields = $extended;
+
+		return $this;
 		}
 
 	public function setFullJoinSelects(bool $fullSelects = true) : static
