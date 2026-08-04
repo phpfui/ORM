@@ -27,8 +27,6 @@ abstract class Record extends DataObject
 	/** @var array<string> */
 	protected static array $primaryKeys;
 
-	protected static string $table;
-
 	protected string $validator = '';
 
 	/** @var array<string,array<string>> */
@@ -932,8 +930,6 @@ abstract class Record extends DataObject
 		$sql = \str_replace('~INSERT~', $command, $sql) . $updateSql;
 
 		$returnValue = \PHPFUI\ORM::execute($sql, $input);
-//		echo "returnValue " . (int)$returnValue . " from $sql\n\n";
-//		print_r($input);
 
 		if ($returnValue)
 			{
