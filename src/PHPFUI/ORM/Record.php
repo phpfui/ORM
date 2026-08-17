@@ -27,6 +27,8 @@ abstract class Record extends DataObject
 	/** @var array<string> */
 	protected static array $primaryKeys;
 
+	protected static string $table;
+
 	protected string $validator = '';
 
 	/** @var array<string,array<string>> */
@@ -886,7 +888,7 @@ abstract class Record extends DataObject
 		$updateSql = '';
 		$command = 'insert';
 
-		if (\PHPFUI\ORM::pdo()->sqlite)
+		if (\PHPFUI\ORM::pdo()->getSqlite())
 			{
 			if ($update)
 				{
@@ -895,7 +897,7 @@ abstract class Record extends DataObject
 			}
 		elseif ($update)
 			{
-			if (\PHPFUI\ORM::pdo()->postGre)
+			if (\PHPFUI\ORM::pdo()->getPostGre())
 				{
 				$updateSql = " ON CONFLICT ({$primaryKey}) DO UPDATE SET ";
 				}

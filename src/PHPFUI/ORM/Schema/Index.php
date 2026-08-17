@@ -15,7 +15,7 @@ class Index
 	/**
 	 * @param array<string,mixed> $fields
 	 */
-	public function __construct(\PHPFUI\ORM\PDOInstance $pdo, array $fields)
+	public function __construct(\PHPFUI\ORM\Interface\PDOInstance $pdo, array $fields)
 		{
 		if (empty($fields))
 			{

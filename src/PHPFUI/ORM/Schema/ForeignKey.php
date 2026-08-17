@@ -23,7 +23,7 @@ class ForeignKey
 	/**
 	 * @param array<string> $row
 	 */
-	public function __construct(\PHPFUI\ORM\PDOInstance $pdo, array $row)	// @phpstan-ignore-line
+	public function __construct(\PHPFUI\ORM\Interface\PDOInstance $pdo, array $row)	// @phpstan-ignore-line
 		{
 		if ('PRIMARY' === ($row['from'] ?? 'PRIMARY'))
 			{

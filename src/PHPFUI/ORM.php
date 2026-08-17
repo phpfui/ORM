@@ -21,7 +21,7 @@ class ORM
 
 	private static int | string | null $currentInstance = null;
 
-	/** @var array<\PHPFUI\ORM\PDOInstance> */
+	/** @var array<\PHPFUI\ORM\Interface\PDOInstance> */
 	private static array $instances = [];
 
 	private static ?\Psr\Log\AbstractLogger $logger = null;
@@ -32,7 +32,7 @@ class ORM
 	/**
 	 * Add a PDO instance and return the index for future reference.  Use the return value to switch bethin
 	 */
-	public static function addConnection(\PHPFUI\ORM\PDOInstance $pdo, string $name = '') : int | string
+	public static function addConnection(\PHPFUI\ORM\Interface\PDOInstance $pdo, string $name = '') : int | string
 		{
 		if ($name)
 			{
@@ -101,7 +101,7 @@ class ORM
 	 */
 	public static function expandResources(array $data) : array
 		{
-		if (! self::getInstance()->postGre)
+		if (! self::getInstance()->getPostGre())
 			{
 			return $data;
 			}
@@ -176,7 +176,7 @@ class ORM
 		return self::getInstance()->getIndexes($table);
 		}
 
-	public static function getInstance() : \PHPFUI\ORM\PDOInstance
+	public static function getInstance() : \PHPFUI\ORM\Interface\PDOInstance
 		{
 		if (null === self::$currentInstance)
 			{
@@ -310,7 +310,7 @@ class ORM
 		{
 		$pdo = self::getInstance();
 
-		if ($pdo->postGre && $table)
+		if ($pdo->getPostGre() && $table)
 			{
 			$name = $table . '_' . $name . '_seq';
 			}
@@ -332,9 +332,9 @@ class ORM
 		}
 
 	/**
-	 * @return ?\PHPFUI\ORM\PDOInstance the underlying PDO object
+	 * @return ?\PHPFUI\ORM\Interface\PDOInstance the underlying PDO object
 	 */
-	public static function pdo() : ?\PHPFUI\ORM\PDOInstance
+	public static function pdo() : ?\PHPFUI\ORM\Interface\PDOInstance
 		{
 		return self::getInstance();
 		}

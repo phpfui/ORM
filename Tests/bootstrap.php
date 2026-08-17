@@ -92,9 +92,9 @@ if ('sqlite' == $driver && ! \str_contains($dsn, ':memory:'))
 	\fclose(\fopen($sqliteFile, 'w'));
 	}
 
-$pdo = new \PHPFUI\ORM\PDOInstance($dsn, $config['name'], $config['key']);
+$pdo = \PHPFUI\ORM\PDO\Factory::get($dsn, $config['name'], $config['key']);
 
-if ($pdo->postGre)
+if ($pdo->getPostGre())
 	{
 	$pdo->execute("SET TIME ZONE 'UTC';");
 	}
@@ -132,7 +132,7 @@ $validatorGenerator = new \PHPFUI\ORM\Tool\Generate\Validator();
 
 foreach ($tables as $table)
 	{
-	if ($pdo->postGre)
+	if ($pdo->getPostGre())
 		{
 		$tableName = '"' . $table . '"';
 		$id = '"' . $table . '_id"';

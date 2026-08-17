@@ -46,7 +46,7 @@ class MigrationTest extends \PHPUnit\Framework\TestCase
 
 		$pdo = \PHPFUI\ORM::getInstance();
 
-		if ($pdo->sqlite || $pdo->postGre)
+		if ($pdo->getSqlite() || $pdo->getPostGre())
 			{
 			return;	// alter table not supported
 			}
@@ -119,7 +119,7 @@ class MigrationTest extends \PHPUnit\Framework\TestCase
 
 		$pdo = \PHPFUI\ORM::getInstance();
 
-		if ($pdo->sqlite || $pdo->postGre)
+		if ($pdo->getSqlite() || $pdo->getPostGre())
 			{
 			return;	// alter table not supported
 			}
@@ -223,7 +223,7 @@ class MigrationTest extends \PHPUnit\Framework\TestCase
 
 		$pdo = \PHPFUI\ORM::getInstance();
 
-		if ($pdo->sqlite || $pdo->postGre)
+		if ($pdo->getSqlite() || $pdo->getPostGre())
 			{
 			return;
 			}

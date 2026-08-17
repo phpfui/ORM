@@ -33,7 +33,7 @@ class DeleteTest extends \PHPUnit\Framework\TestCase
 		$this->assertEquals(55, $table->count());
 		$this->assertEquals('', \PHPFUI\ORM::getLastError());
 		$purchaseorderdetail = new \Tests\App\Record\PurchaseOrderDetail(245);
-		$time = \PHPFUI\ORM::getInstance()->postGre ? '2006-01-22 00:00:00+00' : '2006-01-22 00:00:00';
+		$time = \PHPFUI\ORM::getInstance()->getPostGre() ? '2006-01-22 00:00:00+00' : '2006-01-22 00:00:00';
 		$this->assertEquals($time, $purchaseorderdetail->date_received);
 		$purchaseorderdetail->delete();
 		$this->assertEquals('', \PHPFUI\ORM::getLastError());

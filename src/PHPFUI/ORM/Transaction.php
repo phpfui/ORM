@@ -6,7 +6,7 @@ class Transaction
 	{
 	private bool $committed = false;
 
-	private \PHPFUI\ORM\PDOInstance $instance;
+	private \PHPFUI\ORM\Interface\PDOInstance $instance;
 
 	public function __construct()
 		{

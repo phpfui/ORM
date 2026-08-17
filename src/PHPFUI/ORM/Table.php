@@ -610,7 +610,7 @@ abstract class Table implements \Countable
 			}
 		$this->offset = $offset;
 
-		if (\PHPFUI\ORM::getInstance()->postGre)
+		if (\PHPFUI\ORM::getInstance()->getPostGre())
 			{
 			return "\nLIMIT {$this->limit} OFFSET {$offset}";
 			}

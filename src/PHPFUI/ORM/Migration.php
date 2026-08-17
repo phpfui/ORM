@@ -387,7 +387,7 @@ abstract class Migration
 			return true;
 			}
 
-		if (\PHPFUI\ORM::getInstance()->sqlite)
+		if (\PHPFUI\ORM::getInstance()->getSqlite())
 			{
 			$sql = "DROP INDEX `{$indexName}`";
 			}

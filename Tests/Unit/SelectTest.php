@@ -60,7 +60,7 @@ class SelectTest extends \PHPUnit\Framework\TestCase
 		$this->assertEquals('', \PHPFUI\ORM::getLastError());
 
 		// SQLite count returns zero in this instance for unknown reasons, so bail for this test on SQLite only
-		if (! \PHPFUI\ORM::getInstance()->sqlite)
+		if (! \PHPFUI\ORM::getInstance()->getSqlite())
 			{
 			$this->assertEquals(16, $recordCursor->count());
 			}

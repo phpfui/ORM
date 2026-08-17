@@ -21,9 +21,9 @@ class Field
 	/**
 	 * @param array<string,mixed> $fields
 	 */
-	public function __construct(\PHPFUI\ORM\PDOInstance $pdo, array $fields, bool $autoIncrement)
+	public function __construct(\PHPFUI\ORM\Interface\PDOInstance $pdo, array $fields, bool $autoIncrement)
 		{
-		if (\str_starts_with($pdo->getDSN(), 'mysql') || $pdo->postGre)
+		if (\str_starts_with($pdo->getDSN(), 'mysql') || $pdo->getPostGre())
 			{
 			$this->name = $fields['Field'];
 			$this->type = \strtolower($fields['Type']);
