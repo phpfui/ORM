@@ -178,14 +178,39 @@ class InsertTest extends \PHPUnit\Framework\TestCase
 
 		$customerTable = new \Tests\App\Table\Customer();
 		$this->assertCount(29, $customerTable);
+		$customerTable->setWhere(new \PHPFUI\ORM\Condition('customer_id', null));
+		$this->assertCount(0, $customerTable);
 
 		$customerTable->insert($customers);
 		$this->assertEquals('', \PHPFUI\ORM::getLastError());
+		$customerTable->setWhere(new \PHPFUI\ORM\Condition('customer_id', null));
+		$this->assertCount(0, $customerTable);
+		$customerTable->setWhere(null);
 		$this->assertCount(32, $customerTable);
 		$customerTable->setWhere(new \PHPFUI\ORM\Condition('zip_postal_code', operator:new \PHPFUI\ORM\Operator\IsNull()));
 		$this->assertCount(2, $customerTable);
 		$customerTable->setWhere(new \PHPFUI\ORM\Condition('email_address', '%@phpfui%', new \PHPFUI\ORM\Operator\Like()));
 		$this->assertCount(3, $customerTable);
+
+		$customer4 = new \Tests\App\Record\Customer();
+		$customer4->customer_id = 99;
+		$customer4->address = '654 Elm';
+		$customer4->business_phone = '212-123-4567';
+		$customer4->city = 'Rochester';
+		$customer4->company = 'PHPFUI';
+		$customer4->email_address = 'bruce4@phpfui.net';
+		$customer4->fax_number = '212-345-6789';
+		$customer4->first_name = 'Fred';
+		$customer4->home_phone = '987-654-3210';
+		$customer4->job_title = 'Honcho';
+		$customer4->last_name = 'Willis';
+		$customer4->mobile_phone = '123-456-7890';
+		$customer4->state_province = 'NY';
+		$customerTable->insert([$customer4], insertAutoIncrementKey:true);
+		$customerTable->setWhere(null);
+		$this->assertCount(33, $customerTable);
+		$customerTable->setWhere(new \PHPFUI\ORM\Condition('customer_id', $customer4->customer_id));
+		$this->assertCount(1, $customerTable);
 
 		$this->assertTrue($transaction->rollBack());
 		$customerTable->setWhere();

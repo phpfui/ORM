@@ -34,16 +34,6 @@ abstract class Record extends DataObject
 	/** @var array<string,array<string>> */
 	protected static array $virtualFields = [];
 
-	/** @var array<string> */
-	private static array $sqlDefaults = [
-		'CURRENT_TIMESTAMP',
-		'CURRENT_DATE',
-		'true',
-		'false',
-		"b'0'",
-		"b'1'",
-	];
-
 	/**
 	 * Construct a CRUD object
 	 *
@@ -104,6 +94,19 @@ abstract class Record extends DataObject
 				break;
 
 			}
+		}
+
+	/** @return array<string> */
+	public static function getSQLDefaults() : array
+		{
+		return [
+			'CURRENT_TIMESTAMP',
+			'CURRENT_DATE',
+			'true',
+			'false',
+			"b'0'",
+			"b'1'",
+		];
 		}
 
 	/**
@@ -502,7 +505,7 @@ abstract class Record extends DataObject
 				}
 			else	// has default value, if SQL default, set to null, otherwise default value
 				{
-				$this->current[$field] = \in_array($description->defaultValue, self::$sqlDefaults) ? null : $description->defaultValue;
+				$this->current[$field] = \in_array($description->defaultValue, $this->getSQLDefaults()) ? null : $description->defaultValue;
 				}
 			}
 
