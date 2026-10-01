@@ -171,4 +171,4 @@ foreach ($cursors as $cursor)
 PHPFUI is distributed under the MIT License.
 
 ## PHP Versions
-This library only supports **modern** versions of PHP which still receive security updates. While we would love to support PHP from the late Ming Dynasty, the advantages of modern PHP versions far out weigh quaint notions of backward compatibility. Time to upgrade.
+This library only supports **modern** versions of PHP which still receive updates. While we would love to support PHP from the late Ming Dynasty, the advantages of modern PHP versions far out weigh quaint notions of backward compatibility. Time to upgrade.
