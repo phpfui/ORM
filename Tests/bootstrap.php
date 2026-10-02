@@ -92,7 +92,7 @@ if ('sqlite' == $driver && ! \str_contains($dsn, ':memory:'))
 	\fclose(\fopen($sqliteFile, 'w'));
 	}
 
-$pdo = \PHPFUI\ORM\PDO\Factory::get($dsn, $config['name'], $config['key']);
+$pdo = new \PHPFUI\ORM\PDO\Factory()->get($dsn, $config['name'], $config['key']);
 
 if ($pdo->getPostGre())
 	{
