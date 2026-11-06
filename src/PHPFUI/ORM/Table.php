@@ -1160,11 +1160,11 @@ abstract class Table implements \Countable
 						{
 						if (\is_array($request[$field]))
 							{
-							$data[$field] = $request[$field][$index];
+							$data[$field] = $request[$field][$index] ?? null;
 							}
 						else
 							{
-							$data[$field] = $request[$field];
+							$data[$field] = $request[$field] ?? null;
 							}
 						}
 					}
