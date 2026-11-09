@@ -4,10 +4,6 @@ namespace PHPFUI\ORM\Trait;
 
 trait PDOInstance
 	{
-	private bool $postGre;
-
-	private bool $sqlite;
-
 	/** @var array<string> */
 	private array $lastError = [];
 
@@ -21,6 +17,10 @@ trait PDOInstance
 
 	private string $lastSql = '';
 
+	private bool $postGre;
+
+	private bool $sqlite;
+
 	/**
 	 * @param ?array<string,string> $options
 	 */
@@ -29,16 +29,6 @@ trait PDOInstance
 		$this->postGre = \str_starts_with($dsn, 'pgsql');
 		$this->sqlite = \str_starts_with($dsn, 'sqlite');
 		parent::__construct($dsn, $username, $password, $options);
-		}
-
-	public function getPostGre() : bool
-		{
-		return $this->postGre;
-		}
-
-	public function getSqlite() : bool
-		{
-		return $this->sqlite;
 		}
 
 	/**
@@ -388,6 +378,11 @@ trait PDOInstance
 		return $this->lastSql;
 		}
 
+	public function getPostGre() : bool
+		{
+		return $this->postGre;
+		}
+
 	/**
 	 * @param array<mixed> $input
 	 */
@@ -456,6 +451,11 @@ trait PDOInstance
 			}
 
 		return $statement->fetchAll($fetchType);
+		}
+
+	public function getSqlite() : bool
+		{
+		return $this->sqlite;
 		}
 
 	/**

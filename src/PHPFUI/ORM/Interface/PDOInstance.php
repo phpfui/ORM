@@ -15,10 +15,6 @@ interface PDOInstance
 		?array $options = null
 	);
 
-	public function getPostGre() : bool;
-
-	public function getSqlite() : bool;
-
 	public function beginTransaction() : bool;
 
 	/**
@@ -127,6 +123,8 @@ interface PDOInstance
 	 */
 	public function getLastSql() : string;
 
+	public function getPostGre() : bool;
+
 	/**
 	 * @param array<mixed> $input
 	 */
@@ -156,6 +154,8 @@ interface PDOInstance
 	 * @return array<array<string,string>>
 	 */
 	public function getRows(string $sql, array $input = [], int $fetchType = \PDO::FETCH_ASSOC) : array;
+
+	public function getSqlite() : bool;
 
 	/**
 	 * @return array<string>

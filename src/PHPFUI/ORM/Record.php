@@ -96,19 +96,6 @@ abstract class Record extends DataObject
 			}
 		}
 
-	/** @return array<string> */
-	public static function getSQLDefaults() : array
-		{
-		return [
-			'CURRENT_TIMESTAMP',
-			'CURRENT_DATE',
-			'true',
-			'false',
-			"b'0'",
-			"b'1'",
-		];
-		}
-
 	/**
 	 * Allows for $object->field syntax
 	 *
@@ -365,6 +352,19 @@ abstract class Record extends DataObject
 			}
 
 		return $retVal;
+		}
+
+	/** @return array<string> */
+	public static function getSQLDefaults() : array
+		{
+		return [
+			'CURRENT_TIMESTAMP',
+			'CURRENT_DATE',
+			'true',
+			'false',
+			"b'0'",
+			"b'1'",
+		];
 		}
 
 	/**
