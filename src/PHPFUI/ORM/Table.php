@@ -225,7 +225,11 @@ abstract class Table implements \Countable
 	 */
 	public function addSelect(string | object $field, string $as = '') : static
 		{
-		if (\is_object($field))
+		if ($field instanceof \PHPFUI\ORM\Table)
+			{
+			$this->selects["({$field->getSelectSQL()})"] = $as;
+			}
+		else if (\is_object($field))
 			{
 			$this->selects["{$field}"] = $as;
 			}
@@ -764,12 +768,23 @@ abstract class Table implements \Countable
 		}
 
 	/**
-	 * @param array<mixed> &$input
-	 *
-	 * Sets up lastSql and lastInput variable for use in returning cursors
+	 * @param ?array<mixed> &$input Pass null to substitute values for ? place holders
 	 */
-	public function getSelectSQL(array &$input, bool $limited = true) : string
+	public function getSelectSQL(?array &$input = null, bool $limited = true) : string
 		{
+		if (null === $input)
+			{
+			$data = [];
+			$sql = $this->getSelectSQL($data);
+
+			foreach ($data as $variable)
+				{
+				$pos = strpos($sql, '?');
+				$sql = substr($sql, 0, $pos) . \PHPFUI\ORM::getInstance()->quote($variable) . substr($sql, $pos + 1);
+				}
+
+			return $sql;
+			}
 		$table = $this->instance->getTableName();
 		$select = $this->getSelectFields();
 		$joins = $this->getJoins($input);
