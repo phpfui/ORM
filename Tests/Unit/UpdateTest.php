@@ -51,9 +51,12 @@ class UpdateTest extends \PHPUnit\Framework\TestCase
 		$condition2->and(new \PHPFUI\ORM\Condition('first_name', 'Helena'));
 		$customerTable2->setWhere($condition2);
 		$this->assertEquals(1, $customerTable2->count());
+		$customerFound = $customerTable2->getRecordCursor()->current();
+		$this->assertEquals('Helena', $customerFound->first_name);
+		$this->assertEquals('Kupkova', $customerFound->last_name);
 
 		$customerTable2->update(['last_name' => 'Wells', 'first_name' => 'Bruce']);
-		$customer = new \Tests\App\Record\Customer(15);
+		$customer = new \Tests\App\Record\Customer($customerFound->customer_id);
 		$this->assertEquals('Bruce', $customer->first_name);
 		$this->assertEquals('Wells', $customer->last_name);
 		$this->assertEquals(1, $customerTable->count());
