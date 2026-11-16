@@ -143,8 +143,3 @@ foreach ($tables as $table)
 	$validatorGenerator->generate($table);
 	}
 $pdo->clearErrors();
-
-//$rows = \PHPFUI\ORM::getRows("SELECT COUNT(*) from (SELECT * FROM `order_detail` GROUP BY `order_detail_id` HAVING (quantity * unit_price) >= 1000.0) countalias");
-//print_r($rows);
-//print_r("\n");
-//print_r(\PHPFUI\ORM::getLastSQL());

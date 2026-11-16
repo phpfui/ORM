@@ -58,12 +58,7 @@ class SelectTest extends \PHPUnit\Framework\TestCase
 		$recordCursor = $orderDetailTable->getRecordCursor();
 		$count = $recordCursor->count();
 		$this->assertEquals('', \PHPFUI\ORM::getLastError());
-
-		// SQLite count returns zero in this instance for unknown reasons, so bail for this test on SQLite only
-		if (! \PHPFUI\ORM::getInstance()->getSqlite())
-			{
-			$this->assertEquals(16, $recordCursor->count());
-			}
+		$this->assertEquals(16, $recordCursor->count());
 		}
 
 	public function testSelectIn() : void
@@ -194,5 +189,23 @@ class SelectTest extends \PHPUnit\Framework\TestCase
 		$this->assertEquals('', \PHPFUI\ORM::getLastError());
 		$this->assertEquals(11, $table->count());
 		$this->assertEquals('', \PHPFUI\ORM::getLastError());
+		}
+
+	public function testSelectWhereSubQuery() : void
+		{
+		$orderTable = new \Tests\App\Table\Order();
+		$orderDetailTable = new \Tests\App\Table\OrderDetail();
+		$orderDetailTable->addSelect(new \PHPFUI\ORM\Literal('(quantity * unit_price)'));
+		$orderDetailTable->setWhere(new \PHPFUI\ORM\Condition('order_detail_id', new \PHPFUI\ORM\Literal('`order`.order_id'), new \PHPFUI\ORM\Operator\Equal()));
+
+		$orderTable->setWhere(new \PHPFUI\ORM\Condition($orderDetailTable, 1000.00, new \PHPFUI\ORM\Operator\GreaterThanEqual()));
+		$recordCursor = $orderTable->getRecordCursor();
+		$this->assertEquals('', \PHPFUI\ORM::getLastError());
+		$this->assertEquals(11, $recordCursor->count());
+
+		$orderTable->setWhere(new \PHPFUI\ORM\Condition(new \PHPFUI\ORM\Literal(1000.00), $orderDetailTable, new \PHPFUI\ORM\Operator\LessThanEqual()));
+		$recordCursor = $orderTable->getRecordCursor();
+		$this->assertEquals('', \PHPFUI\ORM::getLastError());
+		$this->assertEquals(11, $recordCursor->count());
 		}
 	}

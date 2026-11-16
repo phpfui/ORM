@@ -3,13 +3,15 @@
 namespace PHPFUI\ORM;
 
 /**
- * Conditions are used for the WHERE part of the query. Think of each Condition as enclosed in parentheses ().
+ * Conditions are used for the WHERE, HAVING and JOIN conditions of the query. Think of each Condition as enclosed in parentheses ().
  *
  * You start with an initial test: Field Value Operator (FVO) tupple.
  *
  * You can then add additional FVO tupples with a logical operator (AND, OR, AND NOT, OR NOT) separating the previous FVO tupple.
  *
  * To add a sub condition in parentheses, add another Condition with the same logical operator separator.
+ *
+ * You can use a **\PHPFUI\ORM\Table** as either the field or value that will resolve to a select statement. It is your responibility to insure the select statement produces valid SQL for a sub query.
  */
 class Condition implements \Countable, \Stringable
 	{
@@ -21,11 +23,11 @@ class Condition implements \Countable, \Stringable
 	 *
 	 * Will try to parse FVO from string if $operator is null.
 	 *
-	 * @param string|\PHPFUI\ORM\Literal|null $field single name (no .) of a field existing the the table.  Will try to parse FVO from string if $operator is null.
-	 * @param mixed $value to test field against.  Must be string for LIKE operators and an array for IN operators.
+	 * @param string|\PHPFUI\ORM\Literal|\PHPFUI\ORM\Table|null $field single name (no .) of a field existing the the table.  Will try to parse FVO from string if $operator is null.
+	 * @param mixed $value to test field against.  Must be string for LIKE operators and an array for IN operators. Can also be a **\PHPFUI\ORM\Table** that will evaluate to a correct sub query.
 	 * @param \PHPFUI\ORM\Operator $operator comparision of your choice
 	 */
-	public function __construct(string|\PHPFUI\ORM\Literal|null $field = null, mixed $value = null, \PHPFUI\ORM\Operator $operator = new \PHPFUI\ORM\Operator\Equal())
+	public function __construct(string|\PHPFUI\ORM\Literal|\PHPFUI\ORM\Table|null $field = null, mixed $value = null, \PHPFUI\ORM\Operator $operator = new \PHPFUI\ORM\Operator\Equal())
 		{
 		if ($field)
 			{
@@ -40,9 +42,12 @@ class Condition implements \Countable, \Stringable
 		{
 		$retVal = '';
 		$first = '';
-
 		foreach ($this->conditions as $parts)
 			{
+			if ($parts[1] instanceof \PHPFUI\ORM\Table)
+				{
+				$parts[1] = new \PHPFUI\ORM\Literal("({$parts[1]->getSelectSQL()})");
+				}
 
 			if (! \is_object($parts[1]) || $parts[1] instanceof \PHPFUI\ORM\Literal)
 				{
@@ -92,7 +97,15 @@ class Condition implements \Countable, \Stringable
 					}
 				elseif (\is_object($value))
 					{
-					$retVal .= "{$first}{$field}{$operator} {$value}";
+					if ($value instanceof \PHPFUI\ORM\Table)
+						{
+						$input = [];
+						$retVal .= "{$first}{$field}{$operator} (" . $value->getSelectSQL($input) . ')';
+						}
+					else
+						{
+						$retVal .= "{$first}{$field}{$operator} {$value}";
+						}
 					$first = ' ';
 					}
 				else
@@ -106,6 +119,7 @@ class Condition implements \Countable, \Stringable
 				{
 				$retVal .= " {$parts[0]} ({$parts[1]})";
 				}
+
 			}
 
 		return $retVal;
@@ -166,30 +180,26 @@ class Condition implements \Countable, \Stringable
 
 		foreach ($this->conditions as $parts)
 			{
-			if (! \is_object($parts[1]) || $parts[1] instanceof \PHPFUI\ORM\Literal)
+			foreach ($parts as $i => $part)
 				{
-				$value = $parts[3];
-
-				if ($value instanceof \PHPFUI\ORM\Table)
+				if ($part instanceof \PHPFUI\ORM\Table)
 					{
-					$value->getSelectSQL($retVal);
+					$subQueryInput = [];
+					$part->getSelectSQL($subQueryInput);
+					$retVal = \array_merge($retVal, $subQueryInput);
 					}
-				elseif (\is_array($value))
+				elseif ($part instanceof \PHPFUI\ORM\Condition)
 					{
-					$retVal = \array_merge($retVal, $value);
+					$retVal = \array_merge($retVal, $part->getInput());
 					}
-				elseif (\is_object($value))
+				elseif (is_array($part))
 					{
-					// skip
+					$retVal = \array_merge($retVal, $part);
 					}
-				elseif (null !== $value)
+				elseif ($i === 3 && ! is_object($part))
 					{
-					$retVal[] = $value;
+					$retVal[] = $part;
 					}
-				}
-			else
-				{
-				$retVal = \array_merge($retVal, $parts[1]->getInput());
 				}
 			}
 
@@ -220,7 +230,7 @@ class Condition implements \Countable, \Stringable
 	/**
 	 * Internal method to type check $condition parameter
 	 */
-	private function add(string $logical, string | \PHPFUI\ORM\Condition | \PHPFUI\ORM\Literal $condition, \PHPFUI\ORM\Operator $operator, mixed $value) : static
+	private function add(string $logical, string | \PHPFUI\ORM\Condition | \PHPFUI\ORM\Literal | \PHPFUI\ORM\Table $condition, \PHPFUI\ORM\Operator $operator, mixed $value) : static
 		{
 		// convert enum to the backed type
 		if (\is_object($value) && \enum_exists($value::class))
@@ -245,7 +255,11 @@ class Condition implements \Countable, \Stringable
 			$logical = '';
 			}
 
-		if ('string' == \gettype($condition) || \PHPFUI\ORM\Literal::class == $condition::class)
+		if ($condition instanceof \PHPFUI\ORM\Table)
+			{
+			$this->conditions[] = [$logical, $condition, $operator, $value];
+			}
+		elseif ('string' == \gettype($condition) || \PHPFUI\ORM\Literal::class == $condition::class)
 			{
 			$this->conditions[] = [$logical, $condition, $operator, $value];
 			}

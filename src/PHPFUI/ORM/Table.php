@@ -466,7 +466,7 @@ abstract class Table implements \Countable
 	/**
 	 * @param array<mixed> &$input
 	 */
-	public function getCountSQL(array &$input, string $alias = 'countAlias') : string
+	public function getCountSQL(?array &$input, string $alias = 'countAlias') : string
 		{
 		return 'SELECT COUNT(*) from (' . $this->getSelectSQL($input) . ') ' . $alias;
 		}
@@ -780,7 +780,11 @@ abstract class Table implements \Countable
 			foreach ($data as $variable)
 				{
 				$pos = strpos($sql, '?');
-				$sql = substr($sql, 0, $pos) . \PHPFUI\ORM::getInstance()->quote($variable) . substr($sql, $pos + 1);
+				if ('string' === \gettype($variable))
+					{
+					$variable = \PHPFUI\ORM::getInstance()->quote($variable);
+					}
+				$sql = substr($sql, 0, $pos) . $variable . substr($sql, $pos + 1);
 				}
 
 			return $sql;
@@ -800,7 +804,7 @@ abstract class Table implements \Countable
 			foreach ($this->unions as $info)
 				{
 				[$table, $any] = $info;
-				$sql .= ' UNION ';
+				$sql .= "\nUNION ";
 
 				if ($any)
 					{
@@ -859,7 +863,7 @@ abstract class Table implements \Countable
 	 * @param iterable<\PHPFUI\ORM\Record> $records
 	 * @param string $ignore Pass "ignore" to not error on duplicate records or database specific command
 	 * @param bool $insertAutoIncrementKey set to true to add the auto increment primary key and not automatically generate it
-	 * @param int $chuckSize use 0 for no chunking
+	 * @param int $chunkSize use 0 for no chunking
 	 */
 	public function insert(iterable $records, string $ignore = '', bool $insertAutoIncrementKey = false, int $chunkSize = 100) : bool
 		{
@@ -1281,7 +1285,7 @@ abstract class Table implements \Countable
 	/**
 	 * @param array<mixed> &$input
 	 */
-	private function getTotalSQL(array &$input) : string
+	private function getTotalSQL(?array &$input) : string
 		{
 		$input = [];
 
