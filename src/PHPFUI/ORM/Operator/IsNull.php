@@ -13,4 +13,9 @@ class IsNull extends \PHPFUI\ORM\Operator
 		{
 		return null === $variable;
 		}
+
+	public function hasParameter() : bool
+		{
+		return false;
+		}
 	}

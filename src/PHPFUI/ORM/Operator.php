@@ -26,4 +26,13 @@ abstract class Operator implements \Stringable
 		{
 		return $this->operator;
 		}
+
+	/**
+	 * Return true if the operator has a parameter (is null and is
+	 * not null would return false for example)
+	 */
+	public function hasParameter() : bool
+		{
+		return true;
+		}
 	}

@@ -780,6 +780,10 @@ abstract class Table implements \Countable
 			foreach ($data as $variable)
 				{
 				$pos = strpos($sql, '?');
+				if ($pos === false)
+					{
+					continue;
+					}
 				if ('string' === \gettype($variable))
 					{
 					$variable = \PHPFUI\ORM::getInstance()->quote($variable);

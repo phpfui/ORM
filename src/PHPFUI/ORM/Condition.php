@@ -198,7 +198,10 @@ class Condition implements \Countable, \Stringable
 					}
 				elseif ($i === 3 && ! is_object($part))
 					{
-					$retVal[] = $part;
+					if ($parts[2]->hasParameter())
+						{
+						$retVal[] = $part;
+						}
 					}
 				}
 			}
