@@ -143,7 +143,7 @@ This repository may reference external tools, services, or libraries:
 
 ## Disclaimer
 
-This cheat sheet is provided **as-is**. While we strive for accuracy:
+This package is provided **as-is**. While we strive for accuracy:
 
 - Users are responsible for verifying information
 - Test code in safe environments first
@@ -172,6 +172,6 @@ For security questions, contact:
 
 ---
 
-**Last Updated:** 2026-11-05
+**Last Updated:** 2026-11-25
 **License:** MIT
 
