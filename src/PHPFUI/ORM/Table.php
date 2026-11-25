@@ -229,7 +229,7 @@ abstract class Table implements \Countable
 			{
 			$this->selects["({$field->getSelectSQL()})"] = $as;
 			}
-		else if (\is_object($field))
+		elseif (\is_object($field))
 			{
 			$this->selects["{$field}"] = $as;
 			}
@@ -779,16 +779,18 @@ abstract class Table implements \Countable
 
 			foreach ($data as $variable)
 				{
-				$pos = strpos($sql, '?');
-				if ($pos === false)
+				$pos = \strpos($sql, '?');
+
+				if (false === $pos)
 					{
 					continue;
 					}
+
 				if ('string' === \gettype($variable))
 					{
 					$variable = \PHPFUI\ORM::getInstance()->quote($variable);
 					}
-				$sql = substr($sql, 0, $pos) . $variable . substr($sql, $pos + 1);
+				$sql = \substr($sql, 0, $pos) . $variable . \substr($sql, $pos + 1);
 				}
 
 			return $sql;
@@ -871,7 +873,8 @@ abstract class Table implements \Countable
 	 */
 	public function insert(iterable $records, string $ignore = '', bool $insertAutoIncrementKey = false, int $chunkSize = 100) : bool
 		{
-		$totalRecords = count($records);
+		$totalRecords = \count($records);
+
 		if (! $totalRecords)
 			{
 			return false;
@@ -883,7 +886,8 @@ abstract class Table implements \Countable
 			}
 
 		$postGre = '';
-		if (strlen($ignore) && \PHPFUI\ORM::getInstance()->getPostGre())
+
+		if (\strlen($ignore) && \PHPFUI\ORM::getInstance()->getPostGre())
 			{
 			$postGre = $ignore;
 			$ignore = '';
@@ -916,6 +920,7 @@ abstract class Table implements \Countable
 		$sql = $insertsql;
 		$input = [];
 		$comma = '(';
+
 		foreach ($records as $record)
 			{
 			foreach ($fields as $fieldName => $definition)
@@ -927,6 +932,7 @@ abstract class Table implements \Countable
 					$input[] = $record[$fieldName];
 					}
 				}
+
 			if (++$inserted >= $chunkSize)
 				{
 				$this->lastSql = $sql;
@@ -942,6 +948,7 @@ abstract class Table implements \Countable
 				$comma = "),\n(";
 				}
 			}
+
 		if ($sql != $insertsql)
 			{
 			$sql .= ')';

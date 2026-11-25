@@ -58,6 +58,7 @@ class SelectTest extends \PHPUnit\Framework\TestCase
 		$recordCursor = $orderDetailTable->getRecordCursor();
 		$count = $recordCursor->count();
 		$this->assertEquals('', \PHPFUI\ORM::getLastError());
+
 		if (! \PHPFUI\ORM::pdo()->getSqlite()) // avoid PHP bug in SQLite driver https://github.com/php/php-src/issues/25537
 			{
 			$this->assertEquals(16, $recordCursor->count());
@@ -204,6 +205,7 @@ class SelectTest extends \PHPUnit\Framework\TestCase
 		$orderTable->setWhere(new \PHPFUI\ORM\Condition($orderDetailTable, 1000.00, new \PHPFUI\ORM\Operator\GreaterThanEqual()));
 		$recordCursor = $orderTable->getRecordCursor();
 		$this->assertEquals('', \PHPFUI\ORM::getLastError());
+
 		if (! \PHPFUI\ORM::pdo()->getSqlite())	// avoid PHP bug in SQLite driver https://github.com/php/php-src/issues/25537
 			{
 			$this->assertEquals(11, $recordCursor->count());
@@ -212,6 +214,7 @@ class SelectTest extends \PHPUnit\Framework\TestCase
 		$orderTable->setWhere(new \PHPFUI\ORM\Condition(new \PHPFUI\ORM\Literal(1000.00), $orderDetailTable, new \PHPFUI\ORM\Operator\LessThanEqual()));
 		$recordCursor = $orderTable->getRecordCursor();
 		$this->assertEquals('', \PHPFUI\ORM::getLastError());
+
 		if (! \PHPFUI\ORM::pdo()->getSqlite())	// avoid PHP bug in SQLite driver https://github.com/php/php-src/issues/25537
 			{
 			$this->assertEquals(11, $recordCursor->count());

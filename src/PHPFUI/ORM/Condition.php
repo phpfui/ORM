@@ -42,6 +42,7 @@ class Condition implements \Countable, \Stringable
 		{
 		$retVal = '';
 		$first = '';
+
 		foreach ($this->conditions as $parts)
 			{
 			if ($parts[1] instanceof \PHPFUI\ORM\Table)
@@ -192,11 +193,11 @@ class Condition implements \Countable, \Stringable
 					{
 					$retVal = \array_merge($retVal, $part->getInput());
 					}
-				elseif (is_array($part))
+				elseif (\is_array($part))
 					{
 					$retVal = \array_merge($retVal, $part);
 					}
-				elseif ($i === 3 && ! is_object($part))
+				elseif (3 === $i && ! \is_object($part))
 					{
 					if ($parts[2]->hasParameter())
 						{
